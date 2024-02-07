@@ -16,6 +16,6 @@
     - [ ] Hocon
     - [ ] JSON
 - [ ] Platforms
-  - [ ] [Minestom](core/README.md)
-  - [ ] [Paper]()
+  - [ ] [Minestom](minestom/README.md)
+  - [ ] [Paper](paper/README.md)
     - **Spigot support is not planned, but may be supported in the future**
