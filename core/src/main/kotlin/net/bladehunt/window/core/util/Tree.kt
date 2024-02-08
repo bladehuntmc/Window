@@ -1,9 +1,9 @@
 package net.bladehunt.window.core.util
 
-class Tree<T>(rootData: T){
+open class Tree<T>(rootData: T) {
     private val root = Node(rootData)
 
-    data class Node<T>(
+    open class Node<T>(
         val data: T,
         var parent: Node<T>? = null,
         val children: MutableList<Node<T>> = mutableListOf()
