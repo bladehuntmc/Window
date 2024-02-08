@@ -11,6 +11,7 @@ allprojects {
     repositories {
         mavenCentral()
         maven(url = "https://jitpack.io")
+        maven(url = "https://gitlab.com/api/v4/projects/54686082/packages/maven")
     }
     tasks.withType<JavaCompile> {
         sourceCompatibility = "17"
