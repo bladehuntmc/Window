@@ -14,7 +14,7 @@ import org.junit.jupiter.api.BeforeAll
 import org.junit.jupiter.api.Test
 import java.util.UUID
 
-object ItemTest {
+object WindowItemTest {
     lateinit var player: FakePlayer
 
     @BeforeAll @JvmStatic fun setup() {
