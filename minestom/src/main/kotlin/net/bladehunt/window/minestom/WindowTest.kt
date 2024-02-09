@@ -2,8 +2,9 @@ package net.bladehunt.window.minestom
 
 import net.bladehunt.reakt.reactivity.Signal
 import net.bladehunt.window.core.AdventureComponent
-import net.bladehunt.window.minestom.component.button
-import net.bladehunt.window.minestom.component.title
+import net.bladehunt.window.minestom.dsl.button
+import net.bladehunt.window.minestom.dsl.title
+import net.bladehunt.window.minestom.dsl.window
 import net.kyori.adventure.text.format.TextColor
 import net.kyori.adventure.text.format.TextDecoration
 import net.minestom.server.MinecraftServer
@@ -54,7 +55,7 @@ object WindowTest {
                             }
                         }
                     }
-                    player.openInventory(window.inventory)
+                    player.openInventory(window.handle)
                 }
             }
         )

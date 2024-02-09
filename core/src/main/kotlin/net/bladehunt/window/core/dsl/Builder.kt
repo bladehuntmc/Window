@@ -5,6 +5,9 @@ import net.bladehunt.reakt.pubsub.EventSubscriber
 import net.bladehunt.reakt.pubsub.event.Event
 import net.bladehunt.reakt.reactivity.ReactiveContext
 
+/**
+ * A reactive builder - Automatically unsubscribes from publishers and allows subscribing to all collected publishers via the subscribe function.
+ */
 abstract class Builder<T> : ReactiveContext {
     private val publishers = mutableListOf<EventPublisher>()
 
