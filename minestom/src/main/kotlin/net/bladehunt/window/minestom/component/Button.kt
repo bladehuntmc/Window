@@ -1,9 +1,5 @@
 package net.bladehunt.window.minestom.component
 
-import net.bladehunt.reakt.pubsub.EventPublisher
-import net.bladehunt.reakt.pubsub.event.Event
-import net.bladehunt.window.core.component.NodeComponent
-import net.bladehunt.window.core.component.WindowComponent
 import net.bladehunt.window.core.dsl.Builder
 import net.bladehunt.window.minestom.MinestomWindow
 import net.minestom.server.entity.Player
