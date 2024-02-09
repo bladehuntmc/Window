@@ -31,7 +31,7 @@ object WindowTest {
                     val lastClicker = Signal<AdventureComponent>(AdventureComponent.empty())
                     val materials = Material.values().toList()
                     val window = window(InventoryType.CHEST_6_ROW) {
-                        title { AdventureComponent.text(signal()) }
+                        title { AdventureComponent.text("Dynamic title example: ${signal()}") }
                         button {
                             onClick = { button, player, clickType, result ->
                                 var signalValue by signal

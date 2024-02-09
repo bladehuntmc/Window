@@ -11,4 +11,6 @@ class TitleComponent(
         window.title = title()
     }
 }
-fun MinestomWindow.title(block: TitleComponent.() -> AdventureComponent): TitleComponent = TitleComponent(this, block)
+fun MinestomWindow.title(block: TitleComponent.() -> AdventureComponent): TitleComponent = TitleComponent(this, block).also {
+    getNode().addChild(it)
+}
