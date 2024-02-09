@@ -1,11 +1,11 @@
 package net.bladehunt.window.core.util
 
-open class Tree<T>(rootData: T) {
-    private val root = Node(rootData)
+class Tree<T>(rootData: T) {
+    val root = Node(rootData)
 
-    open class Node<T>(
+    data class Node<T>(
         val data: T,
-        var parent: Node<T>? = null,
+        val parent: Node<T>? = null,
         val children: MutableList<Node<T>> = mutableListOf()
     ) {
         fun addChild(child: T) {
@@ -35,16 +35,14 @@ open class Tree<T>(rootData: T) {
         findNode(value)?.remove()
     }
 
-    fun traversePreOrder(node: Node<T>? = root, visit: (T) -> Unit) {
-        if (node == null) return
+    fun traversePreOrder(node: Node<T> = root, visit: (T) -> Unit) {
         visit(node.data)
         for (child in node.children) {
             traversePreOrder(child, visit)
         }
     }
 
-    fun traversePostOrder(node: Node<T>? = root, visit: (T) -> Unit) {
-        if (node == null) return
+    fun traversePostOrder(node: Node<T> = root, visit: (T) -> Unit) {
         for (child in node.children) {
             traversePostOrder(child, visit)
         }

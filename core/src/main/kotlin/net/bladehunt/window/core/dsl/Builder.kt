@@ -1,11 +1,11 @@
-package net.bladehunt.window.minestom
+package net.bladehunt.window.core.dsl
 
 import net.bladehunt.reakt.pubsub.EventPublisher
 import net.bladehunt.reakt.pubsub.EventSubscriber
 import net.bladehunt.reakt.pubsub.event.Event
 import net.bladehunt.reakt.reactivity.ReactiveContext
 
-abstract class Builder<T, C> : ReactiveContext {
+abstract class Builder<T> : ReactiveContext {
     private val publishers = mutableListOf<EventPublisher>()
 
     override fun onEvent(event: Event) {
@@ -24,5 +24,5 @@ abstract class Builder<T, C> : ReactiveContext {
         publishers.forEach { it.subscribe(subscriber) }
     }
 
-    abstract fun build(value: C): T
+    abstract fun build(): T
 }
