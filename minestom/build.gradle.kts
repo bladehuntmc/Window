@@ -1,5 +1,5 @@
 dependencies {
-    api("dev.hollowcube:minestom-ce:1554487748")
+    api("net.minestom:minestom-snapshots:7320437640")
     //api("net.bladehunt:ReaKt:8b0ade6")
     api(project(":core"))
     testImplementation(platform("org.junit:junit-bom:5.9.1"))
