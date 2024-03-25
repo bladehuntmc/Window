@@ -1,28 +1,28 @@
 package net.bladehunt.window.core
 
+import net.bladehunt.reakt.pubsub.EventPublisher
+import net.bladehunt.reakt.pubsub.event.Event
+import net.bladehunt.window.core.canvas.Canvas
 import net.bladehunt.window.core.canvas.Column
-import net.bladehunt.window.core.canvas.Row
-import net.bladehunt.window.core.canvas.Size
-import net.bladehunt.window.core.util.Int2
+import net.bladehunt.window.core.component.Component
+import net.bladehunt.window.core.component.ParentComponent
+import net.bladehunt.window.core.util.Size2
 
-fun main() {
-    Column<Int>(Size.Static(5, 5)).apply {
-        Row<Int>(Size.Flex()).let {
-            reserve(it).let { (map) ->
-                map[Int2(0, 0)] = 1
-            }
-        }
-        Row<Int>(Size.Flex()).let {
-            reserve(it).let { (map) ->
-                map[Int2(0, 0)] = 2
-            }
-        }
-        Row<Int>(Size.Static(5, 2)).let {
-            reserve(it).let { (map) ->
-                map[Int2(0, 0)] = 3
-            }
-        }
+open class Window<Pixel>(size: Size2) : Column<Pixel>(size), ParentComponent<Pixel> {
+    override val children: MutableCollection<Component<Pixel>> = arrayListOf()
 
-        println(composite())
+    fun render() = render(this)
+    override fun render(canvas: Canvas<Pixel>) {
+        children.forEach {
+            it.render(canvas)
+        }
+        calculateShapes()
+        children.forEach {
+            it.render(canvas)
+        }
     }
+
+    override fun onEvent(event: Event) = render(this)
+    override fun onSubscribe(publisher: EventPublisher) {}
+    override fun onUnsubscribe(publisher: EventPublisher) {}
 }
