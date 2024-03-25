@@ -1,29 +1,28 @@
 package net.bladehunt.window.core
 
-import net.bladehunt.window.core.canvas.Reservation
-import net.bladehunt.window.core.canvas.Shaped
+import net.bladehunt.window.core.canvas.Column
+import net.bladehunt.window.core.canvas.Row
 import net.bladehunt.window.core.canvas.Size
-import net.bladehunt.window.core.canvas.StaticSize
-import net.bladehunt.window.core.component.Column
-import net.bladehunt.window.core.component.Component
-import net.bladehunt.window.core.component.ParentComponent
 import net.bladehunt.window.core.util.Int2
 
-class Window<Pixel>(size: Size) : ParentComponent<Pixel>, net.bladehunt.window.core.canvas.Column<Pixel>(size) {
-    override fun render() {
-        TODO("Not yet implemented")
+fun main() {
+    Column<Int>(Size.Static(5, 5)).apply {
+        Row<Int>(Size.Flex()).let {
+            reserve(it).let { (map) ->
+                map[Int2(0, 0)] = 1
+            }
+        }
+        Row<Int>(Size.Flex()).let {
+            reserve(it).let { (map) ->
+                map[Int2(0, 0)] = 2
+            }
+        }
+        Row<Int>(Size.Static(5, 2)).let {
+            reserve(it).let { (map) ->
+                map[Int2(0, 0)] = 3
+            }
+        }
+
+        println(composite())
     }
-
-    override val children: MutableCollection<Component<Pixel>> = mutableListOf()
-    override val reservations: MutableList<Pair<Shaped, Reservation<Pixel>>> = arrayListOf()
-
-    override fun composite(): Map<Int2, Pixel> {
-        TODO("Not yet implemented")
-    }
-}
-
-fun test() {
-    val window = Window<Int>(StaticSize(Int2(5, 5)))
-    val a = Column(window, StaticSize(Int2(2, 5)))
-    a.render()
 }

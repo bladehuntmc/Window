@@ -2,11 +2,11 @@ package net.bladehunt.window.core.canvas
 
 import net.bladehunt.window.core.util.Int2
 
-open class Column<Pixel>(override val size: Size) : Canvas<Pixel> {
+open class Row<Pixel>(override val size: Size) : Canvas<Pixel> {
     override val reservations: LinkedHashMap<Sized, Reservation<Pixel>> = linkedMapOf()
 
     override fun composite(): Map<Int2, Pixel> {
-        var filledRows = 0
+        var filledCols = 0
         val flexItems = arrayListOf<Size.Flex>()
 
         // calculate flexes
@@ -16,14 +16,14 @@ open class Column<Pixel>(override val size: Size) : Canvas<Pixel> {
                 flexItems += size
                 return@forEach
             }
-            filledRows += sized.size.y
+            filledCols += sized.size.x
         }
-        val remainingRows = size.y - filledRows
-        var remainder = if (flexItems.size != 0) remainingRows % flexItems.size else 0
+        val remainingCols = size.x - filledCols
+        var remainder = if (flexItems.size != 0) remainingCols % flexItems.size else 0
 
         flexItems.forEach { flex ->
-            flex.x = size.x
-            flex.y = remainingRows.floorDiv(flexItems.size) + if (remainder > 0) 1 else 0
+            flex.x = remainingCols.floorDiv(flexItems.size) + if (remainder > 0) 1 else 0
+            flex.y = size.y
             remainder -= 1
         }
 
@@ -32,9 +32,9 @@ open class Column<Pixel>(override val size: Size) : Canvas<Pixel> {
             reservations.forEach { (sized, res) ->
                 val reservation = res.limit(sized.size)
                 reservation.pixelMap.forEach { (pos, pixel) ->
-                    set(pos.copy(y = pos.y + rows), pixel)
+                    set(pos.copy(x = pos.x + rows), pixel)
                 }
-                rows += sized.size.y
+                rows += sized.size.x
             }
         }
     }

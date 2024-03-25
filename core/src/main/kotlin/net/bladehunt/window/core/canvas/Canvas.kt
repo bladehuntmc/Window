@@ -2,23 +2,9 @@ package net.bladehunt.window.core.canvas
 
 import net.bladehunt.window.core.util.Int2
 
-interface Canvas<Pixel> {
-    val reservations: MutableList<Pair<Shaped, Reservation<Pixel>>>
+interface Canvas<Pixel> : Sized {
+    val reservations: LinkedHashMap<Sized, Reservation<Pixel>>
 
-    fun reserve(shaped: Shaped, index: Int = -1): Reservation<Pixel> {
-        val reservation = shaped.reservation<Pixel>()
-
-        when (index) {
-            -1 -> {
-                reservations.add(shaped to reservation)
-            }
-            else -> {
-                reservations.add(index, shaped to reservation)
-            }
-        }
-
-        return reservation
-    }
-
+    fun reserve(sized: Sized): Reservation<Pixel> = Reservation<Pixel>().also { reservations[sized] = it }
     fun composite(): Map<Int2, Pixel>
 }
