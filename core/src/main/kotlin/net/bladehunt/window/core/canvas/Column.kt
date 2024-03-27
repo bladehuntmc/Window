@@ -1,55 +1,46 @@
 package net.bladehunt.window.core.canvas
 
 import net.bladehunt.window.core.util.Int2
-import net.bladehunt.window.core.util.Size
-import net.bladehunt.window.core.util.Size2
 
-open class Column<Pixel>(override val size: Size2) : Canvas<Pixel> {
-    override val reservations: LinkedHashMap<Sized, Reservation<Pixel>> = linkedMapOf()
-
-    override fun calculateShapes() {
+interface Column<Pixel, R : Reserved<Pixel>> : Canvas<Pixel, R> {
+    override fun calculateSizes() {
         var filledRows = 0
-        val flexItems = arrayListOf<Size.Flex>()
+        val flexItems = arrayListOf<Reservation<Pixel>>()
 
         reservations.forEach { (_, reservation) ->
-            val (sizeX, sizeY) = reservation.size
-            if (sizeX is Size.Flex) sizeX.amount = size.x.amount
-            if (sizeY is Size.Flex) {
-                flexItems += sizeY
+            val (_, flexX, sizeY, flexY) = reservation.size
+            if (flexX) reservation.size = reservation.size.copy(x = this.size.x)
+            if (flexY) {
+                flexItems.add(reservation)
                 return@forEach
             }
-            filledRows += sizeY.amount
+            filledRows += sizeY
         }
-        val remainingRows = size.y.amount - filledRows
+        val remainingRows = size.y - filledRows
         var remainder = if (flexItems.size != 0) remainingRows % flexItems.size else 0
 
-        flexItems.forEach { flex ->
-            flex.amount = remainingRows.floorDiv(flexItems.size) + if (remainder > 0) 1 else 0
+        flexItems.forEach { reservation ->
+            reservation.size = reservation.size.copy(
+                y = remainingRows.floorDiv(flexItems.size) + if (remainder > 0) 1 else 0
+            )
             remainder -= 1
         }
-        reservations.forEach { (sized) ->
-            if (sized is Canvas<*>) {
-                (sized as Canvas<Pixel>).calculateShapes()
-            }
-        }
+
+        reservations.keys
+            .filterIsInstance<Canvas<Pixel, R>>()
+            .forEach(Canvas<Pixel, R>::calculateSizes)
     }
 
-    override fun composite(): Map<Int2, Pixel> {
+    override fun build(): Map<Int2, Pixel> {
         return buildMap {
             var rows = 0
-            reservations.forEach { (sized, reservation) ->
-                if (sized is Canvas<*>) {
-                    reservation.pixelMap.putAll((sized as Canvas<Pixel>).composite())
-                }
-                reservation.limit().pixelMap.forEach { (pos, pixel) ->
+            reservations.values.forEach { reservation ->
+                val limited = reservation.limit()
+                limited.pixelMap.forEach { (pos, pixel) ->
                     set(pos.copy(y = pos.y + rows), pixel)
                 }
-                rows += reservation.size.y.amount
+                rows += reservation.size.y
             }
         }
-    }
-
-    override fun toString(): String {
-        return "Column(size=$size, reservations=$reservations)"
     }
 }

@@ -2,7 +2,6 @@ package net.bladehunt.window.minestom
 
 import net.bladehunt.window.core.Window
 import net.bladehunt.window.core.WindowDsl
-import net.bladehunt.window.core.canvas.Canvas
 import net.bladehunt.window.core.util.Size2
 import net.minestom.server.inventory.Inventory
 import net.minestom.server.inventory.InventoryType
@@ -17,9 +16,12 @@ class MinestomWindow(inventoryType: InventoryType) : Window<ItemStack>(
         }
     }
 
-    override fun render(canvas: Canvas<ItemStack>) {
-        super.render(canvas)
-        canvas.composite().forEach { (pos, item) ->
+    override fun render() {
+        calculateSizes()
+        iterator().forEach {
+            it.render()
+        }
+        build().forEach { (pos, item) ->
             inventory[pos] = item
         }
     }

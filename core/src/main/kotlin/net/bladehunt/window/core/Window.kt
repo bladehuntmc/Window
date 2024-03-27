@@ -1,28 +1,28 @@
 package net.bladehunt.window.core
 
-import net.bladehunt.reakt.pubsub.EventPublisher
-import net.bladehunt.reakt.pubsub.event.Event
-import net.bladehunt.window.core.canvas.Canvas
 import net.bladehunt.window.core.canvas.Column
+import net.bladehunt.window.core.canvas.Reservation
 import net.bladehunt.window.core.component.Component
 import net.bladehunt.window.core.component.ParentComponent
 import net.bladehunt.window.core.util.Size2
 
-open class Window<Pixel>(size: Size2) : Column<Pixel>(size), ParentComponent<Pixel> {
-    override val children: MutableCollection<Component<Pixel>> = arrayListOf()
-
-    fun render() = render(this)
-    override fun render(canvas: Canvas<Pixel>) {
-        children.forEach {
-            it.render(canvas)
-        }
-        calculateShapes()
-        children.forEach {
-            it.render(canvas)
-        }
+abstract class Window<Pixel>(override val size: Size2) : Column<Pixel, Component<Pixel>>, ParentComponent<Pixel> {
+    override val reservation: Reservation<Pixel>
+        get() = throw NotImplementedError("Cannot get a Reservation from a top level component")
+    override val reservations: MutableMap<Component<Pixel>, Reservation<Pixel>> = linkedMapOf()
+    override fun reserve(reserved: Component<Pixel>) {
+        reservations[reserved] = reserved.reservation
     }
 
-    override fun onEvent(event: Event) = render(this)
-    override fun onSubscribe(publisher: EventPublisher) {}
-    override fun onUnsubscribe(publisher: EventPublisher) {}
+    override fun composite() {
+        throw NotImplementedError("Cannot composite a top level component! Use Window<Pixel>#render")
+    }
+
+    override fun clear() = reservations.clear()
+    override fun iterator(): Iterator<Component<Pixel>> = reservations.keys.iterator()
+    override fun removeChild(child: Component<Pixel>): Boolean = reservations.remove(child) != null
+    override fun addChild(child: Component<Pixel>): Boolean {
+        reserve(child)
+        return true
+    }
 }

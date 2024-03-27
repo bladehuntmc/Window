@@ -2,16 +2,19 @@ package net.bladehunt.window.minestom.component
 
 import net.bladehunt.window.core.WindowDsl
 import net.bladehunt.window.core.canvas.Reservation
+import net.bladehunt.window.core.canvas.container.Padding
 import net.bladehunt.window.core.component.Component
 import net.bladehunt.window.core.component.ParentComponent
 import net.bladehunt.window.core.util.Size2
-import net.bladehunt.window.core.canvas.Composite as CanvasComposite
+import net.bladehunt.window.core.canvas.container.Container as CanvasContainer
 import net.minestom.server.item.ItemStack
 
-class Composite(
-    override val size: Size2,
-    override val reservation: Reservation<ItemStack>
-) : ParentComponent<ItemStack>, CanvasComposite<ItemStack, Component<ItemStack>> {
+class Container(
+    override val padding: Padding<ItemStack>,
+    override val reservation: Reservation<ItemStack>,
+) : ParentComponent<ItemStack>, CanvasContainer<ItemStack, Component<ItemStack>> {
+    override val size: Size2
+        get() = reservation.size
 
     override val reservations: MutableMap<Component<ItemStack>, Reservation<ItemStack>> = linkedMapOf()
     override fun reserve(reserved: Component<ItemStack>) {
@@ -40,14 +43,15 @@ class Composite(
         return true
     }
     override fun toString(): String {
-        return "Composite(size=$size, reservations=$reservations)"
+        return "Container(size=$size, padding=$padding, reservations=$reservations)"
     }
 }
 @WindowDsl
-inline fun ParentComponent<ItemStack>.composite(
+inline fun ParentComponent<ItemStack>.container(
     size: Size2 = Size2(),
-    block: @WindowDsl Composite.() -> Unit
-): Composite = Composite(size, Reservation(size)).also {
+    padding: Padding<ItemStack>,
+    block: @WindowDsl Container.() -> Unit
+): Container = Container(padding, Reservation(size)).also {
     this.addChild(it)
     it.block()
 }

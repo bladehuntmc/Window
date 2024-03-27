@@ -1,5 +1,5 @@
+import net.bladehunt.window.core.canvas.container.Padding
 import net.bladehunt.window.core.util.Size2
-import net.bladehunt.window.minestom.MinestomWindow
 import net.bladehunt.window.minestom.component.*
 import net.bladehunt.window.minestom.window
 import net.minestom.server.MinecraftServer
@@ -14,27 +14,22 @@ fun main() {
 
     val instance = MinecraftServer.getInstanceManager().createInstanceContainer()
 
+    val win = window(InventoryType.CHEST_6_ROW) {
+        container(padding = Padding.Static(1, ItemStack.of(Material.BLACK_STAINED_GLASS_PANE))) {
+            staticItem(ItemStack.of(Material.STONE))
+        }
+    }
+    win.iterator().forEach {
+        println(it)
+    }
+    win.inventory.itemStacks.forEach {
+        println(it)
+    }
+
     MinecraftServer.getGlobalEventHandler().addListener(AsyncPlayerConfigurationEvent::class.java) { event ->
         event.spawningInstance = instance
         val player = event.player
         player.scheduleNextTick {
-            val win = window(InventoryType.CHEST_6_ROW) {
-                composite {
-                    fill(ItemStack.of(Material.BLACK_STAINED_GLASS_PANE))
-                    row {
-                        staticItem(ItemStack.of(Material.OAK_LOG))
-                        staticItem(ItemStack.of(Material.OAK_LOG))
-                        staticItem(ItemStack.of(Material.OAK_LOG))
-                    }
-                }
-                row(Size2(y = 1)) {
-                    fill(ItemStack.of(Material.IRON_BARS))
-                    staticItem(ItemStack.of(Material.OAK_LOG))
-                }
-            }
-
-            println(win.children)
-
             player.eventNode().addListener(PlayerStartSneakingEvent::class.java) { sneakEvent ->
                 player.openInventory(win.inventory)
             }
