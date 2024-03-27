@@ -11,9 +11,6 @@ import net.minestom.server.item.ItemStack
 class Row(
     override val reservation: Reservation<ItemStack>
 ) : ParentComponent<ItemStack>, CanvasRow<ItemStack, Component<ItemStack>> {
-    override val size: Size2
-        get() = reservation.size
-
     override val reservations: MutableMap<Component<ItemStack>, Reservation<ItemStack>> = linkedMapOf()
     override fun reserve(reserved: Component<ItemStack>) {
         reservations[reserved] = reserved.reservation

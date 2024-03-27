@@ -15,15 +15,28 @@ fun main() {
     val instance = MinecraftServer.getInstanceManager().createInstanceContainer()
 
     val win = window(InventoryType.CHEST_6_ROW) {
-        container(padding = Padding.Static(1, ItemStack.of(Material.BLACK_STAINED_GLASS_PANE))) {
-            staticItem(ItemStack.of(Material.STONE))
+        composite {
+            container(padding = Padding.Static(1, ItemStack.of(Material.BLACK_STAINED_GLASS_PANE))) {
+                column {
+                    row {
+                        fill(ItemStack.of(Material.RED_WOOL))
+                        fill(ItemStack.of(Material.GREEN_WOOL))
+                    }
+                    row {
+                        fill(ItemStack.of(Material.GREEN_WOOL))
+                        fill(ItemStack.of(Material.BLUE_WOOL))
+                    }
+                }
+            }
+            column {
+                empty()
+                row(size = Size2(null, 1)) {
+                    empty()
+                    staticItem(ItemStack.of(Material.BARRIER))
+                    empty()
+                }
+            }
         }
-    }
-    win.iterator().forEach {
-        println(it)
-    }
-    win.inventory.itemStacks.forEach {
-        println(it)
     }
 
     MinecraftServer.getGlobalEventHandler().addListener(AsyncPlayerConfigurationEvent::class.java) { event ->

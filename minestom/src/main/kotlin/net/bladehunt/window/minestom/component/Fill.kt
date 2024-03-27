@@ -19,10 +19,8 @@ class Fill(val itemStack: ItemStack, override val reservation: Reservation<ItemS
     }
 
     override fun toString(): String {
-        return "StaticItem(itemStack=$itemStack, size=$size)"
+        return "Fill(itemStack=$itemStack, size=$size)"
     }
-
-    override val size: Size2 = Size2()
 }
 @WindowDsl
 fun ParentComponent<ItemStack>.fill(

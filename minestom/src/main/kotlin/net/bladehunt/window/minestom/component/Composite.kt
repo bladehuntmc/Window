@@ -9,10 +9,8 @@ import net.bladehunt.window.core.canvas.Composite as CanvasComposite
 import net.minestom.server.item.ItemStack
 
 class Composite(
-    override val size: Size2,
     override val reservation: Reservation<ItemStack>
 ) : ParentComponent<ItemStack>, CanvasComposite<ItemStack, Component<ItemStack>> {
-
     override val reservations: MutableMap<Component<ItemStack>, Reservation<ItemStack>> = linkedMapOf()
     override fun reserve(reserved: Component<ItemStack>) {
         reservations[reserved] = reserved.reservation
@@ -47,7 +45,7 @@ class Composite(
 inline fun ParentComponent<ItemStack>.composite(
     size: Size2 = Size2(),
     block: @WindowDsl Composite.() -> Unit
-): Composite = Composite(size, Reservation(size)).also {
+): Composite = Composite(Reservation(size)).also {
     this.addChild(it)
     it.block()
 }

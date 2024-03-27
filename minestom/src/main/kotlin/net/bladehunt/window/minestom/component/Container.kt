@@ -13,9 +13,6 @@ class Container(
     override val padding: Padding<ItemStack>,
     override val reservation: Reservation<ItemStack>,
 ) : ParentComponent<ItemStack>, CanvasContainer<ItemStack, Component<ItemStack>> {
-    override val size: Size2
-        get() = reservation.size
-
     override val reservations: MutableMap<Component<ItemStack>, Reservation<ItemStack>> = linkedMapOf()
     override fun reserve(reserved: Component<ItemStack>) {
         reservations[reserved] = reserved.reservation

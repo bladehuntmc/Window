@@ -6,8 +6,12 @@ import net.bladehunt.reakt.reactivity.ReactiveContext
 import net.bladehunt.window.core.canvas.Reservation
 import net.bladehunt.window.core.canvas.Reserved
 import net.bladehunt.window.core.canvas.Shape
+import net.bladehunt.window.core.util.Size2
 
 interface Component<Pixel> : ReactiveContext, Shape, Reserved<Pixel> {
+    override val size: Size2
+        get() = reservation.size
+
     fun render()
 
     override fun onEvent(event: Event) = render()

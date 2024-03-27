@@ -16,8 +16,6 @@ class StaticItem(val itemStack: ItemStack, override val reservation: Reservation
     override fun toString(): String {
         return "StaticItem(itemStack=${itemStack.material()}, size=$size)"
     }
-
-    override val size: Size2 = Size2(1, 1)
 }
 @WindowDsl
 fun ParentComponent<ItemStack>.staticItem(
