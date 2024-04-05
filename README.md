@@ -1,6 +1,6 @@
 # Window 🪟
 ### *A cross platform reactive GUI library for [minestom-ce](https://github.com/hollow-cube/minestom-ce) and [paper](https://papermc.io/)*
-> [MIT License](LICENSE.md)
+> [MIT License](LICENSE.txt)
 
 ## Current progress 🚀
 - [x] ~~Reactivity~~ Handled by [ReaKt](https://gitlab.com/bladehunt/reakt)
