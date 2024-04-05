@@ -5,7 +5,6 @@ import net.bladehunt.window.core.util.Size2
 import net.bladehunt.window.minestom.component.*
 import net.bladehunt.window.minestom.window
 import net.kyori.adventure.text.Component
-import net.kyori.adventure.text.TextComponent
 import net.minestom.server.MinecraftServer
 import net.minestom.server.event.player.AsyncPlayerConfigurationEvent
 import net.minestom.server.event.player.PlayerStartSneakingEvent

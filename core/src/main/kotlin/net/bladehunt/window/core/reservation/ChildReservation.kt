@@ -5,12 +5,10 @@ import net.bladehunt.window.core.component.ParentComponent
 import net.bladehunt.window.core.util.Int2
 
 class ChildReservation<Pixel>(
-    private val component: Component<Pixel>,
     private val onSet: (pos: Int2, pixel: Pixel) -> Unit
 ) : Reservation<Pixel> {
 
     constructor(component: Component<Pixel>, parent: ParentComponent<Pixel>) : this(
-        component,
         { pos: Int2, pixel: Pixel ->
             parent.updateOne(component, pos, pixel)
         }

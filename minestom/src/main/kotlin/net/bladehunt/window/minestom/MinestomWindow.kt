@@ -3,12 +3,9 @@ package net.bladehunt.window.minestom
 import net.bladehunt.reakt.reactivity.Effect
 import net.bladehunt.reakt.reactivity.Memo
 import net.bladehunt.reakt.reactivity.MemoResult
-import net.bladehunt.reakt.reactivity.ReactiveContext
 import net.bladehunt.window.core.WindowDsl
 import net.bladehunt.window.core.component.Column
-import net.bladehunt.window.core.component.Component
 import net.bladehunt.window.core.reservation.Reservation
-import net.bladehunt.window.core.util.Int2
 import net.bladehunt.window.core.util.Size2
 import net.minestom.server.inventory.Inventory
 import net.minestom.server.inventory.InventoryType
