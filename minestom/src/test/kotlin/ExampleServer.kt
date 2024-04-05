@@ -22,26 +22,21 @@ fun main() {
     val win = window(InventoryType.CHEST_6_ROW) {
         title { title() }
         container(
-            background = Background.Static(ItemStack.of(Material.GRAY_STAINED_GLASS_PANE)),
-            padding = Padding.Static(1, ItemStack.of(Material.BLACK_STAINED_GLASS_PANE)),
+            background = Background.Static(ItemStack.of(Material.WHITE_STAINED_GLASS_PANE)),
+            padding = Padding.Static(1, 1, 1, 0, ItemStack.of(Material.BLACK_STAINED_GLASS_PANE))
         ) {
             column {
-                row(Size2(y = 1)) {
-                    staticItem(ItemStack.of(Material.RED_WOOL))
-                    staticItem(ItemStack.of(Material.YELLOW_WOOL))
-                    staticItem(ItemStack.of(Material.RED_WOOL))
-                    staticItem(ItemStack.of(Material.YELLOW_WOOL))
-                }
-                row(Size2(y = 1)) {
-                    staticItem(ItemStack.of(Material.GREEN_WOOL))
-                    staticItem(ItemStack.of(Material.BLUE_WOOL))
-                    staticItem(ItemStack.of(Material.GREEN_WOOL))
-                    staticItem(ItemStack.of(Material.BLUE_WOOL))
-                }
+                staticItem(ItemStack.of(Material.RED_WOOL))
+                staticItem(ItemStack.of(Material.GREEN_WOOL))
+                staticItem(ItemStack.of(Material.BLUE_WOOL))
             }
         }
+        row(size = Size2(y = 1)) {
+            fill(ItemStack.of(Material.RED_STAINED_GLASS_PANE))
+            staticItem(ItemStack.of(Material.BARRIER))
+            fill(ItemStack.of(Material.RED_STAINED_GLASS_PANE))
+        }
     }
-    println(win.inventory.itemStacks.map { it.material().name() })
 
     MinecraftServer.getGlobalEventHandler().addListener(AsyncPlayerConfigurationEvent::class.java) { event ->
         event.spawningInstance = instance
