@@ -1,4 +1,4 @@
-package net.bladehunt.window.core.canvas
+package net.bladehunt.window.core
 
 import net.bladehunt.window.core.util.Size2
 

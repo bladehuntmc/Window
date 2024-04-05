@@ -3,15 +3,12 @@ package net.bladehunt.window.core.component
 import net.bladehunt.reakt.pubsub.EventPublisher
 import net.bladehunt.reakt.pubsub.event.Event
 import net.bladehunt.reakt.reactivity.ReactiveContext
-import net.bladehunt.window.core.canvas.Reservation
-import net.bladehunt.window.core.canvas.Reserved
-import net.bladehunt.window.core.canvas.Shape
-import net.bladehunt.window.core.util.Size2
+import net.bladehunt.window.core.reservation.Reserved
+import net.bladehunt.window.core.Shape
+import net.bladehunt.window.core.util.Int2
 
 interface Component<Pixel> : ReactiveContext, Shape, Reserved<Pixel> {
-    override val size: Size2
-        get() = reservation.size
-
+    fun preRender(limits: Int2)
     fun render()
 
     override fun onEvent(event: Event) = render()

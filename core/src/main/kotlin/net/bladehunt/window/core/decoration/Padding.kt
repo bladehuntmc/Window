@@ -1,4 +1,4 @@
-package net.bladehunt.window.core.canvas.container
+package net.bladehunt.window.core.decoration
 
 interface Padding<Pixel> {
     val top: Int
@@ -6,7 +6,7 @@ interface Padding<Pixel> {
     val left: Int
     val bottom: Int
 
-    val item: Pixel
+    val pixel: Pixel
 
     data class Static<Pixel>(
         override val top: Int,
@@ -14,7 +14,7 @@ interface Padding<Pixel> {
         override val left: Int,
         override val bottom: Int,
 
-        override val item: Pixel
+        override val pixel: Pixel
     ) : Padding<Pixel> {
         constructor(amount: Int, item: Pixel) : this (amount, amount, amount, amount, item)
     }
@@ -25,10 +25,10 @@ interface Padding<Pixel> {
         override val left: Int,
         override val bottom: Int,
 
-        val itemBlock: () -> Pixel
+        val block: () -> Pixel
     ) : Padding<Pixel> {
         constructor(amount: Int, itemBlock: () -> Pixel) : this (amount, amount, amount, amount, itemBlock)
-        override val item: Pixel
-            get() = itemBlock()
+        override val pixel: Pixel
+            get() = block()
     }
 }
