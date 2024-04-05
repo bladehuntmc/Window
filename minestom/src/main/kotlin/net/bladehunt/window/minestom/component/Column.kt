@@ -1,51 +1,82 @@
+/*
+ * Copyright 2024 BladehuntMC
+ * Copyright 2024 oglassdev
+ *
+ * Permission is hereby granted, free of charge, to any person obtaining a
+ * copy of this software and associated documentation files (the “Software”),
+ * to deal in the Software without restriction, including without limitation the
+ * rights to use, copy, modify, merge, publish, distribute, sublicense, and/or
+ * sell copies of the Software, and to permit persons to whom the Software is
+ * furnished to do so, subject to the following conditions:
+ *
+ * The above copyright notice and this permission notice shall be included in all copies or substantial portions of the Software.
+ *
+ * THE SOFTWARE IS PROVIDED “AS IS”, WITHOUT WARRANTY OF ANY KIND,
+ * EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES
+ * OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND
+ * NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT
+ * HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY,
+ * WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
+ * FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
+ * OTHER DEALINGS IN THE SOFTWARE.
+ */
+
 package net.bladehunt.window.minestom.component
 
 import net.bladehunt.window.core.WindowDsl
-import net.bladehunt.window.core.canvas.Reservation
 import net.bladehunt.window.core.component.Component
+import net.bladehunt.window.core.component.Column as CoreColumn
 import net.bladehunt.window.core.component.ParentComponent
+import net.bladehunt.window.core.interaction.InteractionHandler
+import net.bladehunt.window.core.reservation.ChildReservation
+import net.bladehunt.window.core.reservation.Reservation
 import net.bladehunt.window.core.util.Size2
-import net.bladehunt.window.core.canvas.Column as CanvasColumn
+import net.bladehunt.window.minestom.MinestomInteraction
 import net.minestom.server.item.ItemStack
 
 class Column(
-    override val reservation: Reservation<ItemStack>
-) : ParentComponent<ItemStack>, CanvasColumn<ItemStack, Component<ItemStack>> {
-    override val reservations: MutableMap<Component<ItemStack>, Reservation<ItemStack>> = linkedMapOf()
-    override fun reserve(reserved: Component<ItemStack>) {
-        reservations[reserved] = reserved.reservation
-    }
+    size: Size2 = Size2(),
+) : CoreColumn<ItemStack>(size), InteractionHandler<MinestomInteraction> {
+    override var reservation: Reservation<ItemStack>? = null
+    override fun onEvent(event: MinestomInteraction) {
+        when (event) {
+            is MinestomInteraction.InventoryCondition -> {
+                val iter = offsets.toList().sortedBy { it.second }.iterator()
+                val first = iter.next()
 
-    override fun composite() {
-        reservation.clear()
-        build().forEach { (pos, item) ->
-            reservation.pixelMap[pos] = item
-        }
-    }
-    override fun render() {
-        calculateSizes()
-        iterator().forEach {
-            it.render()
-        }
-        composite()
-    }
+                var offset = first.second
+                var component: Component<ItemStack> = first.first
 
-    override fun clear() = reservations.clear()
-    override fun iterator(): Iterator<Component<ItemStack>> = reservations.keys.iterator()
-    override fun removeChild(child: Component<ItemStack>): Boolean = reservations.remove(child) != null
-    override fun addChild(child: Component<ItemStack>): Boolean {
-        reserve(child)
-        return true
-    }
-    override fun toString(): String {
-        return "Column(size=$size, reservations=$reservations)"
+                while (iter.hasNext()) {
+                    val (nextComponent, nextOffset) = iter.next()
+                    if (event.clickPos.y in offset..<nextOffset) {
+                        break
+                    }
+                    component = nextComponent
+                    offset = nextOffset
+                }
+
+                val childEvent = event.copy(
+                    clickPos = event.clickPos.copy(y = event.clickPos.y - offset)
+                )
+                if (childEvent.clickPos.y >= component.size.y  || childEvent.clickPos.x >= component.size.x) return
+                try {
+                    @Suppress("UNCHECKED_CAST")
+                    (component as? InteractionHandler<MinestomInteraction>)?.onEvent(childEvent)
+                } catch (_: ClassCastException) {}
+            }
+        }
     }
 }
+
 @WindowDsl
 inline fun ParentComponent<ItemStack>.column(
     size: Size2 = Size2(),
     block: @WindowDsl Column.() -> Unit
-): Column = Column(Reservation(size)).also {
-    this.addChild(it)
+): Column = Column(
+    size
+).also {
     it.block()
+    it.reservation = ChildReservation(it, this)
+    this.addChild(it)
 }

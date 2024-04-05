@@ -21,11 +21,23 @@
  * OTHER DEALINGS IN THE SOFTWARE.
  */
 
-package net.bladehunt.window.core.component
+package net.bladehunt.window.core.decoration
 
-import net.bladehunt.window.core.Parent
-import net.bladehunt.window.core.util.Int2
+interface Background<Pixel> {
+    val item: Pixel?
 
-interface ParentComponent<Pixel> : Component<Pixel>, Parent<Component<Pixel>> {
-    fun updateOne(component: Component<Pixel>, pos: Int2, pixel: Pixel)
+    data object None : Background<Nothing> {
+        override val item: Nothing? = null
+    }
+
+    data class Static<Pixel>(
+        override val item: Pixel
+    ) : Background<Pixel>
+
+    data class Dynamic<Pixel>(
+        val itemBlock: () -> Pixel?
+    ) : Background<Pixel?> {
+        override val item: Pixel?
+            get() = itemBlock()
+    }
 }

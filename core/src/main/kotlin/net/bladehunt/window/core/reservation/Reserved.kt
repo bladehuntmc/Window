@@ -21,11 +21,8 @@
  * OTHER DEALINGS IN THE SOFTWARE.
  */
 
-package net.bladehunt.window.core.component
+package net.bladehunt.window.core.reservation
 
-import net.bladehunt.window.core.Parent
-import net.bladehunt.window.core.util.Int2
-
-interface ParentComponent<Pixel> : Component<Pixel>, Parent<Component<Pixel>> {
-    fun updateOne(component: Component<Pixel>, pos: Int2, pixel: Pixel)
+interface Reserved<Pixel> {
+    var reservation: Reservation<Pixel>?
 }

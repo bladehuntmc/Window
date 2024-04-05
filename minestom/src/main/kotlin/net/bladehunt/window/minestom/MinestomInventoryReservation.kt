@@ -21,39 +21,34 @@
  * OTHER DEALINGS IN THE SOFTWARE.
  */
 
-package net.bladehunt.window.minestom.component
+package net.bladehunt.window.minestom
 
-import net.bladehunt.window.core.WindowDsl
-import net.bladehunt.window.core.component.Component
-import net.bladehunt.window.core.component.ParentComponent
-import net.bladehunt.window.core.interaction.InteractionHandler
-import net.bladehunt.window.core.reservation.ChildReservation
 import net.bladehunt.window.core.reservation.Reservation
 import net.bladehunt.window.core.util.Int2
-import net.bladehunt.window.core.util.Size2
-import net.bladehunt.window.minestom.MinestomInteraction
+import net.minestom.server.inventory.Inventory
 import net.minestom.server.item.ItemStack
 
-class StaticItem(val item: ItemStack) : Component<ItemStack>, InteractionHandler<MinestomInteraction> {
-    override var reservation: Reservation<ItemStack>? = null
-    override val size: Size2 = Size2(1, 1)
-    override fun preRender(limits: Int2) {}
-
-    override fun render() {
-        val reservation = reservation ?: return
-        reservation[Int2(0, 0)] = item
+class MinestomInventoryReservation(val inventory: Inventory) : Reservation<ItemStack> {
+    override fun set(slot: Int2, pixel: ItemStack) {
+        inventory[slot] = pixel
     }
-    override fun onEvent(event: MinestomInteraction) {
-        when (event) {
-            is MinestomInteraction.InventoryCondition -> {
-                event.result.isCancel = true
+
+    override fun get(slot: Int2): ItemStack = inventory[slot]
+
+    override fun isEmpty(): Boolean = inventory.itemStacks.all { it.isAir }
+
+    override fun isNotEmpty(): Boolean = inventory.itemStacks.any { !it.isAir }
+
+    override fun clear() = inventory.clear()
+
+    override fun iterator(): Iterator<Pair<Int2, ItemStack>> {
+        val rowSize = inventory.inventoryType.rowSize
+        return iterator {
+            for (slot in 0..inventory.inventoryType.size) {
+                val item = inventory[slot]
+                if (item.isAir) continue
+                yield(Int2(slot % rowSize, slot / rowSize) to item)
             }
         }
     }
-}
-
-@WindowDsl
-fun ParentComponent<ItemStack>.staticItem(item: ItemStack): StaticItem = StaticItem(item).also {
-    it.reservation = ChildReservation(it, this)
-    this.addChild(it)
 }

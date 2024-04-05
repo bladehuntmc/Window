@@ -21,11 +21,10 @@
  * OTHER DEALINGS IN THE SOFTWARE.
  */
 
-package net.bladehunt.window.core.component
+package net.bladehunt.window.core
 
-import net.bladehunt.window.core.Parent
-import net.bladehunt.window.core.util.Int2
+import net.bladehunt.window.core.util.Size2
 
-interface ParentComponent<Pixel> : Component<Pixel>, Parent<Component<Pixel>> {
-    fun updateOne(component: Component<Pixel>, pos: Int2, pixel: Pixel)
+interface Shape {
+    val size: Size2
 }

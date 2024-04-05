@@ -21,39 +21,35 @@
  * OTHER DEALINGS IN THE SOFTWARE.
  */
 
-package net.bladehunt.window.minestom.component
+package net.bladehunt.window.core.reservation
 
-import net.bladehunt.window.core.WindowDsl
 import net.bladehunt.window.core.component.Component
 import net.bladehunt.window.core.component.ParentComponent
-import net.bladehunt.window.core.interaction.InteractionHandler
-import net.bladehunt.window.core.reservation.ChildReservation
-import net.bladehunt.window.core.reservation.Reservation
 import net.bladehunt.window.core.util.Int2
-import net.bladehunt.window.core.util.Size2
-import net.bladehunt.window.minestom.MinestomInteraction
-import net.minestom.server.item.ItemStack
 
-class StaticItem(val item: ItemStack) : Component<ItemStack>, InteractionHandler<MinestomInteraction> {
-    override var reservation: Reservation<ItemStack>? = null
-    override val size: Size2 = Size2(1, 1)
-    override fun preRender(limits: Int2) {}
+class ChildReservation<Pixel>(
+    private val onSet: (pos: Int2, pixel: Pixel) -> Unit
+) : Reservation<Pixel> {
 
-    override fun render() {
-        val reservation = reservation ?: return
-        reservation[Int2(0, 0)] = item
-    }
-    override fun onEvent(event: MinestomInteraction) {
-        when (event) {
-            is MinestomInteraction.InventoryCondition -> {
-                event.result.isCancel = true
-            }
+    constructor(component: Component<Pixel>, parent: ParentComponent<Pixel>) : this(
+        { pos: Int2, pixel: Pixel ->
+            parent.updateOne(component, pos, pixel)
         }
-    }
-}
+    )
 
-@WindowDsl
-fun ParentComponent<ItemStack>.staticItem(item: ItemStack): StaticItem = StaticItem(item).also {
-    it.reservation = ChildReservation(it, this)
-    this.addChild(it)
+    private val pixelMap = hashMapOf<Int2, Pixel>()
+    override fun set(slot: Int2, pixel: Pixel) {
+        pixelMap[slot] = pixel
+        onSet(slot, pixel)
+    }
+
+    override fun get(slot: Int2): Pixel? = pixelMap[slot]
+
+    override fun isEmpty(): Boolean = pixelMap.isEmpty()
+
+    override fun isNotEmpty(): Boolean = pixelMap.isNotEmpty()
+
+    override fun clear() = pixelMap.clear()
+
+    override fun iterator(): Iterator<Pair<Int2, Pixel>> = pixelMap.map { it.toPair() }.iterator()
 }

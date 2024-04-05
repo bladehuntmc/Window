@@ -1,30 +1,70 @@
+/*
+ * Copyright 2024 BladehuntMC
+ * Copyright 2024 oglassdev
+ *
+ * Permission is hereby granted, free of charge, to any person obtaining a
+ * copy of this software and associated documentation files (the “Software”),
+ * to deal in the Software without restriction, including without limitation the
+ * rights to use, copy, modify, merge, publish, distribute, sublicense, and/or
+ * sell copies of the Software, and to permit persons to whom the Software is
+ * furnished to do so, subject to the following conditions:
+ *
+ * The above copyright notice and this permission notice shall be included in all copies or substantial portions of the Software.
+ *
+ * THE SOFTWARE IS PROVIDED “AS IS”, WITHOUT WARRANTY OF ANY KIND,
+ * EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES
+ * OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND
+ * NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT
+ * HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY,
+ * WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
+ * FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
+ * OTHER DEALINGS IN THE SOFTWARE.
+ */
+
 package net.bladehunt.window.minestom.component
 
 import net.bladehunt.window.core.WindowDsl
-import net.bladehunt.window.core.canvas.Reservation
 import net.bladehunt.window.core.component.Component
 import net.bladehunt.window.core.component.ParentComponent
+import net.bladehunt.window.core.interaction.InteractionHandler
+import net.bladehunt.window.core.reservation.ChildReservation
+import net.bladehunt.window.core.reservation.Reservation
 import net.bladehunt.window.core.util.Int2
 import net.bladehunt.window.core.util.Size2
+import net.bladehunt.window.minestom.MinestomInteraction
 import net.minestom.server.item.ItemStack
 
-class Fill(val itemStack: ItemStack, override val reservation: Reservation<ItemStack>) : Component<ItemStack> {
+class Fill(val item: ItemStack) : Component<ItemStack>, InteractionHandler<MinestomInteraction> {
+    override var reservation: Reservation<ItemStack>? = null
+    override var size: Size2 = Size2()
+    override fun preRender(limits: Int2) {
+        size = size.copy(x = limits.x, y = limits.y)
+    }
+
     override fun render() {
-        val pixelMap = reservation.pixelMap
+        val reservation = reservation ?: return
         for (x in 0..<size.x) {
             for (y in 0..<size.y) {
-                pixelMap[Int2(x,y)] = itemStack
+                reservation[Int2(x, y)] = item
+            }
+        }
+    }
+
+    override fun onEvent(event: MinestomInteraction) {
+        when (event) {
+            is MinestomInteraction.InventoryCondition -> {
+                event.result.isCancel = true
             }
         }
     }
 
     override fun toString(): String {
-        return "Fill(itemStack=$itemStack, size=$size)"
+        return "Fill(item=$item, reservation=$reservation, size=$size)"
     }
 }
+
 @WindowDsl
-fun ParentComponent<ItemStack>.fill(
-    item: ItemStack
-): Fill = Fill(item, Reservation(Size2())).also {
+fun ParentComponent<ItemStack>.fill(item: ItemStack): Fill = Fill(item).also {
+    it.reservation = ChildReservation(it, this)
     this.addChild(it)
 }

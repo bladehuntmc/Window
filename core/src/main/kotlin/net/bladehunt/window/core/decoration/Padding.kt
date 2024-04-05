@@ -21,11 +21,37 @@
  * OTHER DEALINGS IN THE SOFTWARE.
  */
 
-package net.bladehunt.window.core.component
+package net.bladehunt.window.core.decoration
 
-import net.bladehunt.window.core.Parent
-import net.bladehunt.window.core.util.Int2
+interface Padding<Pixel> {
+    val top: Int
+    val right: Int
+    val left: Int
+    val bottom: Int
 
-interface ParentComponent<Pixel> : Component<Pixel>, Parent<Component<Pixel>> {
-    fun updateOne(component: Component<Pixel>, pos: Int2, pixel: Pixel)
+    val pixel: Pixel
+
+    data class Static<Pixel>(
+        override val top: Int,
+        override val right: Int,
+        override val left: Int,
+        override val bottom: Int,
+
+        override val pixel: Pixel
+    ) : Padding<Pixel> {
+        constructor(amount: Int, item: Pixel) : this (amount, amount, amount, amount, item)
+    }
+
+    data class Dynamic<Pixel>(
+        override val top: Int,
+        override val right: Int,
+        override val left: Int,
+        override val bottom: Int,
+
+        val block: () -> Pixel
+    ) : Padding<Pixel> {
+        constructor(amount: Int, itemBlock: () -> Pixel) : this (amount, amount, amount, amount, itemBlock)
+        override val pixel: Pixel
+            get() = block()
+    }
 }
