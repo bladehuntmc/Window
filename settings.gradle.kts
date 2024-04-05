@@ -13,4 +13,4 @@ plugins {
 }
 
 rootProject.name = "Window"
-include("core", "minestom", "paper")
+include("core", "minestom", "minestom:example", "paper")

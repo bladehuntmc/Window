@@ -1,3 +1,5 @@
+package net.bladehunt.window.minestom.example
+
 import net.bladehunt.reakt.reactivity.Signal
 import net.bladehunt.window.core.decoration.Background
 import net.bladehunt.window.core.decoration.Padding
