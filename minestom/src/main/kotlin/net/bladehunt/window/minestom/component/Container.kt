@@ -34,7 +34,6 @@ import net.bladehunt.window.core.reservation.Reservation
 import net.bladehunt.window.core.util.Size2
 import net.bladehunt.window.minestom.MinestomInteraction
 import net.minestom.server.entity.Player
-import net.minestom.server.inventory.condition.InventoryConditionResult
 import net.minestom.server.item.ItemStack
 
 @Suppress("UNCHECKED_CAST")
