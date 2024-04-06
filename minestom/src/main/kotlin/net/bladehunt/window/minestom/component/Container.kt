@@ -24,28 +24,27 @@
 package net.bladehunt.window.minestom.component
 
 import net.bladehunt.window.core.decoration.Padding
-import net.bladehunt.window.core.WindowDsl
 import net.bladehunt.window.core.component.Container as CoreContainer
-import net.bladehunt.window.core.component.ParentComponent
-import net.bladehunt.window.core.decoration.Background
 import net.bladehunt.window.core.interaction.InteractionHandler
-import net.bladehunt.window.core.reservation.ChildReservation
 import net.bladehunt.window.core.reservation.Reservation
 import net.bladehunt.window.core.util.Size2
 import net.bladehunt.window.minestom.MinestomInteraction
 import net.minestom.server.entity.Player
 import net.minestom.server.item.ItemStack
+import net.minestom.server.item.Material
 
 @Suppress("UNCHECKED_CAST")
 class Container(
-    size: Size2 = Size2(),
-    background: Background<ItemStack> = Background.None as Background<ItemStack>,
-    padding: Padding<ItemStack> = Padding.Static(0, ItemStack.AIR),
-    val defaultClickBehavior: (player: Player) -> Boolean = { true }
-) : CoreContainer<ItemStack>(size, background, padding), InteractionHandler<MinestomInteraction> {
+    size: Size2 = Size2()
+) : CoreContainer<ItemStack>(size), InteractionHandler<MinestomInteraction> {
+    override var background: CoreContainer<ItemStack>.() -> ItemStack = { ItemStack.of(Material.WHITE_STAINED_GLASS_PANE) }
+    override var padding: CoreContainer<ItemStack>.() -> Padding<ItemStack> = { Padding(1, 1, ItemStack.of(Material.BLACK_STAINED_GLASS_PANE)) }
     override var reservation: Reservation<ItemStack>? = null
 
+    var defaultClickBehavior: Container.(player: Player) -> Boolean = { true }
+
     override fun onEvent(event: MinestomInteraction) {
+        val padding = padding()
         when (event) {
             is MinestomInteraction.InventoryCondition -> {
                 val first = firstOrNull()
@@ -69,23 +68,3 @@ class Container(
         }
     }
 }
-
-@Suppress("UNCHECKED_CAST")
-@WindowDsl
-inline fun ParentComponent<ItemStack>.container(
-    size: Size2 = Size2(),
-    background: Background<ItemStack> = Background.None as Background<ItemStack>,
-    padding: Padding<ItemStack> = Padding.Static(0, ItemStack.AIR),
-    noinline defaultClickBehavior: (player: Player) -> Boolean = { true },
-    block: @WindowDsl Container.() -> Unit
-): Container = Container(
-    size,
-    background,
-    padding,
-    defaultClickBehavior
-)
-    .also {
-        it.block()
-        it.reservation = ChildReservation(it, this)
-        this.addChild(it)
-    }

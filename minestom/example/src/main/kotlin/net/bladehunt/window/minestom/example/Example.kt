@@ -23,12 +23,13 @@
 
 package net.bladehunt.window.minestom.example
 
+import kotlinx.coroutines.runBlocking
 import net.bladehunt.reakt.reactivity.Signal
-import net.bladehunt.window.core.decoration.Background
 import net.bladehunt.window.core.decoration.Padding
-import net.bladehunt.window.core.util.Size2
-import net.bladehunt.window.minestom.component.*
-import net.bladehunt.window.minestom.window
+import net.bladehunt.window.minestom.*
+import net.bladehunt.window.minestom.component.button
+import net.bladehunt.window.minestom.component.nav.navItem
+import net.bladehunt.window.minestom.component.navbar
 import net.kyori.adventure.text.Component
 import net.minestom.server.MinecraftServer
 import net.minestom.server.event.player.AsyncPlayerConfigurationEvent
@@ -36,30 +37,69 @@ import net.minestom.server.event.player.PlayerStartSneakingEvent
 import net.minestom.server.inventory.InventoryType
 import net.minestom.server.item.ItemStack
 import net.minestom.server.item.Material
-import net.minestom.server.timer.TaskSchedule
 
-fun main() {
+fun main() = runBlocking {
     val server = MinecraftServer.init()
 
     val instance = MinecraftServer.getInstanceManager().createInstanceContainer()
 
-    val title = Signal(Component.text("Example"))
+    val backgroundMaterial = Signal(0)
+    val navbarMaterial = Signal(0)
+    val materials = arrayOf(
+        Material.WHITE_STAINED_GLASS_PANE,
+        Material.LIGHT_GRAY_STAINED_GLASS_PANE,
+        Material.GRAY_STAINED_GLASS_PANE,
+        Material.BLACK_STAINED_GLASS_PANE,
+        Material.BLUE_STAINED_GLASS_PANE,
+        Material.LIGHT_BLUE_STAINED_GLASS_PANE,
+        Material.GREEN_STAINED_GLASS_PANE,
+        Material.LIME_STAINED_GLASS_PANE
+    )
+    val titles = arrayOf(
+        "First Example",
+        "Second Example",
+        "Third Example",
+        "RESTARTING"
+    )
+    val title = Signal(0)
     val win = window(InventoryType.CHEST_6_ROW) {
-        title { title() }
-        container(
-            background = Background.Static(ItemStack.of(Material.WHITE_STAINED_GLASS_PANE)),
-            padding = Padding.Static(1, 1, 1, 0, ItemStack.of(Material.BLACK_STAINED_GLASS_PANE))
-        ) {
-            column {
-                staticItem(ItemStack.of(Material.RED_WOOL))
-                staticItem(ItemStack.of(Material.GREEN_WOOL))
-                staticItem(ItemStack.of(Material.BLUE_WOOL))
+        title { Component.text(titles[title() % titles.size]) }
+        container {
+            background { ItemStack.of(materials[backgroundMaterial() % materials.size]) }
+            padding { Padding(1, 1, 1, 0, ItemStack.of(Material.BLACK_STAINED_GLASS_PANE)) }
+            row {
+                button {
+                    item { ItemStack.of(Material.ITEM_FRAME).withDisplayName(Component.text("Change background")) }
+                    onClick = {
+                        backgroundMaterial.value += 1
+                    }
+                }
+                button {
+                    item { ItemStack.of(Material.STICK).withDisplayName(Component.text("Change navbar")) }
+                    onClick = {
+                        navbarMaterial.value += 1
+                    }
+                }
+                button {
+                    item { ItemStack.of(Material.PAPER).withDisplayName(Component.text("Change title")) }
+                    onClick = {
+                        title.value += 1
+                    }
+                }
             }
         }
-        row(size = Size2(y = 1)) {
-            fill(ItemStack.of(Material.RED_STAINED_GLASS_PANE))
-            staticItem(ItemStack.of(Material.BARRIER))
-            fill(ItemStack.of(Material.RED_STAINED_GLASS_PANE))
+        navbar {
+            fill { ItemStack.of(materials[navbarMaterial() % materials.size]) }
+            navItem {
+                display = {
+                    ItemStack.of(Material.ARROW)
+                }
+            }
+            navItem {
+                display = {
+                    ItemStack.of(Material.ARROW)
+                }
+            }
         }
     }
 
@@ -71,9 +111,6 @@ fun main() {
                 player.openInventory(win.inventory)
             }
         }
-        player.scheduler().scheduleTask({
-            title.value = Component.text("Updated")
-        }, TaskSchedule.seconds(5), TaskSchedule.stop())
     }
 
     server.start("127.0.0.1", 25565)

@@ -21,23 +21,26 @@
  * OTHER DEALINGS IN THE SOFTWARE.
  */
 
-package net.bladehunt.window.core.decoration
+package net.bladehunt.window.minestom.component
 
-interface Background<Pixel> {
-    val item: Pixel?
+import net.bladehunt.window.core.WindowDsl
+import net.bladehunt.window.core.component.ParentComponent
+import net.bladehunt.window.core.reservation.ChildReservation
+import net.bladehunt.window.minestom.component.nav.Navbar
+import net.minestom.server.item.ItemStack
 
-    data object None : Background<Nothing> {
-        override val item: Nothing? = null
-    }
+@WindowDsl
+fun ParentComponent<ItemStack>.navbar(
+    block: @WindowDsl Navbar.() -> Unit
+) = Navbar().apply {
+    block()
+    this.reservation = ChildReservation(this, this@navbar)
+    this@navbar.addChild(this)
+}
 
-    data class Static<Pixel>(
-        override val item: Pixel
-    ) : Background<Pixel>
-
-    data class Dynamic<Pixel>(
-        val itemBlock: () -> Pixel?
-    ) : Background<Pixel?> {
-        override val item: Pixel?
-            get() = itemBlock()
-    }
+@WindowDsl
+fun ParentComponent<ItemStack>.button(block: @WindowDsl Button.() -> Unit) = Button().apply {
+    block()
+    this.reservation = ChildReservation(this, this@button)
+    this@button.addChild(this)
 }
