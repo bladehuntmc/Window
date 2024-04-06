@@ -34,7 +34,6 @@ import net.bladehunt.window.core.reservation.Reservation
 import net.bladehunt.window.core.util.Int2
 import net.bladehunt.window.core.util.Size2
 import net.minestom.server.inventory.Inventory
-import net.minestom.server.inventory.InventoryType
 import net.minestom.server.item.ItemStack
 
 class MinestomWindow(
@@ -108,13 +107,3 @@ class MinestomWindow(
         }
     }
 }
-
-@WindowDsl
-inline fun window(type: InventoryType, block: @WindowDsl MinestomWindow.() -> Unit): MinestomWindow = MinestomWindow(
-    MinestomInventoryReservation(Inventory(type, "Window"))
-)
-    .apply {
-        block()
-        preRender(this.size.asInt2())
-        render()
-    }

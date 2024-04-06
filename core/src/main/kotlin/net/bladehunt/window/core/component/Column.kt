@@ -29,7 +29,7 @@ import net.bladehunt.window.core.util.Size2
 
 abstract class Column<Pixel>(override var size: Size2) : Component<Pixel>, ParentComponent<Pixel> {
     private val children: MutableCollection<Component<Pixel>> = arrayListOf()
-    val offsets: MutableMap<Component<Pixel>, Int> = hashMapOf()
+    protected val offsets: MutableMap<Component<Pixel>, Int> = hashMapOf()
 
     override fun updateOne(component: Component<Pixel>, pos: Int2, pixel: Pixel) {
         val offset = offsets[component] ?: return

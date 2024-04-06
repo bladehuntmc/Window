@@ -23,23 +23,30 @@
 
 package net.bladehunt.window.core.component
 
-import net.bladehunt.window.core.decoration.Background
+import net.bladehunt.window.core.WindowDsl
 import net.bladehunt.window.core.decoration.Padding
 import net.bladehunt.window.core.util.Int2
 import net.bladehunt.window.core.util.Size2
 
 abstract class Container<Pixel>(
-    override var size: Size2,
-    val background: Background<Pixel>,
-    val padding: Padding<Pixel>
+    override var size: Size2
 ) : Component<Pixel>, ParentComponent<Pixel> {
+
+    protected abstract var background: Container<Pixel>.() -> Pixel
+    @WindowDsl fun background(block: @WindowDsl Container<Pixel>.() -> Pixel) { background = block }
+
+    protected abstract var padding: Container<Pixel>.() -> Padding<Pixel>
+    @WindowDsl fun padding(block: @WindowDsl Container<Pixel>.() -> Padding<Pixel>) { padding = block }
+
     private val children: MutableCollection<Component<Pixel>> = arrayListOf()
 
     override fun updateOne(component: Component<Pixel>, pos: Int2, pixel: Pixel) {
+        val padding = padding()
         reservation?.set(pos.copy(x = pos.x + padding.left, y = pos.y + padding.top), pixel)
     }
 
     override fun preRender(limits: Int2) {
+        val padding = padding()
         size = size.copy(
             x = if (size.flexX) limits.x else size.x,
             y = if (size.flexY) limits.y else size.y
@@ -52,6 +59,8 @@ abstract class Container<Pixel>(
         ))
     }
     override fun render() {
+        val padding = padding()
+        val background = background()
         val first = firstOrNull() ?: return
         first.render()
         val childPixels = first.reservation
@@ -67,7 +76,7 @@ abstract class Container<Pixel>(
                 val pos = Int2(x, y)
                 val pixel = if (isPadding) {
                     padding.pixel
-                } else childPixels[pos] ?: background.item ?: continue
+                } else childPixels[pos] ?: background ?: continue
                 reservation?.set(pos, pixel)
             }
         }
