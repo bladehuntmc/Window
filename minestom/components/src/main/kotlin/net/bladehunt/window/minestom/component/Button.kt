@@ -21,20 +21,37 @@
  * OTHER DEALINGS IN THE SOFTWARE.
  */
 
-package net.bladehunt.window.core.component
+package net.bladehunt.window.minestom.component
 
-import net.bladehunt.reakt.pubsub.EventPublisher
-import net.bladehunt.reakt.pubsub.event.Event
-import net.bladehunt.reakt.reactivity.ReactiveContext
-import net.bladehunt.window.core.reservation.Reserved
-import net.bladehunt.window.core.Shape
+import net.bladehunt.window.core.WindowDsl
+import net.bladehunt.window.core.component.Component
+import net.bladehunt.window.core.interaction.InteractionHandler
+import net.bladehunt.window.core.reservation.Reservation
 import net.bladehunt.window.core.util.Int2
+import net.bladehunt.window.core.util.Size2
+import net.bladehunt.window.minestom.MinestomInteraction
+import net.minestom.server.item.ItemStack
+import net.minestom.server.item.Material
 
-interface Component<Pixel> : ReactiveContext, Shape, Reserved<Pixel> {
-    fun preRender(limits: Int2)
-    fun render()
+class Button : Component<ItemStack>, InteractionHandler<MinestomInteraction> {
+    override var reservation: Reservation<ItemStack>? = null
+    override val size: Size2 = Size2(1, 1)
+    override fun preRender(limits: Int2) {}
 
-    override fun onEvent(event: Event) = render()
-    override fun onSubscribe(publisher: EventPublisher) {}
-    override fun onUnsubscribe(publisher: EventPublisher) {}
+    private var item: Button.() -> ItemStack = { ItemStack.of(Material.STONE) }
+
+    @WindowDsl
+    fun item(block: @WindowDsl Button.() -> ItemStack) {
+        item = block
+    }
+
+    var onClick: Button.(event: MinestomInteraction) -> Unit = { }
+
+    override fun render() {
+        val reservation = reservation ?: return
+        reservation[Int2(0, 0)] = item()
+    }
+    override fun onEvent(event: MinestomInteraction) {
+        onClick(event)
+    }
 }

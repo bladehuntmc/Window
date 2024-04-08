@@ -21,20 +21,35 @@
  * OTHER DEALINGS IN THE SOFTWARE.
  */
 
-package net.bladehunt.window.core.component
+package net.bladehunt.window.core.reservation
 
-import net.bladehunt.reakt.pubsub.EventPublisher
-import net.bladehunt.reakt.pubsub.event.Event
-import net.bladehunt.reakt.reactivity.ReactiveContext
-import net.bladehunt.window.core.reservation.Reserved
-import net.bladehunt.window.core.Shape
+import net.bladehunt.window.core.component.Component
+import net.bladehunt.window.core.component.ParentComponent
 import net.bladehunt.window.core.util.Int2
 
-interface Component<Pixel> : ReactiveContext, Shape, Reserved<Pixel> {
-    fun preRender(limits: Int2)
-    fun render()
+class ChildReservation<Pixel>(
+    private val onSet: (pos: Int2, pixel: Pixel) -> Unit
+) : Reservation<Pixel> {
 
-    override fun onEvent(event: Event) = render()
-    override fun onSubscribe(publisher: EventPublisher) {}
-    override fun onUnsubscribe(publisher: EventPublisher) {}
+    constructor(component: Component<Pixel>, parent: ParentComponent<Pixel>) : this(
+        { pos: Int2, pixel: Pixel ->
+            parent.updateOne(component, pos, pixel)
+        }
+    )
+
+    private val pixelMap = hashMapOf<Int2, Pixel>()
+    override fun set(slot: Int2, pixel: Pixel) {
+        pixelMap[slot] = pixel
+        onSet(slot, pixel)
+    }
+
+    override fun get(slot: Int2): Pixel? = pixelMap[slot]
+
+    override fun isEmpty(): Boolean = pixelMap.isEmpty()
+
+    override fun isNotEmpty(): Boolean = pixelMap.isNotEmpty()
+
+    override fun clear() = pixelMap.clear()
+
+    override fun iterator(): Iterator<Pair<Int2, Pixel>> = pixelMap.map { it.toPair() }.iterator()
 }

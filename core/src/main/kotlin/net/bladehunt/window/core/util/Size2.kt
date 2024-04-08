@@ -21,20 +21,14 @@
  * OTHER DEALINGS IN THE SOFTWARE.
  */
 
-package net.bladehunt.window.core.component
+package net.bladehunt.window.core.util
 
-import net.bladehunt.reakt.pubsub.EventPublisher
-import net.bladehunt.reakt.pubsub.event.Event
-import net.bladehunt.reakt.reactivity.ReactiveContext
-import net.bladehunt.window.core.reservation.Reserved
-import net.bladehunt.window.core.Shape
-import net.bladehunt.window.core.util.Int2
-
-interface Component<Pixel> : ReactiveContext, Shape, Reserved<Pixel> {
-    fun preRender(limits: Int2)
-    fun render()
-
-    override fun onEvent(event: Event) = render()
-    override fun onSubscribe(publisher: EventPublisher) {}
-    override fun onUnsubscribe(publisher: EventPublisher) {}
+data class Size2(val x: Int, val flexX: Boolean, val y: Int, val flexY: Boolean) {
+    constructor(x: Int? = null, y: Int? = null) : this(
+        x ?: 0,
+        x == null,
+        y ?: 0,
+        y == null,
+    )
+    fun asInt2(): Int2 = Int2(x, y)
 }

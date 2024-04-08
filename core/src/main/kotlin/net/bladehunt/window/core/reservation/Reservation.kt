@@ -21,20 +21,16 @@
  * OTHER DEALINGS IN THE SOFTWARE.
  */
 
-package net.bladehunt.window.core.component
+package net.bladehunt.window.core.reservation
 
-import net.bladehunt.reakt.pubsub.EventPublisher
-import net.bladehunt.reakt.pubsub.event.Event
-import net.bladehunt.reakt.reactivity.ReactiveContext
-import net.bladehunt.window.core.reservation.Reserved
-import net.bladehunt.window.core.Shape
 import net.bladehunt.window.core.util.Int2
 
-interface Component<Pixel> : ReactiveContext, Shape, Reserved<Pixel> {
-    fun preRender(limits: Int2)
-    fun render()
+interface Reservation<Pixel> : Iterable<Pair<Int2, Pixel>> {
+    operator fun set(slot: Int2, pixel: Pixel)
+    operator fun get(slot: Int2): Pixel?
 
-    override fun onEvent(event: Event) = render()
-    override fun onSubscribe(publisher: EventPublisher) {}
-    override fun onUnsubscribe(publisher: EventPublisher) {}
+    fun isEmpty(): Boolean
+    fun isNotEmpty(): Boolean
+
+    fun clear()
 }

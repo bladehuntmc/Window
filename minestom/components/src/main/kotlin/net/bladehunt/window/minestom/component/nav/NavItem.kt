@@ -21,20 +21,20 @@
  * OTHER DEALINGS IN THE SOFTWARE.
  */
 
-package net.bladehunt.window.core.component
+package net.bladehunt.window.minestom.component.nav
 
-import net.bladehunt.reakt.pubsub.EventPublisher
-import net.bladehunt.reakt.pubsub.event.Event
-import net.bladehunt.reakt.reactivity.ReactiveContext
-import net.bladehunt.window.core.reservation.Reserved
-import net.bladehunt.window.core.Shape
-import net.bladehunt.window.core.util.Int2
+import net.bladehunt.window.core.WindowDsl
+import net.bladehunt.window.minestom.MinestomInteraction
+import net.minestom.server.item.ItemStack
+import net.minestom.server.item.Material
 
-interface Component<Pixel> : ReactiveContext, Shape, Reserved<Pixel> {
-    fun preRender(limits: Int2)
-    fun render()
+data class NavItem(
+    var display: Navbar.() -> ItemStack = { ItemStack.of(Material.STONE) },
+    var onClick: Navbar.(event: MinestomInteraction) -> Unit = {}
+)
 
-    override fun onEvent(event: Event) = render()
-    override fun onSubscribe(publisher: EventPublisher) {}
-    override fun onUnsubscribe(publisher: EventPublisher) {}
+@WindowDsl
+fun Navbar.navItem(block: @WindowDsl NavItem.() -> Unit): NavItem = NavItem().apply {
+    block()
+    this@navItem.addChild(this)
 }

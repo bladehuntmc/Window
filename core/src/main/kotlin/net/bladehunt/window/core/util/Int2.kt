@@ -21,20 +21,16 @@
  * OTHER DEALINGS IN THE SOFTWARE.
  */
 
-package net.bladehunt.window.core.component
+package net.bladehunt.window.core.util
 
-import net.bladehunt.reakt.pubsub.EventPublisher
-import net.bladehunt.reakt.pubsub.event.Event
-import net.bladehunt.reakt.reactivity.ReactiveContext
-import net.bladehunt.window.core.reservation.Reserved
-import net.bladehunt.window.core.Shape
-import net.bladehunt.window.core.util.Int2
+data class Int2(val x: Int, val y: Int) {
+    operator fun plus(other: Int2): Int2 = Int2(x + other.x, y + other.y)
+    operator fun minus(other: Int2): Int2 = Int2(x - other.x, y - other.y)
 
-interface Component<Pixel> : ReactiveContext, Shape, Reserved<Pixel> {
-    fun preRender(limits: Int2)
-    fun render()
-
-    override fun onEvent(event: Event) = render()
-    override fun onSubscribe(publisher: EventPublisher) {}
-    override fun onUnsubscribe(publisher: EventPublisher) {}
+    operator fun times(other: Int2): Int2 = Int2(x * other.x, y * other.y)
 }
+
+operator fun <T> MutableMap<Int2, T>.set(x: Int, y: Int, value: T) {
+    this[Int2(x, y)] = value
+}
+operator fun <T> MutableMap<Int2, T>.get(x: Int, y: Int): T? = this[Int2(x, y)]

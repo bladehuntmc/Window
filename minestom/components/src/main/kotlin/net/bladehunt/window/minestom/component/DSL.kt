@@ -21,20 +21,26 @@
  * OTHER DEALINGS IN THE SOFTWARE.
  */
 
-package net.bladehunt.window.core.component
+package net.bladehunt.window.minestom.component
 
-import net.bladehunt.reakt.pubsub.EventPublisher
-import net.bladehunt.reakt.pubsub.event.Event
-import net.bladehunt.reakt.reactivity.ReactiveContext
-import net.bladehunt.window.core.reservation.Reserved
-import net.bladehunt.window.core.Shape
-import net.bladehunt.window.core.util.Int2
+import net.bladehunt.window.core.WindowDsl
+import net.bladehunt.window.core.component.ParentComponent
+import net.bladehunt.window.core.reservation.ChildReservation
+import net.bladehunt.window.minestom.component.nav.Navbar
+import net.minestom.server.item.ItemStack
 
-interface Component<Pixel> : ReactiveContext, Shape, Reserved<Pixel> {
-    fun preRender(limits: Int2)
-    fun render()
+@WindowDsl
+fun ParentComponent<ItemStack>.navbar(
+    block: @WindowDsl Navbar.() -> Unit
+) = Navbar().apply {
+    block()
+    this.reservation = ChildReservation(this, this@navbar)
+    this@navbar.addChild(this)
+}
 
-    override fun onEvent(event: Event) = render()
-    override fun onSubscribe(publisher: EventPublisher) {}
-    override fun onUnsubscribe(publisher: EventPublisher) {}
+@WindowDsl
+fun ParentComponent<ItemStack>.button(block: @WindowDsl Button.() -> Unit) = Button().apply {
+    block()
+    this.reservation = ChildReservation(this, this@button)
+    this@button.addChild(this)
 }
