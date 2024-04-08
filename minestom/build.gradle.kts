@@ -2,7 +2,7 @@ publishing {
     publications {
         create<MavenPublication>("library") {
             from(components["java"])
-            artifactId = "reakt-minestom"
+            artifactId = "window-minestom"
         }
     }
     repositories {
