@@ -2,7 +2,7 @@ publishing {
     publications {
         create<MavenPublication>("library") {
             from(components["java"])
-            artifactId = "reakt-core"
+            artifactId = "window-core"
         }
     }
     repositories {

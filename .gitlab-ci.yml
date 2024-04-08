@@ -18,7 +18,8 @@ build:
     - ./gradlew clean assemble
   artifacts:
     paths:
-      - build/libs/*.jar
+      - core/libs/*.jar
+      - minestom/libs/*.jar
     expire_in: 6 h
 deploy:
   stage: deploy
