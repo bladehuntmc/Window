@@ -6,6 +6,7 @@ This contains all functionality of Window for Minestom.<br>
 - Reactivity
 - Windows
   - Native Minestom inventories
-- Components
+- "Standard" component library
   - Buttons
+  - Navbar
   - Title
