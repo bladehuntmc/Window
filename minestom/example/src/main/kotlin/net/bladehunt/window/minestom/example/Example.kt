@@ -26,6 +26,7 @@ package net.bladehunt.window.minestom.example
 import kotlinx.coroutines.runBlocking
 import net.bladehunt.reakt.reactivity.Signal
 import net.bladehunt.window.core.decoration.Padding
+import net.bladehunt.window.core.util.Size2
 import net.bladehunt.window.minestom.*
 import net.bladehunt.window.minestom.component.button
 import net.bladehunt.window.minestom.component.nav.navItem
@@ -35,6 +36,7 @@ import net.minestom.server.MinecraftServer
 import net.minestom.server.event.player.AsyncPlayerConfigurationEvent
 import net.minestom.server.event.player.PlayerStartSneakingEvent
 import net.minestom.server.inventory.InventoryType
+import net.minestom.server.item.Enchantment
 import net.minestom.server.item.ItemStack
 import net.minestom.server.item.Material
 
@@ -43,53 +45,80 @@ fun main() = runBlocking {
 
     val instance = MinecraftServer.getInstanceManager().createInstanceContainer()
 
-    val backgroundMaterial = Signal(0)
-    val navbarMaterial = Signal(0)
     val materials = arrayOf(
         Material.WHITE_STAINED_GLASS_PANE,
         Material.LIGHT_GRAY_STAINED_GLASS_PANE,
-        Material.GRAY_STAINED_GLASS_PANE,
-        Material.BLACK_STAINED_GLASS_PANE,
-        Material.BLUE_STAINED_GLASS_PANE,
-        Material.LIGHT_BLUE_STAINED_GLASS_PANE,
-        Material.GREEN_STAINED_GLASS_PANE,
-        Material.LIME_STAINED_GLASS_PANE
+        Material.GRAY_STAINED_GLASS_PANE
     )
     val titles = arrayOf(
         "First Example",
         "Second Example",
-        "Third Example",
-        "RESTARTING"
+        "Third Example"
     )
-    val title = Signal(0)
+
+    val backgroundMaterial = Signal(materials[0])
+    val navbarMaterial = Signal(materials[1])
+    val title = Signal(titles[0])
+
     val win = window(InventoryType.CHEST_6_ROW) {
-        title { Component.text(titles[title() % titles.size]) }
+        title { Component.text(title()) }
         container {
-            background { ItemStack.of(materials[backgroundMaterial() % materials.size]) }
+            background { ItemStack.of(backgroundMaterial()) }
             padding { Padding(1, 1, 1, 0, ItemStack.of(Material.BLACK_STAINED_GLASS_PANE)) }
-            row {
-                button {
-                    item { ItemStack.of(Material.ITEM_FRAME).withDisplayName(Component.text("Change background")) }
-                    onClick = {
-                        backgroundMaterial.value += 1
+            column {
+                row {
+                    size = Size2(y = 1)
+                    materials.forEach { material ->
+                        button {
+                            item {
+                                ItemStack.builder(material)
+                                    .displayName(Component.text("Change background"))
+                                    .meta { if (backgroundMaterial() == material) it.enchantment(Enchantment.EFFICIENCY, 1) }
+                                    .build()
+                            }
+                            onClick = {
+                                backgroundMaterial.value = material
+                            }
+                        }
                     }
                 }
-                button {
-                    item { ItemStack.of(Material.STICK).withDisplayName(Component.text("Change navbar")) }
-                    onClick = {
-                        navbarMaterial.value += 1
+                row {
+                    size = Size2(y = 1)
+                    materials.forEach { material ->
+                        button {
+                            item {
+                                ItemStack.builder(material)
+                                    .displayName(Component.text("Change navbar"))
+                                    .meta { if (navbarMaterial() == material) it.enchantment(Enchantment.EFFICIENCY, 1) }
+                                    .build()
+                            }
+                            onClick = {
+                                navbarMaterial.value = material
+                            }
+                        }
                     }
                 }
-                button {
-                    item { ItemStack.of(Material.PAPER).withDisplayName(Component.text("Change title")) }
-                    onClick = {
-                        title.value += 1
+                row {
+                    size = Size2(y = 1)
+                    titles.forEach { str ->
+                        button {
+                            item {
+                                ItemStack.builder(Material.BOOK)
+                                    .displayName(Component.text("Change navbar"))
+                                    .lore(Component.text(str))
+                                    .meta { if (title() == str) it.enchantment(Enchantment.EFFICIENCY, 1) }
+                                    .build()
+                            }
+                            onClick = {
+                                title.value = str
+                            }
+                        }
                     }
                 }
             }
         }
         navbar {
-            fill { ItemStack.of(materials[navbarMaterial() % materials.size]) }
+            fill { ItemStack.of(navbarMaterial()) }
             navItem {
                 display = {
                     ItemStack.of(Material.ARROW)

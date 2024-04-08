@@ -1,5 +1,5 @@
 # Window 🪟
-### *A cross platform reactive GUI library for [minestom-ce](https://github.com/hollow-cube/minestom-ce) and [paper](https://papermc.io/)*
+### *A cross platform reactive GUI library for [minestom](https://github.com/Minestom/Minestom) and [paper](https://papermc.io/)*
 > [MIT License](LICENSE.txt)
 
 ## Current progress 🚀

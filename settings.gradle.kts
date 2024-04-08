@@ -20,5 +20,3 @@ include(
     "minestom:components",
     "paper"
 )
-include("processor")
-include("annotations")
