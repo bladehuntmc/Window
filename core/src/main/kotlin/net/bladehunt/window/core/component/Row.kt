@@ -54,6 +54,9 @@ abstract class Row<Pixel>(override var size: Size2) : Component<Pixel>, ParentCo
                 remainder--
                 sizeX
             } else size.x
+
+            offsets[component] = totalX
+
             component.preRender(Int2(sizeX, limits.y))
 
             if (component.size.x > totalY) totalY = component.size.y
@@ -67,14 +70,8 @@ abstract class Row<Pixel>(override var size: Size2) : Component<Pixel>, ParentCo
     }
 
     override fun render() {
-        var columns = 0
         forEach { component ->
             component.render()
-            component.reservation?.forEach { (pos, pixel) ->
-                reservation?.set(pos.copy(x = pos.x + columns), pixel)
-            }
-            offsets[component] = columns
-            columns += component.size.x
         }
     }
 
