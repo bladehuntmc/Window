@@ -34,6 +34,9 @@ class MinestomInventoryReservation(val inventory: Inventory) : Reservation<ItemS
     }
 
     override fun get(slot: Int2): ItemStack = inventory[slot]
+    override fun remove(slot: Int2) {
+        inventory[slot] = ItemStack.AIR
+    }
 
     override fun isEmpty(): Boolean = inventory.itemStacks.all { it.isAir }
 

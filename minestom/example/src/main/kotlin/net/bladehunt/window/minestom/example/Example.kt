@@ -70,7 +70,7 @@ fun main() = runBlocking {
                     size = Size2(y = 1)
                     materials.forEach { material ->
                         button {
-                            item {
+                            display {
                                 ItemStack.builder(material)
                                     .displayName(Component.text("Change background"))
                                     .meta { if (backgroundMaterial() == material) it.enchantment(Enchantment.EFFICIENCY, 1) }
@@ -86,7 +86,7 @@ fun main() = runBlocking {
                     size = Size2(y = 1)
                     materials.forEach { material ->
                         button {
-                            item {
+                            display {
                                 ItemStack.builder(material)
                                     .displayName(Component.text("Change navbar"))
                                     .meta { if (navbarMaterial() == material) it.enchantment(Enchantment.EFFICIENCY, 1) }
@@ -102,7 +102,7 @@ fun main() = runBlocking {
                     size = Size2(y = 1)
                     titles.forEach { str ->
                         button {
-                            item {
+                            display {
                                 ItemStack.builder(Material.BOOK)
                                     .displayName(Component.text("Change navbar"))
                                     .lore(Component.text(str))

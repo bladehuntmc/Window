@@ -38,18 +38,18 @@ class Button : Component<ItemStack>, InteractionHandler<MinestomInteraction> {
     override val size: Size2 = Size2(1, 1)
     override fun preRender(limits: Int2) {}
 
-    private var item: Button.() -> ItemStack = { ItemStack.of(Material.STONE) }
+    private var display: Button.() -> ItemStack = { ItemStack.of(Material.STONE) }
 
     @WindowDsl
-    fun item(block: @WindowDsl Button.() -> ItemStack) {
-        item = block
+    fun display(block: @WindowDsl Button.() -> ItemStack) {
+        display = block
     }
 
     var onClick: Button.(event: MinestomInteraction) -> Unit = { }
 
     override fun render() {
         val reservation = reservation ?: return
-        reservation[Int2(0, 0)] = item()
+        reservation[Int2(0, 0)] = display()
     }
     override fun onEvent(event: MinestomInteraction) {
         onClick(event)

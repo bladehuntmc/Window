@@ -21,12 +21,30 @@
  * OTHER DEALINGS IN THE SOFTWARE.
  */
 
-package net.bladehunt.window.core.component
+package net.bladehunt.window.minestom.component
 
-import net.bladehunt.window.core.Parent
-import net.bladehunt.window.core.util.Int2
+import net.bladehunt.window.core.component.Canvas as CoreCanvas
+import net.bladehunt.window.core.interaction.InteractionHandler
+import net.bladehunt.window.core.reservation.Reservation
+import net.bladehunt.window.core.util.Size2
+import net.bladehunt.window.minestom.MinestomInteraction
+import net.minestom.server.item.ItemStack
 
-interface ParentComponent<Pixel> : Component<Pixel>, Parent<Component<Pixel>> {
-    fun updateOne(component: Component<Pixel>, pos: Int2, pixel: Pixel)
-    fun removeOne(component: Component<Pixel>, pos: Int2)
+class Canvas(
+    size: Size2 = Size2(),
+) : CoreCanvas<ItemStack>(size), InteractionHandler<MinestomInteraction> {
+    override var reservation: Reservation<ItemStack>? = null
+    override fun onEvent(event: MinestomInteraction) {
+        when (event) {
+            is MinestomInteraction.InventoryCondition -> {
+                val offset = offset()
+                val child = firstOrNull() ?: return
+                val childEvent = event.copy(clickPos = event.clickPos + offset)
+                try {
+                    @Suppress("UNCHECKED_CAST")
+                    (child as? InteractionHandler<MinestomInteraction>)?.onEvent(childEvent)
+                } catch (_: ClassCastException) {}
+            }
+        }
+    }
 }

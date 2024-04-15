@@ -23,62 +23,72 @@
 
 package net.bladehunt.window.core.component
 
-import net.bladehunt.window.core.WindowOverflowException
+import net.bladehunt.reakt.pubsub.event.Event
+import net.bladehunt.window.core.WindowDsl
 import net.bladehunt.window.core.util.Int2
 import net.bladehunt.window.core.util.Size2
+import kotlin.math.min
 
-abstract class Column<Pixel>(override var size: Size2) : Component<Pixel>, ParentComponent<Pixel> {
+abstract class Canvas<Pixel>(override var size: Size2) : Component<Pixel>, ParentComponent<Pixel> {
     private val children: MutableCollection<Component<Pixel>> = arrayListOf()
-    protected val offsets: MutableMap<Component<Pixel>, Int> = hashMapOf()
+
+    private val inner: MutableMap<Int2, Pixel> = hashMapOf()
+
+    protected var innerSize: Canvas<Pixel>.() -> Int2 = { size.asInt2() }
+    @WindowDsl fun innerSize(block: @WindowDsl Canvas<Pixel>.() -> Int2) { innerSize = block }
+
+    protected var offset: Canvas<Pixel>.() -> Int2 = { Int2(0, 0) }
+    @WindowDsl fun offset(block: @WindowDsl Canvas<Pixel>.() -> Int2) { offset = block }
 
     override fun updateOne(component: Component<Pixel>, pos: Int2, pixel: Pixel) {
-        val offset = offsets[component] ?: return
-        reservation?.set(pos.copy(y = pos.y + offset), pixel)
+        inner[pos] = pixel
+        if (pos.x in 0..<size.x && pos.y in 0..<size.y) {
+            reservation?.set(pos - offset(), pixel)
+        }
     }
 
     override fun removeOne(component: Component<Pixel>, pos: Int2) {
-        val offset = offsets[component] ?: return
-        reservation?.remove(pos.copy(y = pos.y + offset))
+        inner.remove(pos)
+        if (pos.x in 0..<size.x && pos.y in 0..<size.y) {
+            reservation?.remove(pos - offset())
+        }
+    }
+
+    private fun updateReservation() {
+        val (offsetX, offsetY) = offset()
+        reservation?.also {
+            for (x in 0..<size.x) {
+                for (y in 0..<size.y) {
+                    val item = inner[Int2(x + offsetX, y + offsetY)]
+                    val reservedSlot = Int2(x, y)
+                    if (item == null) {
+                        if (it[reservedSlot] != null) {
+                            it.remove(reservedSlot)
+                        }
+                        continue
+                    }
+                    it[reservedSlot] = item
+                }
+            }
+        }
+    }
+
+    override fun onEvent(event: Event) {
+        updateReservation()
     }
 
     override fun preRender(limits: Int2) {
-        var totalX = 0
-        var totalY = 0
-
-        val flexSpace = limits.y - sumOf { if (!it.size.flexY) it.size.y else 0 }
-        val flexItems = filter { it.size.flexY }
-
-        if (flexItems.size > flexSpace) throw WindowOverflowException("There were too many components when trying to render the column")
-
-        val each = if (flexItems.isNotEmpty()) flexSpace.floorDiv(flexItems.size) else 0
-        var remainder = if (flexItems.isNotEmpty()) flexSpace % flexItems.size else 0
-
-        forEach { component ->
-            val size = component.size
-            val sizeY = if (flexItems.contains(component)) {
-                val sizeY = each + remainder.coerceIn(0, 1)
-                remainder--
-                sizeY
-            } else size.y
-
-            offsets[component] = totalY
-
-            component.preRender(Int2(limits.x, sizeY))
-
-            if (component.size.x > totalX) totalX = component.size.x
-            totalY += component.size.y
-        }
-
+        val first = firstOrNull() ?: return
+        val inner = innerSize()
+        first.preRender(inner)
         size = size.copy(
-            x = if (size.flexX) totalX else size.x,
-            y = if (size.flexY) totalY else size.y
+            x = if (size.flexX) min(first.size.x, limits.x) else size.x,
+            y = if (size.flexY) min(first.size.y, limits.y) else size.y
         )
     }
 
     override fun render() {
-        forEach { component ->
-            component.render()
-        }
+        firstOrNull()?.render()
     }
 
     override fun clear() = children.clear()

@@ -69,10 +69,34 @@ inline fun ParentComponent<ItemStack>.row(
 }
 
 @WindowDsl
+inline fun ParentComponent<ItemStack>.auto(
+    size: Size2 = Size2(),
+    block: @WindowDsl Auto.() -> Unit
+): Auto = Auto(
+    size
+).also {
+    it.block()
+    it.reservation = ChildReservation(it, this)
+    this.addChild(it)
+}
+
+@WindowDsl
 inline fun ParentComponent<ItemStack>.container(
     size: Size2 = Size2(),
     block: @WindowDsl Container.() -> Unit
 ): Container = Container(
+    size
+).also {
+    it.block()
+    it.reservation = ChildReservation(it, this)
+    this.addChild(it)
+}
+
+@WindowDsl
+inline fun ParentComponent<ItemStack>.canvas(
+    size: Size2 = Size2(),
+    block: @WindowDsl Canvas.() -> Unit
+): Canvas = Canvas(
     size
 ).also {
     it.block()

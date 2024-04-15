@@ -21,12 +21,15 @@
  * OTHER DEALINGS IN THE SOFTWARE.
  */
 
-package net.bladehunt.window.core.component
+package net.bladehunt.window.minestom.component
 
-import net.bladehunt.window.core.Parent
-import net.bladehunt.window.core.util.Int2
+import net.bladehunt.window.core.component.Auto as CoreAuto
+import net.bladehunt.window.core.reservation.Reservation
+import net.bladehunt.window.core.util.Size2
+import net.minestom.server.item.ItemStack
 
-interface ParentComponent<Pixel> : Component<Pixel>, Parent<Component<Pixel>> {
-    fun updateOne(component: Component<Pixel>, pos: Int2, pixel: Pixel)
-    fun removeOne(component: Component<Pixel>, pos: Int2)
+class Auto(
+    size: Size2 = Size2(),
+) : CoreAuto<ItemStack>(size) {
+    override var reservation: Reservation<ItemStack>? = null
 }

@@ -26,52 +26,52 @@ package net.bladehunt.window.core.component
 import net.bladehunt.window.core.WindowOverflowException
 import net.bladehunt.window.core.util.Int2
 import net.bladehunt.window.core.util.Size2
+import kotlin.math.max
 
-abstract class Column<Pixel>(override var size: Size2) : Component<Pixel>, ParentComponent<Pixel> {
+abstract class Auto<Pixel>(override var size: Size2) : Component<Pixel>, ParentComponent<Pixel> {
     private val children: MutableCollection<Component<Pixel>> = arrayListOf()
-    protected val offsets: MutableMap<Component<Pixel>, Int> = hashMapOf()
+    protected val offsets: MutableMap<Component<Pixel>, Int2> = hashMapOf()
 
     override fun updateOne(component: Component<Pixel>, pos: Int2, pixel: Pixel) {
         val offset = offsets[component] ?: return
-        reservation?.set(pos.copy(y = pos.y + offset), pixel)
+        reservation?.set(pos + offset, pixel)
     }
 
     override fun removeOne(component: Component<Pixel>, pos: Int2) {
         val offset = offsets[component] ?: return
-        reservation?.remove(pos.copy(y = pos.y + offset))
+        reservation?.remove(pos + offset)
     }
 
     override fun preRender(limits: Int2) {
         var totalX = 0
         var totalY = 0
 
-        val flexSpace = limits.y - sumOf { if (!it.size.flexY) it.size.y else 0 }
-        val flexItems = filter { it.size.flexY }
-
-        if (flexItems.size > flexSpace) throw WindowOverflowException("There were too many components when trying to render the column")
-
-        val each = if (flexItems.isNotEmpty()) flexSpace.floorDiv(flexItems.size) else 0
-        var remainder = if (flexItems.isNotEmpty()) flexSpace % flexItems.size else 0
-
+        var pointerX = 0
+        var rowHeight = 0
         forEach { component ->
-            val size = component.size
-            val sizeY = if (flexItems.contains(component)) {
-                val sizeY = each + remainder.coerceIn(0, 1)
-                remainder--
-                sizeY
-            } else size.y
+            if (pointerX + component.size.x > limits.x) {
+                if (pointerX > totalX) totalX = pointerX
+                totalY += rowHeight
+                pointerX = 0
+                rowHeight = 0
+            }
+            if (component.size.x > limits.x) throw WindowOverflowException("Component size X didn't fit within limits!")
+            if (component.size.y > limits.y + totalY) throw WindowOverflowException("Component size Y didn't fit within limits!")
 
-            offsets[component] = totalY
+            offsets[component] = Int2(pointerX, totalY)
 
-            component.preRender(Int2(limits.x, sizeY))
+            pointerX += component.size.x
+            if (component.size.y > rowHeight) rowHeight = component.size.y
 
-            if (component.size.x > totalX) totalX = component.size.x
-            totalY += component.size.y
+            component.preRender(Int2(
+                x = if (component.size.flexX) 1 else component.size.x,
+                y = if (component.size.flexY) 1 else component.size.y,
+            ))
         }
 
         size = size.copy(
-            x = if (size.flexX) totalX else size.x,
-            y = if (size.flexY) totalY else size.y
+            x = if (size.flexX) max(totalX, pointerX) else size.x,
+            y = if (size.flexY) totalY + rowHeight else size.y
         )
     }
 

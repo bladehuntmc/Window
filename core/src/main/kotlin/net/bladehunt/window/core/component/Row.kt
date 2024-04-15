@@ -36,13 +36,16 @@ abstract class Row<Pixel>(override var size: Size2) : Component<Pixel>, ParentCo
         reservation?.set(pos.copy(x = pos.x + offset), pixel)
     }
 
-    override fun preRender(limits: Int2) {
-        size = size.copy(
-            x = if (size.flexX) limits.x else size.x,
-            y = if (size.flexY) limits.y else size.y
-        )
+    override fun removeOne(component: Component<Pixel>, pos: Int2) {
+        val offset = offsets[component] ?: return
+        reservation?.remove(pos.copy(x = pos.x + offset))
+    }
 
-        val flexSpace = this.size.x - sumOf { if (!it.size.flexX) it.size.x else 0 }
+    override fun preRender(limits: Int2) {
+        var totalX = 0
+        var totalY = 0
+
+        val flexSpace = limits.x - sumOf { if (!it.size.flexX) it.size.x else 0 }
         val flexItems = filter { it.size.flexX }
         if (flexItems.size > flexSpace) throw WindowOverflowException("There were too many components when trying to render the row")
 
@@ -56,19 +59,24 @@ abstract class Row<Pixel>(override var size: Size2) : Component<Pixel>, ParentCo
                 remainder--
                 sizeX
             } else size.x
-            component.preRender(Int2(sizeX, if (size.flexY) this.size.y else size.y))
+
+            offsets[component] = totalX
+
+            component.preRender(Int2(sizeX, limits.y))
+
+            if (component.size.x > totalY) totalY = component.size.y
+            totalX += component.size.x
         }
+
+        size = size.copy(
+            x = if (size.flexX) totalX else size.x,
+            y = if (size.flexY) totalY else size.y
+        )
     }
 
     override fun render() {
-        var columns = 0
         forEach { component ->
             component.render()
-            component.reservation?.forEach { (pos, pixel) ->
-                reservation?.set(pos.copy(x = pos.x + columns), pixel)
-            }
-            offsets[component] = columns
-            columns += component.size.x
         }
     }
 
