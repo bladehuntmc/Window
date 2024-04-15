@@ -56,7 +56,7 @@ fun main() = runBlocking {
                 offset { offset() }
                 innerSize { Int2(14, 4) }
                 auto {
-                    Material.values().stream().limit(16)
+                    Material.values().stream().limit(32)
                         .forEach {
                             item(ItemStack.of(it))
                         }
