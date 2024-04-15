@@ -47,13 +47,27 @@ abstract class Canvas<Pixel>(override var size: Size2) : Component<Pixel>, Paren
         }
     }
 
+    override fun removeOne(component: Component<Pixel>, pos: Int2) {
+        inner.remove(pos)
+        if (pos.x in 0..<size.x && pos.y in 0..<size.y) {
+            reservation?.remove(pos - offset())
+        }
+    }
+
     private fun updateReservation() {
         val (offsetX, offsetY) = offset()
         reservation?.also {
             for (x in 0..<size.x) {
                 for (y in 0..<size.y) {
-                    val item = inner[Int2(x + offsetX, y + offsetY)] ?: continue
-                    it[Int2(x, y)] = item
+                    val item = inner[Int2(x + offsetX, y + offsetY)]
+                    val reservedSlot = Int2(x, y)
+                    if (item == null) {
+                        if (it[reservedSlot] != null) {
+                            it.remove(reservedSlot)
+                        }
+                        continue
+                    }
+                    it[reservedSlot] = item
                 }
             }
         }

@@ -28,12 +28,16 @@ import net.bladehunt.window.core.component.ParentComponent
 import net.bladehunt.window.core.util.Int2
 
 class ChildReservation<Pixel>(
-    private val onSet: (pos: Int2, pixel: Pixel) -> Unit
+    private val onSet: (pos: Int2, pixel: Pixel) -> Unit,
+    private val onRemove: (pos: Int2) -> Unit
 ) : Reservation<Pixel> {
 
     constructor(component: Component<Pixel>, parent: ParentComponent<Pixel>) : this(
         { pos: Int2, pixel: Pixel ->
             parent.updateOne(component, pos, pixel)
+        },
+        { pos: Int2 ->
+            parent.removeOne(component, pos)
         }
     )
 
@@ -43,13 +47,23 @@ class ChildReservation<Pixel>(
         onSet(slot, pixel)
     }
 
+    override fun remove(slot: Int2) {
+        pixelMap.remove(slot)
+        onRemove(slot)
+    }
+
     override fun get(slot: Int2): Pixel? = pixelMap[slot]
 
     override fun isEmpty(): Boolean = pixelMap.isEmpty()
 
     override fun isNotEmpty(): Boolean = pixelMap.isNotEmpty()
 
-    override fun clear() = pixelMap.clear()
+    override fun clear() {
+        pixelMap.forEach { (pos, _) ->
+            onRemove(pos)
+        }
+        pixelMap.clear()
+    }
 
     override fun iterator(): Iterator<Pair<Int2, Pixel>> = pixelMap.map { it.toPair() }.iterator()
 }

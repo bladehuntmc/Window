@@ -36,6 +36,11 @@ abstract class Row<Pixel>(override var size: Size2) : Component<Pixel>, ParentCo
         reservation?.set(pos.copy(x = pos.x + offset), pixel)
     }
 
+    override fun removeOne(component: Component<Pixel>, pos: Int2) {
+        val offset = offsets[component] ?: return
+        reservation?.remove(pos.copy(x = pos.x + offset))
+    }
+
     override fun preRender(limits: Int2) {
         var totalX = 0
         var totalY = 0

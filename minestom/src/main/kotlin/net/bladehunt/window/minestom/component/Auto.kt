@@ -24,11 +24,8 @@
 package net.bladehunt.window.minestom.component
 
 import net.bladehunt.window.core.component.Auto as CoreAuto
-import net.bladehunt.window.core.component.Component
-import net.bladehunt.window.core.interaction.InteractionHandler
 import net.bladehunt.window.core.reservation.Reservation
 import net.bladehunt.window.core.util.Size2
-import net.bladehunt.window.minestom.MinestomInteraction
 import net.minestom.server.item.ItemStack
 
 class Auto(

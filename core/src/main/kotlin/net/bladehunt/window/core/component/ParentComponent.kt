@@ -28,4 +28,5 @@ import net.bladehunt.window.core.util.Int2
 
 interface ParentComponent<Pixel> : Component<Pixel>, Parent<Component<Pixel>> {
     fun updateOne(component: Component<Pixel>, pos: Int2, pixel: Pixel)
+    fun removeOne(component: Component<Pixel>, pos: Int2)
 }

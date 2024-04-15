@@ -36,6 +36,11 @@ abstract class Column<Pixel>(override var size: Size2) : Component<Pixel>, Paren
         reservation?.set(pos.copy(y = pos.y + offset), pixel)
     }
 
+    override fun removeOne(component: Component<Pixel>, pos: Int2) {
+        val offset = offsets[component] ?: return
+        reservation?.remove(pos.copy(y = pos.y + offset))
+    }
+
     override fun preRender(limits: Int2) {
         var totalX = 0
         var totalY = 0

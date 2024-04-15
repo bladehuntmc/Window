@@ -45,6 +45,11 @@ abstract class Container<Pixel>(
         reservation?.set(pos.copy(x = pos.x + padding.left, y = pos.y + padding.top), pixel)
     }
 
+    override fun removeOne(component: Component<Pixel>, pos: Int2) {
+        val padding = padding()
+        reservation?.set(pos.copy(x = pos.x + padding.left, y = pos.y + padding.top), background())
+    }
+
     override fun preRender(limits: Int2) {
         val padding = padding()
         size = size.copy(

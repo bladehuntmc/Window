@@ -26,6 +26,7 @@ package net.bladehunt.window.core.component
 import net.bladehunt.window.core.WindowOverflowException
 import net.bladehunt.window.core.util.Int2
 import net.bladehunt.window.core.util.Size2
+import kotlin.math.max
 
 abstract class Auto<Pixel>(override var size: Size2) : Component<Pixel>, ParentComponent<Pixel> {
     private val children: MutableCollection<Component<Pixel>> = arrayListOf()
@@ -34,6 +35,11 @@ abstract class Auto<Pixel>(override var size: Size2) : Component<Pixel>, ParentC
     override fun updateOne(component: Component<Pixel>, pos: Int2, pixel: Pixel) {
         val offset = offsets[component] ?: return
         reservation?.set(pos + offset, pixel)
+    }
+
+    override fun removeOne(component: Component<Pixel>, pos: Int2) {
+        val offset = offsets[component] ?: return
+        reservation?.remove(pos + offset)
     }
 
     override fun preRender(limits: Int2) {
@@ -64,9 +70,10 @@ abstract class Auto<Pixel>(override var size: Size2) : Component<Pixel>, ParentC
         }
 
         size = size.copy(
-            x = if (size.flexX) totalX else size.x,
-            y = if (size.flexY) totalY else size.y
+            x = if (size.flexX) max(totalX, pointerX) else size.x,
+            y = if (size.flexY) totalY + rowHeight else size.y
         )
+        println(size)
     }
 
     override fun render() {
