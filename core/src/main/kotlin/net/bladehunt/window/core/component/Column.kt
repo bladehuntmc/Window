@@ -37,13 +37,12 @@ abstract class Column<Pixel>(override var size: Size2) : Component<Pixel>, Paren
     }
 
     override fun preRender(limits: Int2) {
-        size = size.copy(
-            x = if (size.flexX) limits.x else size.x,
-            y = if (size.flexY) limits.y else size.y
-        )
+        var totalX = 0
+        var totalY = 0
 
-        val flexSpace = this.size.y - sumOf { if (!it.size.flexY) it.size.y else 0 }
+        val flexSpace = limits.y - sumOf { if (!it.size.flexY) it.size.y else 0 }
         val flexItems = filter { it.size.flexY }
+
         if (flexItems.size > flexSpace) throw WindowOverflowException("There were too many components when trying to render the column")
 
         val each = if (flexItems.isNotEmpty()) flexSpace.floorDiv(flexItems.size) else 0
@@ -56,8 +55,15 @@ abstract class Column<Pixel>(override var size: Size2) : Component<Pixel>, Paren
                 remainder--
                 sizeY
             } else size.y
-            component.preRender(Int2(if (size.flexX) this.size.x else size.x, sizeY))
+            component.preRender(Int2(limits.x, sizeY))
+            if (component.size.x > totalX) totalX = component.size.x
+            totalY += component.size.y
         }
+
+        size = size.copy(
+            x = if (size.flexX) totalX else size.x,
+            y = if (size.flexY) totalY else size.y
+        )
     }
 
     override fun render() {
