@@ -26,6 +26,7 @@ package net.bladehunt.window.minestom.example
 import kotlinx.coroutines.runBlocking
 import net.bladehunt.reakt.reactivity.Signal
 import net.bladehunt.window.core.decoration.Padding
+import net.bladehunt.window.core.util.Int2
 import net.bladehunt.window.core.util.Size2
 import net.bladehunt.window.minestom.*
 import net.bladehunt.window.minestom.component.button
@@ -45,11 +46,39 @@ fun main() = runBlocking {
 
     val instance = MinecraftServer.getInstanceManager().createInstanceContainer()
 
+    val offset = Signal(Int2(0, 0))
+
     val win = window(InventoryType.CHEST_6_ROW) {
         title { Component.text("Basic Example!") }
-        auto {
-            Material.values().stream().limit(32).forEach {
-                item(ItemStack.of(it))
+        container {
+            padding { Padding(1, 1, 1, 0, ItemStack.of(Material.BLACK_STAINED_GLASS_PANE)) }
+            canvas {
+                offset { offset() }
+                innerSize { Int2(14, 4) }
+                auto {
+                    Material.values().stream().limit(30)
+                        .forEach {
+                            item(ItemStack.of(it))
+                        }
+                }
+            }
+        }
+        row {
+            size = Size2(y = 1)
+            button {
+                item { ItemStack.of(Material.ARROW) }
+                onClick = {
+                    offset.value = Int2(0, 0)
+                    if (it is MinestomInteraction.InventoryCondition) it.result.isCancel = true
+                }
+            }
+            fill(ItemStack.of(Material.BLACK_STAINED_GLASS_PANE))
+            button {
+                item { ItemStack.of(Material.ARROW) }
+                onClick = {
+                    offset.value = Int2(7, 0)
+                    if (it is MinestomInteraction.InventoryCondition) it.result.isCancel = true
+                }
             }
         }
     }

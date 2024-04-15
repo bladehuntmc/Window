@@ -93,6 +93,18 @@ inline fun ParentComponent<ItemStack>.container(
 }
 
 @WindowDsl
+inline fun ParentComponent<ItemStack>.canvas(
+    size: Size2 = Size2(),
+    block: @WindowDsl Canvas.() -> Unit
+): Canvas = Canvas(
+    size
+).also {
+    it.block()
+    it.reservation = ChildReservation(it, this)
+    this.addChild(it)
+}
+
+@WindowDsl
 fun ParentComponent<ItemStack>.fill(item: ItemStack): Fill = Fill(item).also {
     it.reservation = ChildReservation(it, this)
     this.addChild(it)
