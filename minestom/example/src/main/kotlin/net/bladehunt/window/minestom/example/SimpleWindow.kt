@@ -66,7 +66,7 @@ fun main() = runBlocking {
         row {
             size = Size2(y = 1)
             button {
-                item { ItemStack.of(Material.ARROW) }
+                display { ItemStack.of(Material.ARROW) }
                 onClick = {
                     offset.value = Int2(0, 0)
                     if (it is MinestomInteraction.InventoryCondition) it.result.isCancel = true
@@ -74,7 +74,7 @@ fun main() = runBlocking {
             }
             fill(ItemStack.of(Material.BLACK_STAINED_GLASS_PANE))
             button {
-                item { ItemStack.of(Material.ARROW) }
+                display { ItemStack.of(Material.ARROW) }
                 onClick = {
                     offset.value = Int2(7, 0)
                     if (it is MinestomInteraction.InventoryCondition) it.result.isCancel = true

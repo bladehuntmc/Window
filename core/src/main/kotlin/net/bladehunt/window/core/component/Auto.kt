@@ -73,7 +73,6 @@ abstract class Auto<Pixel>(override var size: Size2) : Component<Pixel>, ParentC
             x = if (size.flexX) max(totalX, pointerX) else size.x,
             y = if (size.flexY) totalY + rowHeight else size.y
         )
-        println(size)
     }
 
     override fun render() {
