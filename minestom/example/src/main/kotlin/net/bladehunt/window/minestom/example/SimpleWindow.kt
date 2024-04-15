@@ -47,24 +47,9 @@ fun main() = runBlocking {
 
     val win = window(InventoryType.CHEST_6_ROW) {
         title { Component.text("Basic Example!") }
-        row {
-            column {
-                item {
-                    ItemStack.of(Material.BOOK)
-                }
-                item {
-                    ItemStack.of(Material.BOOK)
-                }
-            }
-            column {
-                item {
-                    ItemStack.of(Material.BOOK)
-                }
-            }
-            column {
-                item {
-                    ItemStack.of(Material.BOOK)
-                }
+        auto {
+            Material.values().stream().limit(32).forEach {
+                item(ItemStack.of(it))
             }
         }
     }
