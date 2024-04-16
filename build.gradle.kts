@@ -7,12 +7,12 @@ plugins {
 
 allprojects {
     group = "net.bladehunt"
-    version = "0.1.0-alpha.2"
+    version = "0.1.0-alpha.3"
 
     repositories {
         mavenCentral()
         maven(url = "https://jitpack.io")
-        maven(url = "https://gitlab.com/api/v4/projects/54686082/packages/maven")
+        maven("https://gitlab.com/api/v4/groups/bladehunt/-/packages/maven")
     }
     tasks.withType<JavaCompile> {
         sourceCompatibility = "17"
