@@ -21,20 +21,8 @@
  * OTHER DEALINGS IN THE SOFTWARE.
  */
 
-package net.bladehunt.window.minestom.component.nav
+package net.bladehunt.window.core.interaction
 
-import net.bladehunt.window.core.dsl.WindowDsl
-import net.bladehunt.window.minestom.MinestomInteraction
-import net.minestom.server.item.ItemStack
-import net.minestom.server.item.Material
-
-data class NavItem(
-    var display: Navbar.() -> ItemStack = { ItemStack.of(Material.STONE) },
-    var onClick: Navbar.(event: MinestomInteraction) -> Unit = {}
-)
-
-@WindowDsl
-fun Navbar.navItem(block: @WindowDsl NavItem.() -> Unit): NavItem = NavItem().apply {
-    block()
-    this@navItem.addChild(this)
+interface Interactable<Event> {
+    var interactionReservation: InteractionReservation<Event>?
 }

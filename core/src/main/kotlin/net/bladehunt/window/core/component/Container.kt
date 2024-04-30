@@ -23,7 +23,7 @@
 
 package net.bladehunt.window.core.component
 
-import net.bladehunt.window.core.WindowDsl
+import net.bladehunt.window.core.dsl.WindowDsl
 import net.bladehunt.window.core.decoration.Padding
 import net.bladehunt.window.core.util.Int2
 import net.bladehunt.window.core.util.Size2
@@ -33,10 +33,12 @@ abstract class Container<Pixel>(
 ) : Component<Pixel>, ParentComponent<Pixel> {
 
     protected abstract var background: Container<Pixel>.() -> Pixel
-    @WindowDsl fun background(block: @WindowDsl Container<Pixel>.() -> Pixel) { background = block }
+    @WindowDsl
+    fun background(block: @WindowDsl Container<Pixel>.() -> Pixel) { background = block }
 
     protected abstract var padding: Container<Pixel>.() -> Padding<Pixel>
-    @WindowDsl fun padding(block: @WindowDsl Container<Pixel>.() -> Padding<Pixel>) { padding = block }
+    @WindowDsl
+    fun padding(block: @WindowDsl Container<Pixel>.() -> Padding<Pixel>) { padding = block }
 
     private val children: MutableCollection<Component<Pixel>> = arrayListOf()
 

@@ -21,6 +21,30 @@
  * OTHER DEALINGS IN THE SOFTWARE.
  */
 
-package net.bladehunt.window.core
+package net.bladehunt.window.core.interaction
 
-class WindowOverflowException(message: String? = null, cause: Throwable? = null) : Exception(message, cause)
+import net.bladehunt.window.core.reservation.Reservation
+import net.bladehunt.window.core.util.Int2
+
+abstract class InteractionReservation<Event> : Reservation<(Event) -> Unit> {
+    protected val callbacks = hashMapOf<Int2, (Event) -> Unit>()
+    override fun set(slot: Int2, pixel: (Event) -> Unit) {
+        callbacks[slot] = pixel
+    }
+
+    override fun remove(slot: Int2) {
+        callbacks.remove(slot)
+    }
+
+    override fun get(slot: Int2): ((Event) -> Unit)? = callbacks[slot]
+
+    override fun isEmpty(): Boolean = callbacks.isEmpty()
+
+    override fun isNotEmpty(): Boolean = callbacks.isNotEmpty()
+
+    override fun clear() {
+        callbacks.clear()
+    }
+
+    override fun iterator(): Iterator<Pair<Int2, (Event) -> Unit>> = callbacks.map { it.toPair() }.iterator()
+}

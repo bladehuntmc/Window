@@ -21,20 +21,31 @@
  * OTHER DEALINGS IN THE SOFTWARE.
  */
 
-package net.bladehunt.window.minestom.component.nav
+package net.bladehunt.window.core.dsl
 
-import net.bladehunt.window.core.dsl.WindowDsl
-import net.bladehunt.window.minestom.MinestomInteraction
-import net.minestom.server.item.ItemStack
-import net.minestom.server.item.Material
+import net.bladehunt.window.core.component.Component
+import net.bladehunt.window.core.interaction.Interactable
+import net.bladehunt.window.core.component.ParentComponent
+import net.bladehunt.window.core.interaction.ComponentInteractionReservation
+import net.bladehunt.window.core.interaction.InteractableParentComponent
+import net.bladehunt.window.core.reservation.ChildReservation
 
-data class NavItem(
-    var display: Navbar.() -> ItemStack = { ItemStack.of(Material.STONE) },
-    var onClick: Navbar.(event: MinestomInteraction) -> Unit = {}
-)
-
-@WindowDsl
-fun Navbar.navItem(block: @WindowDsl NavItem.() -> Unit): NavItem = NavItem().apply {
-    block()
-    this@navItem.addChild(this)
+inline fun <T, reified Parent : ParentComponent<T>, reified Child : Component<T>> Parent.applyWindowDsl(
+    child: Child,
+    block: @WindowDsl Child.() -> Unit
+): Child {
+    child.block()
+    child.reservation = ChildReservation(child, this)
+    this.addChild(child)
+    return child
+}
+inline fun <T, E, reified Parent : InteractableParentComponent<E, T>, reified Child> Parent.applyWindowDsl(
+    child: Child,
+    block: @WindowDsl Child.() -> Unit
+): Child where Child : Component<T>, Child : Interactable<E> {
+    child.block()
+    child.reservation = ChildReservation(child, this)
+    child.interactionReservation = ComponentInteractionReservation(child, this)
+    this.addChild(child)
+    return child
 }

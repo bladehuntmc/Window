@@ -24,7 +24,7 @@
 package net.bladehunt.window.core.component
 
 import net.bladehunt.reakt.pubsub.event.Event
-import net.bladehunt.window.core.WindowDsl
+import net.bladehunt.window.core.dsl.WindowDsl
 import net.bladehunt.window.core.util.Int2
 import net.bladehunt.window.core.util.Size2
 import kotlin.math.min
@@ -35,10 +35,12 @@ abstract class Canvas<Pixel>(override var size: Size2) : Component<Pixel>, Paren
     private val inner: MutableMap<Int2, Pixel> = hashMapOf()
 
     protected var innerSize: Canvas<Pixel>.() -> Int2 = { size.asInt2() }
-    @WindowDsl fun innerSize(block: @WindowDsl Canvas<Pixel>.() -> Int2) { innerSize = block }
+    @WindowDsl
+    fun innerSize(block: @WindowDsl Canvas<Pixel>.() -> Int2) { innerSize = block }
 
     protected var offset: Canvas<Pixel>.() -> Int2 = { Int2(0, 0) }
-    @WindowDsl fun offset(block: @WindowDsl Canvas<Pixel>.() -> Int2) { offset = block }
+    @WindowDsl
+    fun offset(block: @WindowDsl Canvas<Pixel>.() -> Int2) { offset = block }
 
     override fun updateOne(component: Component<Pixel>, pos: Int2, pixel: Pixel) {
         inner[pos] = pixel

@@ -23,7 +23,7 @@
 
 package net.bladehunt.window.core.component
 
-import net.bladehunt.window.core.WindowOverflowException
+import net.bladehunt.window.core.exception.WindowOverflowException
 import net.bladehunt.window.core.util.Int2
 import net.bladehunt.window.core.util.Size2
 

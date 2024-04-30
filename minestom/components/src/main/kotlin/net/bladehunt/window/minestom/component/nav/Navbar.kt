@@ -24,7 +24,7 @@
 package net.bladehunt.window.minestom.component.nav
 
 import net.bladehunt.window.core.Parent
-import net.bladehunt.window.core.WindowDsl
+import net.bladehunt.window.core.dsl.WindowDsl
 import net.bladehunt.window.core.component.Component
 import net.bladehunt.window.core.interaction.InteractionHandler
 import net.bladehunt.window.core.reservation.Reservation
@@ -37,16 +37,20 @@ import kotlin.math.max
 
 class Navbar : Component<ItemStack>, Parent<NavItem>, InteractionHandler<MinestomInteraction> {
     private var layout: Navbar.() -> Layout = { Layout.HORIZONTAL }
-    @WindowDsl fun layout(block: @WindowDsl Navbar.() -> Layout) { layout = block }
+    @WindowDsl
+    fun layout(block: @WindowDsl Navbar.() -> Layout) { layout = block }
 
     private var itemPosition: Navbar.() -> ItemPosition = { ItemPosition.CENTER }
-    @WindowDsl fun itemPosition(block: @WindowDsl Navbar.() -> ItemPosition) { itemPosition = block }
+    @WindowDsl
+    fun itemPosition(block: @WindowDsl Navbar.() -> ItemPosition) { itemPosition = block }
 
     private var closeStyle: Navbar.() -> CloseStyle = { CloseStyle.CENTER }
-    @WindowDsl fun closeStyle(block: @WindowDsl Navbar.() -> CloseStyle) { closeStyle = block }
+    @WindowDsl
+    fun closeStyle(block: @WindowDsl Navbar.() -> CloseStyle) { closeStyle = block }
 
     private var fill: Navbar.() -> ItemStack = { ItemStack.of(Material.RED_STAINED_GLASS_PANE) }
-    @WindowDsl fun fill(block: @WindowDsl Navbar.() -> ItemStack) { fill = block }
+    @WindowDsl
+    fun fill(block: @WindowDsl Navbar.() -> ItemStack) { fill = block }
 
     enum class Layout {
         HORIZONTAL,

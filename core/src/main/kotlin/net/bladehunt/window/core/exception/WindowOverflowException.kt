@@ -21,26 +21,6 @@
  * OTHER DEALINGS IN THE SOFTWARE.
  */
 
-package net.bladehunt.window.minestom.component
+package net.bladehunt.window.core.exception
 
-import net.bladehunt.window.core.WindowDsl
-import net.bladehunt.window.core.component.ParentComponent
-import net.bladehunt.window.core.reservation.ChildReservation
-import net.bladehunt.window.minestom.component.nav.Navbar
-import net.minestom.server.item.ItemStack
-
-@WindowDsl
-fun ParentComponent<ItemStack>.navbar(
-    block: @WindowDsl Navbar.() -> Unit
-) = Navbar().apply {
-    block()
-    this.reservation = ChildReservation(this, this@navbar)
-    this@navbar.addChild(this)
-}
-
-@WindowDsl
-fun ParentComponent<ItemStack>.button(block: @WindowDsl Button.() -> Unit) = Button().apply {
-    block()
-    this.reservation = ChildReservation(this, this@button)
-    this@button.addChild(this)
-}
+class WindowOverflowException(message: String? = null, cause: Throwable? = null) : WindowException(message, cause)

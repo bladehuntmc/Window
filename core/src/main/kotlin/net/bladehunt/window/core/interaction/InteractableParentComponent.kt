@@ -21,8 +21,15 @@
  * OTHER DEALINGS IN THE SOFTWARE.
  */
 
-package net.bladehunt.window.core
+package net.bladehunt.window.core.interaction
 
-@Target(AnnotationTarget.TYPE, AnnotationTarget.FUNCTION)
-@DslMarker
-annotation class WindowDsl
+import net.bladehunt.window.core.component.Component
+import net.bladehunt.window.core.component.ParentComponent
+import net.bladehunt.window.core.util.Int2
+
+interface InteractableParentComponent<Event, Pixel> : Interactable<Event>, ParentComponent<Pixel> {
+    override var interactionReservation: InteractionReservation<Event>?
+
+    fun updateInteraction(component: Component<Pixel>, pos: Int2, callback: (Event) -> Unit)
+    fun removeInteraction(component: Component<Pixel>, pos: Int2)
+}

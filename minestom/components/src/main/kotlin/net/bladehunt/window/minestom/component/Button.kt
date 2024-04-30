@@ -23,7 +23,7 @@
 
 package net.bladehunt.window.minestom.component
 
-import net.bladehunt.window.core.WindowDsl
+import net.bladehunt.window.core.dsl.WindowDsl
 import net.bladehunt.window.core.component.Component
 import net.bladehunt.window.core.interaction.InteractionHandler
 import net.bladehunt.window.core.reservation.Reservation
