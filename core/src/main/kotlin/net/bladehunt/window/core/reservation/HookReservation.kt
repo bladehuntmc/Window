@@ -21,30 +21,20 @@
  * OTHER DEALINGS IN THE SOFTWARE.
  */
 
-package net.bladehunt.window.core.interaction
+package net.bladehunt.window.core.reservation
 
-import net.bladehunt.window.core.reservation.Reservation
-import net.bladehunt.window.core.util.Int2
-
-abstract class InteractionReservation<Event> : Reservation<(Event) -> Unit> {
-    protected val callbacks = hashMapOf<Int2, (Event) -> Unit>()
-    override fun set(slot: Int2, pixel: (Event) -> Unit) {
-        callbacks[slot] = pixel
+open class HookReservation<Pixel>(
+    private val reservation: Reservation<Pixel>,
+    private val onSet: (reservation: Reservation<Pixel>, posX: Int, posY: Int, pixel: Pixel) -> Unit,
+    private val onRemove: (reservation: Reservation<Pixel>, posX: Int, posY: Int) -> Unit
+) : Reservation<Pixel> by reservation {
+    override fun set(posX: Int, posY: Int, pixel: Pixel) {
+        reservation[posX, posY] = pixel
+        onSet(this, posX, posY, pixel)
     }
 
-    override fun remove(slot: Int2) {
-        callbacks.remove(slot)
+    override fun remove(posX: Int, posY: Int) {
+        reservation.remove(posX, posY)
+        onRemove(this, posX, posY)
     }
-
-    override fun get(slot: Int2): ((Event) -> Unit)? = callbacks[slot]
-
-    override fun isEmpty(): Boolean = callbacks.isEmpty()
-
-    override fun isNotEmpty(): Boolean = callbacks.isNotEmpty()
-
-    override fun clear() {
-        callbacks.clear()
-    }
-
-    override fun iterator(): Iterator<Pair<Int2, (Event) -> Unit>> = callbacks.map { it.toPair() }.iterator()
 }

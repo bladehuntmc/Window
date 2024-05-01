@@ -23,6 +23,10 @@
 
 package net.bladehunt.window.core.interaction
 
-interface Interactable<Event> {
-    var interactionReservation: InteractionReservation<Event>?
+import net.bladehunt.window.core.reservation.Reservation
+
+typealias Interaction<T> = (T) -> Unit
+interface Interactable<T> {
+    val interactionReservation: Reservation<Interaction<T>>
+    fun onInteract(event: T)
 }

@@ -24,30 +24,33 @@
 package net.bladehunt.window.core.component
 
 import net.bladehunt.window.core.exception.WindowOverflowException
+import net.bladehunt.window.core.reservation.Reservation
 import net.bladehunt.window.core.util.Int2
-import net.bladehunt.window.core.util.Size2
 
-abstract class Row<Pixel>(override var size: Size2) : Component<Pixel>, ParentComponent<Pixel> {
-    private val children: MutableCollection<Component<Pixel>> = arrayListOf()
-    protected val offsets: MutableMap<Component<Pixel>, Int> = hashMapOf()
+abstract class Row<Pixel>(
+    override val reservation: Reservation<Pixel>
+) : Widget<Pixel>, ParentWidget<Pixel> {
+    private val children: MutableCollection<Widget<Pixel>> = arrayListOf()
+    protected val offsets: MutableMap<Reservation<Pixel>, Int> = hashMapOf()
 
-    override fun updateOne(component: Component<Pixel>, pos: Int2, pixel: Pixel) {
-        val offset = offsets[component] ?: return
-        reservation?.set(pos.copy(x = pos.x + offset), pixel)
+    override fun updateOne(reservation: Reservation<Pixel>, posX: Int, posY: Int, pixel: Pixel) {
+        val offset = offsets[reservation] ?: return
+        reservation[posX + offset, posY] = pixel
     }
 
-    override fun removeOne(component: Component<Pixel>, pos: Int2) {
-        val offset = offsets[component] ?: return
-        reservation?.remove(pos.copy(x = pos.x + offset))
+    override fun removeOne(reservation: Reservation<Pixel>, posX: Int, posY: Int) {
+        val offset = offsets[reservation] ?: return
+        reservation.remove(posX + offset, posY)
     }
 
-    override fun preRender(limits: Int2) {
+    override fun preRender(limits: Int2): Int2 {
         var totalX = 0
         var totalY = 0
 
         val flexSpace = limits.x - sumOf { if (!it.size.flexX) it.size.x else 0 }
         val flexItems = filter { it.size.flexX }
-        if (flexItems.size > flexSpace) throw WindowOverflowException("There were too many components when trying to render the row")
+
+        if (flexItems.size > flexSpace) throw WindowOverflowException("There were too many components when trying to render the column")
 
         val each = if (flexItems.isNotEmpty()) flexSpace.floorDiv(flexItems.size) else 0
         var remainder = if (flexItems.isNotEmpty()) flexSpace % flexItems.size else 0
@@ -60,18 +63,15 @@ abstract class Row<Pixel>(override var size: Size2) : Component<Pixel>, ParentCo
                 sizeX
             } else size.x
 
-            offsets[component] = totalX
+            offsets[component.reservation] = totalX
 
-            component.preRender(Int2(sizeX, limits.y))
+            val usedSpace = component.preRender(Int2(sizeX, limits.y))
 
-            if (component.size.x > totalY) totalY = component.size.y
-            totalX += component.size.x
+            if (usedSpace.y > totalY) totalY = usedSpace.y
+            totalX += usedSpace.x
         }
 
-        size = size.copy(
-            x = if (size.flexX) totalX else size.x,
-            y = if (size.flexY) totalY else size.y
-        )
+        return Int2(if (size.flexX) totalX else size.x, if (size.flexY) totalY else size.y)
     }
 
     override fun render() {
@@ -81,7 +81,7 @@ abstract class Row<Pixel>(override var size: Size2) : Component<Pixel>, ParentCo
     }
 
     override fun clear() = children.clear()
-    override fun iterator(): Iterator<Component<Pixel>> = children.iterator()
-    override fun removeChild(child: Component<Pixel>): Boolean = children.remove(child)
-    override fun addChild(child: Component<Pixel>): Boolean = children.add(child)
+    override fun iterator(): Iterator<Widget<Pixel>> = children.iterator()
+    override fun removeChild(child: Widget<Pixel>): Boolean = children.remove(child)
+    override fun addChild(child: Widget<Pixel>): Boolean = children.add(child)
 }

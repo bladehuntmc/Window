@@ -21,26 +21,19 @@
  * OTHER DEALINGS IN THE SOFTWARE.
  */
 
-package net.bladehunt.window.minestom.component
+package net.bladehunt.window.minestom
 
-import net.bladehunt.window.core.dsl.WindowDsl
-import net.bladehunt.window.core.component.ParentComponent
-import net.bladehunt.window.core.dsl.applyWindowDsl
-import net.bladehunt.window.core.interaction.InteractableParentComponent
-import net.bladehunt.window.minestom.MinestomInteraction
-import net.bladehunt.window.minestom.component.nav.Navbar
-import net.minestom.server.item.ItemStack
+import net.bladehunt.kotstom.extension.rowSize
+import net.bladehunt.kotstom.util.EventNodeContainerInventory
+import net.bladehunt.window.core.interaction.Interaction
+import net.bladehunt.window.core.reservation.Reservation
+import net.bladehunt.window.core.reservation.ArrayReservationImpl
+import net.bladehunt.window.core.util.Size2
+import net.bladehunt.window.minestom.event.MinestomEvent
 
-@WindowDsl
-inline fun ParentComponent<ItemStack>.navbar(block: @WindowDsl Navbar.() -> Unit) = applyWindowDsl(Navbar(), block)
-@WindowDsl
-inline fun InteractableParentComponent<MinestomInteraction, ItemStack>.navbar(
-    block: @WindowDsl Navbar.() -> Unit
-) = applyWindowDsl(Navbar(), block)
-
-@WindowDsl
-inline fun ParentComponent<ItemStack>.button(block: @WindowDsl Button.() -> Unit) = applyWindowDsl(Button(), block)
-@WindowDsl
-inline fun InteractableParentComponent<MinestomInteraction, ItemStack>.button(
-    block: @WindowDsl Button.() -> Unit
-) = applyWindowDsl(Button(), block)
+class MinestomInventoryInteractionReservation(
+    inventory: EventNodeContainerInventory
+) : Reservation<Interaction<MinestomEvent>> by ArrayReservationImpl(
+    Size2(inventory.inventoryType.rowSize, inventory.size / inventory.inventoryType.rowSize),
+) {
+}

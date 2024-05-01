@@ -21,15 +21,17 @@
  * OTHER DEALINGS IN THE SOFTWARE.
  */
 
-package net.bladehunt.window.core.interaction
+package net.bladehunt.window.core.component
 
-import net.bladehunt.window.core.component.Component
-import net.bladehunt.window.core.component.ParentComponent
+import net.bladehunt.window.core.Parent
+import net.bladehunt.window.core.reservation.HookReservation
+import net.bladehunt.window.core.reservation.Reservation
 import net.bladehunt.window.core.util.Int2
+import net.bladehunt.window.core.util.Size2
 
-interface InteractableParentComponent<Event, Pixel> : Interactable<Event>, ParentComponent<Pixel> {
-    override var interactionReservation: InteractionReservation<Event>?
+interface ParentWidget<Pixel> : Widget<Pixel>, Parent<Widget<Pixel>> {
+    fun createReservation(size: Size2): HookReservation<Pixel>
 
-    fun updateInteraction(component: Component<Pixel>, pos: Int2, callback: (Event) -> Unit)
-    fun removeInteraction(component: Component<Pixel>, pos: Int2)
+    fun updateOne(reservation: Reservation<Pixel>, posX: Int, posY: Int, pixel: Pixel)
+    fun removeOne(reservation: Reservation<Pixel>, posX: Int, posY: Int)
 }

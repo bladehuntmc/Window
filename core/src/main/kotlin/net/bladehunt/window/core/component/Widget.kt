@@ -21,20 +21,34 @@
  * OTHER DEALINGS IN THE SOFTWARE.
  */
 
-package net.bladehunt.window.minestom.component.nav
+package net.bladehunt.window.core.component
 
-import net.bladehunt.window.core.dsl.WindowDsl
-import net.bladehunt.window.minestom.MinestomInteraction
-import net.minestom.server.item.ItemStack
-import net.minestom.server.item.Material
+import net.bladehunt.reakt.pubsub.EventPublisher
+import net.bladehunt.reakt.pubsub.event.Event
+import net.bladehunt.reakt.reactivity.ReactiveContext
+import net.bladehunt.window.core.reservation.Reserved
+import net.bladehunt.window.core.Shape
+import net.bladehunt.window.core.util.Int2
+import net.bladehunt.window.core.util.Size2
 
-data class NavItem(
-    var display: Navbar.() -> ItemStack = { ItemStack.of(Material.STONE) },
-    var onClick: Navbar.(event: MinestomInteraction) -> Unit = {}
-)
+interface Widget<Pixel> : ReactiveContext, Shape, Reserved<Pixel> {
+    override val size: Size2
+        get() = reservation.size
 
-@WindowDsl
-fun Navbar.navItem(block: @WindowDsl NavItem.() -> Unit): NavItem = NavItem().apply {
-    block()
-    this@navItem.addChild(this)
+    /**
+     * Pre-rendering a component should include things such as sizing
+     *
+     * @param limits The size limits that the component should be confined to
+     * @return The used size
+     */
+    fun preRender(limits: Int2): Int2
+
+    /**
+     * Places a component's pixels/interactions in the respective reservations
+     */
+    fun render()
+
+    override fun onEvent(event: Event) = render()
+    override fun onSubscribe(publisher: EventPublisher) {}
+    override fun onUnsubscribe(publisher: EventPublisher) {}
 }

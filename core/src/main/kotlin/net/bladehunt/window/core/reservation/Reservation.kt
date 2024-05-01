@@ -23,13 +23,20 @@
 
 package net.bladehunt.window.core.reservation
 
+import net.bladehunt.window.core.Shape
 import net.bladehunt.window.core.util.Int2
 
-interface Reservation<Pixel> : Iterable<Pair<Int2, Pixel>> {
-    operator fun set(slot: Int2, pixel: Pixel)
-    operator fun get(slot: Int2): Pixel?
+interface Reservation<Pixel> : Iterable<Pair<Int2, Pixel>>, Shape {
+    val absoluteSize: Int2
 
-    fun remove(slot: Int2)
+    operator fun set(posX: Int, posY: Int, pixel: Pixel)
+    operator fun get(posX: Int, posY: Int): Pixel?
+
+    operator fun set(pos: Int2, pixel: Pixel) = set(pos.x, pos.y, pixel)
+    operator fun get(pos: Int2): Pixel? = get(pos.x, pos.y)
+
+    fun remove(posX: Int, posY: Int)
+    fun remove(pos: Int2) = remove(pos.x, pos.y)
 
     fun isEmpty(): Boolean
     fun isNotEmpty(): Boolean
