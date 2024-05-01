@@ -29,7 +29,20 @@ import net.bladehunt.window.core.util.Size2
 class ArrayReservationImpl<Pixel>(
     override val size: Size2,
     private val arrayFactory: (sizeX: Int, sizeY: Int) -> Array<Array<Pixel?>>
-) : Reservation<Pixel> {
+) : Reservation<Pixel>, Resizable {
+    constructor(size: Size2, pixelClass: Class<Pixel>) : this(
+        size,
+        { sizeX, sizeY ->
+            java.lang.reflect.Array.newInstance(pixelClass, sizeX, sizeY) as Array<Array<Pixel?>>
+        }
+    )
+
+    companion object {
+        inline operator fun <reified T> invoke(size: Size2): ArrayReservationImpl<T> = ArrayReservationImpl(size) { sizeX, sizeY ->
+            Array(sizeX) { Array(sizeY) { null } }
+        }
+    }
+
     private var pixels: Array<Array<Pixel?>> = arrayFactory(size.x, size.y)
     override val absoluteSize: Int2
         get() {
@@ -45,12 +58,6 @@ class ArrayReservationImpl<Pixel>(
                 if (size.flexY) totalY else size.y,
             )
         }
-
-    companion object {
-        inline operator fun <reified T> invoke(size: Size2): Reservation<T> = ArrayReservationImpl(size) { sizeX, sizeY ->
-            Array(sizeX) { Array(sizeY) { null } }
-        }
-    }
 
     override fun resize(sizeX: Int, sizeY: Int) {
         if (sizeX < 0 || sizeY < 0) throw IllegalArgumentException("Size dimensions must be non-negative")
