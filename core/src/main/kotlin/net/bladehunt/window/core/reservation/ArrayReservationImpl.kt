@@ -28,8 +28,9 @@ import net.bladehunt.window.core.util.Size2
 
 class ArrayReservationImpl<Pixel>(
     override val size: Size2,
-    private val pixels: Array<Array<Pixel?>>
+    private val arrayFactory: (sizeX: Int, sizeY: Int) -> Array<Array<Pixel?>>
 ) : Reservation<Pixel> {
+    private var pixels: Array<Array<Pixel?>> = arrayFactory(size.x, size.y)
     override val absoluteSize: Int2
         get() {
             var totalX = 0
@@ -46,7 +47,20 @@ class ArrayReservationImpl<Pixel>(
         }
 
     companion object {
-        inline operator fun <reified T> invoke(size: Size2): Reservation<T> = ArrayReservationImpl(size, Array(size.x) { Array(size.y) { null } })
+        inline operator fun <reified T> invoke(size: Size2): Reservation<T> = ArrayReservationImpl(size) { sizeX, sizeY ->
+            Array(sizeX) { Array(sizeY) { null } }
+        }
+    }
+
+    override fun resize(sizeX: Int, sizeY: Int) {
+        if (sizeX < 0 || sizeY < 0) throw IllegalArgumentException("Size dimensions must be non-negative")
+
+        val newArray = arrayFactory(sizeX, sizeY)
+        pixels.forEachNotNull { x, y, value ->
+            if (x >= sizeX || y >= sizeY) return@forEachNotNull
+            newArray[x][y] = value
+        }
+        pixels = newArray
     }
 
     override fun get(posX: Int, posY: Int): Pixel? = pixels[posX][posY]
@@ -78,7 +92,7 @@ class ArrayReservationImpl<Pixel>(
     }
     private inline fun Array<Array<Pixel?>>.forEach(block: (x: Int, y: Int, value: Pixel?) -> Unit) {
         for (x in this.indices) {
-            for (y in this.indices) {
+            for (y in this[x].indices) {
                 block(x, y, this[x][y])
             }
         }
