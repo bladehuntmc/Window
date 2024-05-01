@@ -27,6 +27,7 @@ import net.bladehunt.kotstom.util.EventNodeContainerInventory
 import net.bladehunt.window.core.component.Column
 import net.bladehunt.window.core.reservation.HookReservation
 import net.bladehunt.window.core.reservation.ArrayReservationImpl
+import net.bladehunt.window.core.reservation.ResizableHookReservation
 import net.bladehunt.window.core.util.Size2
 import net.kyori.adventure.text.Component
 import net.minestom.server.inventory.InventoryType
@@ -38,6 +39,6 @@ class MinestomWindow(
     MinestomInventoryReservation(EventNodeContainerInventory(inventoryType, Component.text("Window")))
 ) {
     override fun createReservation(size: Size2): HookReservation<ItemStack> {
-        return HookReservation(ArrayReservationImpl<ItemStack>(size), this::updateOne, this::removeOne)
+        return ResizableHookReservation(ArrayReservationImpl<ItemStack>(size), this::updateOne, this::removeOne)
     }
 }
