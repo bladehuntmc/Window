@@ -21,40 +21,31 @@
  * OTHER DEALINGS IN THE SOFTWARE.
  */
 
-package net.bladehunt.window.minestom.example
+package net.bladehunt.window.minestom.widget
 
-import kotlinx.coroutines.runBlocking
-import net.bladehunt.reakt.reactivity.Signal
+import net.bladehunt.window.core.interaction.Interactable
+import net.bladehunt.window.core.interaction.Interaction
+import net.bladehunt.window.core.reservation.Reservation
 import net.bladehunt.window.core.util.Int2
-import net.bladehunt.window.minestom.dsl.button
-import net.bladehunt.window.minestom.dsl.window
-import net.minestom.server.MinecraftServer
-import net.minestom.server.event.player.AsyncPlayerConfigurationEvent
-import net.minestom.server.event.player.PlayerStartSneakingEvent
-import net.minestom.server.inventory.InventoryType
+import net.bladehunt.window.core.widget.Widget
+import net.bladehunt.window.minestom.event.MinestomEvent
+import net.minestom.server.item.ItemStack
+import net.minestom.server.item.Material
 
-fun main() = runBlocking {
-    val server = MinecraftServer.init()
-
-    val instance = MinecraftServer.getInstanceManager().createInstanceContainer()
-
-    val offset = Signal(Int2(0, 0))
-
-    val win = window(InventoryType.CHEST_6_ROW) {
-        button {
-
-        }
+class Button(
+    override val reservation: Reservation<ItemStack>,
+    override val interactionReservation: Reservation<Interaction<MinestomEvent>>
+) : Widget<ItemStack>, Interactable<MinestomEvent> {
+    override fun preRender(limits: Int2): Int2 {
+        return Int2(1, 1)
     }
 
-    MinecraftServer.getGlobalEventHandler().addListener(AsyncPlayerConfigurationEvent::class.java) { event ->
-        event.spawningInstance = instance
-        val player = event.player
-        player.scheduleNextTick {
-            player.eventNode().addListener(PlayerStartSneakingEvent::class.java) { sneakEvent ->
-                player.openInventory(win.inventory)
-            }
-        }
+    override fun render() {
+        reservation[0, 0] = ItemStack.of(Material.STONE)
+        println("rendered button")
+        reservation.iterator().forEach(::println)
     }
 
-    server.start("127.0.0.1", 25565)
+    override fun onInteract(event: MinestomEvent) {
+    }
 }

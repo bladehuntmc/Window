@@ -21,10 +21,11 @@
  * OTHER DEALINGS IN THE SOFTWARE.
  */
 
-package net.bladehunt.window.core.component
+package net.bladehunt.window.core.widget
 
 import net.bladehunt.window.core.exception.WindowOverflowException
 import net.bladehunt.window.core.reservation.Reservation
+import net.bladehunt.window.core.reservation.Resizable
 import net.bladehunt.window.core.util.Int2
 
 abstract class Column<Pixel>(
@@ -35,12 +36,12 @@ abstract class Column<Pixel>(
 
     override fun updateOne(reservation: Reservation<Pixel>, posX: Int, posY: Int, pixel: Pixel) {
         val offset = offsets[reservation] ?: return
-        reservation[posX, posY + offset] = pixel
+        this.reservation[posX, posY + offset] = pixel
     }
 
     override fun removeOne(reservation: Reservation<Pixel>, posX: Int, posY: Int,) {
         val offset = offsets[reservation] ?: return
-        reservation.remove(posX, posY + offset)
+        this.reservation.remove(posX, posY + offset)
     }
 
     override fun preRender(limits: Int2): Int2 {
@@ -66,6 +67,7 @@ abstract class Column<Pixel>(
             offsets[component.reservation] = totalY
 
             val usedSpace = component.preRender(Int2(limits.x, sizeY))
+            (component.reservation as? Resizable)?.resize(usedSpace.x, usedSpace.y)
 
             if (usedSpace.x > totalX) totalX = usedSpace.x
             totalY += usedSpace.y

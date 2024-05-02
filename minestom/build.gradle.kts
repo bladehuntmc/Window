@@ -19,6 +19,12 @@ publishing {
     }
 }
 
+java {
+    targetCompatibility = JavaVersion.VERSION_21
+    sourceCompatibility = JavaVersion.VERSION_21
+    withSourcesJar()
+}
+
 repositories {
     maven("https://gitlab.com/api/v4/groups/bladehunt/-/packages/maven")
 }
@@ -26,7 +32,7 @@ repositories {
 dependencies {
     api(project(":core"))
     api("net.bladehunt:kotstom:0.1.0-beta.4")
-    compileOnly("net.minestom:minestom-snapshots:1_20_5-b938dad0c1")
+    api("net.minestom:minestom-snapshots:1_20_5-b938dad0c1")
     testImplementation(platform("org.junit:junit-bom:5.9.1"))
     testImplementation("org.junit.jupiter:junit-jupiter")
 }

@@ -21,17 +21,39 @@
  * OTHER DEALINGS IN THE SOFTWARE.
  */
 
-package net.bladehunt.window.core.component
+package net.bladehunt.window.minestom
 
-import net.bladehunt.window.core.Parent
-import net.bladehunt.window.core.reservation.HookReservation
-import net.bladehunt.window.core.reservation.Reservation
+import net.bladehunt.reakt.reactivity.Signal
 import net.bladehunt.window.core.util.Int2
-import net.bladehunt.window.core.util.Size2
+import net.bladehunt.window.minestom.dsl.button
+import net.bladehunt.window.minestom.dsl.window
+import net.minestom.server.MinecraftServer
+import net.minestom.server.event.player.AsyncPlayerConfigurationEvent
+import net.minestom.server.event.player.PlayerStartSneakingEvent
+import net.minestom.server.inventory.InventoryType
 
-interface ParentWidget<Pixel> : Widget<Pixel>, Parent<Widget<Pixel>> {
-    fun createReservation(size: Size2): HookReservation<Pixel>
+fun main() {
+    val server = MinecraftServer.init()
 
-    fun updateOne(reservation: Reservation<Pixel>, posX: Int, posY: Int, pixel: Pixel)
-    fun removeOne(reservation: Reservation<Pixel>, posX: Int, posY: Int)
+    val instance = MinecraftServer.getInstanceManager().createInstanceContainer()
+
+    val offset = Signal(Int2(0, 0))
+
+    val win = window(InventoryType.CHEST_6_ROW) {
+        button {
+            println("hi")
+        }
+    }
+
+    MinecraftServer.getGlobalEventHandler().addListener(AsyncPlayerConfigurationEvent::class.java) { event ->
+        event.spawningInstance = instance
+        val player = event.player
+        player.scheduleNextTick {
+            player.eventNode().addListener(PlayerStartSneakingEvent::class.java) { sneakEvent ->
+                player.openInventory(win.inventory)
+            }
+        }
+    }
+
+    server.start("127.0.0.1", 25565)
 }

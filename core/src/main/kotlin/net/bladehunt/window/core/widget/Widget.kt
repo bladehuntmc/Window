@@ -21,7 +21,7 @@
  * OTHER DEALINGS IN THE SOFTWARE.
  */
 
-package net.bladehunt.window.core.component
+package net.bladehunt.window.core.widget
 
 import net.bladehunt.reakt.pubsub.EventPublisher
 import net.bladehunt.reakt.pubsub.event.Event
@@ -36,15 +36,15 @@ interface Widget<Pixel> : ReactiveContext, Shape, Reserved<Pixel> {
         get() = reservation.size
 
     /**
-     * Pre-rendering a component should include things such as sizing
+     * Pre-rendering a widget should include things such as sizing
      *
-     * @param limits The size limits that the component should be confined to
+     * @param limits The size limits that the widget should be confined to
      * @return The used size
      */
     fun preRender(limits: Int2): Int2
 
     /**
-     * Places a component's pixels/interactions in the respective reservations
+     * Places a widget's pixels/interactions in the respective reservations
      */
     fun render()
 

@@ -24,23 +24,9 @@
 package net.bladehunt.window.minestom.example
 
 import kotlinx.coroutines.runBlocking
-import net.bladehunt.reakt.reactivity.Signal
-import net.bladehunt.window.core.decoration.Padding
-import net.bladehunt.window.core.util.Size2
-import net.bladehunt.window.minestom.*
-import net.bladehunt.window.minestom.component.button
-import net.bladehunt.window.minestom.component.nav.navItem
-import net.bladehunt.window.minestom.component.navbar
-import net.kyori.adventure.text.Component
-import net.minestom.server.MinecraftServer
-import net.minestom.server.event.player.AsyncPlayerConfigurationEvent
-import net.minestom.server.event.player.PlayerStartSneakingEvent
-import net.minestom.server.inventory.InventoryType
-import net.minestom.server.item.Enchantment
-import net.minestom.server.item.ItemStack
-import net.minestom.server.item.Material
 
 fun main() = runBlocking {
+    /*
     val server = MinecraftServer.init()
 
     val instance = MinecraftServer.getInstanceManager().createInstanceContainer()
@@ -143,4 +129,6 @@ fun main() = runBlocking {
     }
 
     server.start("127.0.0.1", 25565)
+
+     */
 }
