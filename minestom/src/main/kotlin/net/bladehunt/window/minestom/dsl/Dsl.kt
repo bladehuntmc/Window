@@ -22,32 +22,3 @@
  */
 
 package net.bladehunt.window.minestom.dsl
-
-import net.bladehunt.window.core.dsl.WindowDsl
-import net.bladehunt.window.core.interaction.Interaction
-import net.bladehunt.window.core.reservation.ArrayReservationImpl
-import net.bladehunt.window.core.reservation.HookReservation
-import net.bladehunt.window.core.util.Size2
-import net.bladehunt.window.core.widget.ParentWidget
-import net.bladehunt.window.minestom.MinestomWindow
-import net.bladehunt.window.minestom.event.MinestomEvent
-import net.bladehunt.window.minestom.widget.Button
-import net.minestom.server.inventory.InventoryType
-import net.minestom.server.item.ItemStack
-
-@WindowDsl
-inline fun window(
-    inventoryType: InventoryType,
-    block: @WindowDsl MinestomWindow.() -> Unit
-) = MinestomWindow(inventoryType).apply {
-    block()
-    this.preRender(this.size.asInt2())
-    this.render()
-}
-@WindowDsl
-inline fun ParentWidget<ItemStack>.button(
-    block: @WindowDsl Button.() -> Unit
-) = Button(this.createReservation(Size2(1, 1)), ArrayReservationImpl<Interaction<MinestomEvent>>(Size2(1, 1))).apply {
-    block()
-    this@button.addChild(this)
-}

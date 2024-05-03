@@ -21,12 +21,22 @@
  * OTHER DEALINGS IN THE SOFTWARE.
  */
 
-package net.bladehunt.window.core.interaction
+package net.bladehunt.window.core.util;
 
-import net.bladehunt.window.core.reservation.Reservation
+import org.jetbrains.annotations.Contract;
+import org.jetbrains.annotations.NotNull;
 
-typealias Interaction<T> = (T) -> Unit
-interface Interactable<T> {
-    val interactionReservation: Reservation<Interaction<T>>
-    fun onInteract(event: T)
+public record Int2(int x, int y) {
+    @Contract("_ -> new")
+    public @NotNull Int2 plus(@NotNull Int2 other) {
+        return new Int2(this.x() + other.x(), this.y() + other.y());
+    }
+    @Contract("_ -> new")
+    public @NotNull Int2 minus(@NotNull Int2 other) {
+        return new Int2(this.x() - other.x(), this.y() - other.y());
+    }
+    @Contract("_ -> new")
+    public @NotNull Int2 times(@NotNull Int2 other) {
+        return new Int2(this.x() * other.x(), this.y() * other.y());
+    }
 }

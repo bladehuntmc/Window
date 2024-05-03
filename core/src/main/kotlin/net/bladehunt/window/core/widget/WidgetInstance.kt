@@ -21,11 +21,20 @@
  * OTHER DEALINGS IN THE SOFTWARE.
  */
 
-package net.bladehunt.window.core
+package net.bladehunt.window.core.widget
 
-interface Parent<T> : Iterable<T> {
-    fun addChild(child: T): Boolean
-    fun removeChild(child: T): Boolean
-    fun clear()
-    override fun iterator(): Iterator<T>
+import net.bladehunt.reakt.pubsub.EventPublisher
+import net.bladehunt.reakt.pubsub.event.Event
+import net.bladehunt.reakt.reactivity.ReactiveContext
+import net.bladehunt.window.core.reservation.Reservation
+
+interface WidgetInstance<T> : ReactiveContext {
+    val reservation: Reservation<T>
+
+    fun render()
+    override fun onSubscribe(publisher: EventPublisher) {}
+    override fun onUnsubscribe(publisher: EventPublisher) {}
+    override fun onEvent(event: Event) {
+        render()
+    }
 }

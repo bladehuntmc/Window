@@ -24,17 +24,17 @@
 package net.bladehunt.window.core.reservation
 
 open class HookReservation<Pixel>(
-    private val reservation: Reservation<Pixel>,
+    val inner: Reservation<Pixel>,
     private val onSet: (reservation: Reservation<Pixel>, posX: Int, posY: Int, pixel: Pixel) -> Unit,
     private val onRemove: (reservation: Reservation<Pixel>, posX: Int, posY: Int) -> Unit
-) : Reservation<Pixel> by reservation {
+) : Reservation<Pixel> by inner {
     override fun set(posX: Int, posY: Int, pixel: Pixel) {
-        reservation[posX, posY] = pixel
+        inner[posX, posY] = pixel
         onSet(this, posX, posY, pixel)
     }
 
     override fun remove(posX: Int, posY: Int) {
-        reservation.remove(posX, posY)
+        inner.remove(posX, posY)
         onRemove(this, posX, posY)
     }
 }

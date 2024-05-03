@@ -23,29 +23,23 @@
 
 package net.bladehunt.window.minestom.widget
 
-import net.bladehunt.window.core.interaction.Interactable
-import net.bladehunt.window.core.interaction.Interaction
 import net.bladehunt.window.core.reservation.Reservation
-import net.bladehunt.window.core.util.Int2
+import net.bladehunt.window.core.util.Size2
 import net.bladehunt.window.core.widget.Widget
-import net.bladehunt.window.minestom.event.MinestomEvent
+import net.bladehunt.window.core.widget.WidgetInstance
 import net.minestom.server.item.ItemStack
-import net.minestom.server.item.Material
 
 class Button(
-    override val reservation: Reservation<ItemStack>,
-    override val interactionReservation: Reservation<Interaction<MinestomEvent>>
-) : Widget<ItemStack>, Interactable<MinestomEvent> {
-    override fun preRender(limits: Int2): Int2 {
-        return Int2(1, 1)
+    val itemFactory: Button.Instance.() -> ItemStack,
+    val onClick: Button.Instance.() -> Unit
+) : Widget<ItemStack, Button.Instance> {
+    override val defaultSize: Size2 = Size2(1, 1)
+
+    inner class Instance(override val reservation: Reservation<ItemStack>) : WidgetInstance<ItemStack> {
+        override fun render() {
+            reservation[0, 0] = itemFactory()
+        }
     }
 
-    override fun render() {
-        reservation[0, 0] = ItemStack.of(Material.STONE)
-        println("rendered button")
-        reservation.iterator().forEach(::println)
-    }
-
-    override fun onInteract(event: MinestomEvent) {
-    }
+    override fun createInstance(reservation: Reservation<ItemStack>): Instance = Instance(reservation)
 }

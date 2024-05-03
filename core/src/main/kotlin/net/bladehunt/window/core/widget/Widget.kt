@@ -23,32 +23,13 @@
 
 package net.bladehunt.window.core.widget
 
-import net.bladehunt.reakt.pubsub.EventPublisher
-import net.bladehunt.reakt.pubsub.event.Event
-import net.bladehunt.reakt.reactivity.ReactiveContext
-import net.bladehunt.window.core.reservation.Reserved
-import net.bladehunt.window.core.Shape
-import net.bladehunt.window.core.util.Int2
+import net.bladehunt.window.core.reservation.Reservation
 import net.bladehunt.window.core.util.Size2
 
-interface Widget<Pixel> : ReactiveContext, Shape, Reserved<Pixel> {
-    override val size: Size2
-        get() = reservation.size
-
-    /**
-     * Pre-rendering a widget should include things such as sizing
-     *
-     * @param limits The size limits that the widget should be confined to
-     * @return The used size
-     */
-    fun preRender(limits: Int2): Int2
-
-    /**
-     * Places a widget's pixels/interactions in the respective reservations
-     */
-    fun render()
-
-    override fun onEvent(event: Event) = render()
-    override fun onSubscribe(publisher: EventPublisher) {}
-    override fun onUnsubscribe(publisher: EventPublisher) {}
+interface Widget<T, W : WidgetInstance<T>> {
+    val defaultSize: Size2
+    fun createInstance(reservation: Reservation<T>): W
+    fun render(instance: W) {
+        instance.render()
+    }
 }

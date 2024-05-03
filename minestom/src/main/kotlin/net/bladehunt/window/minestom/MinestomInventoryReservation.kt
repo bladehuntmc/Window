@@ -27,22 +27,28 @@ import net.bladehunt.kotstom.extension.get
 import net.bladehunt.kotstom.extension.rowSize
 import net.bladehunt.kotstom.extension.set
 import net.bladehunt.kotstom.util.EventNodeContainerInventory
+import net.bladehunt.window.core.interact.Interaction
+import net.bladehunt.window.core.reservation.ArrayReservationImpl
 import net.bladehunt.window.core.reservation.Reservation
 import net.bladehunt.window.core.util.Int2
 import net.bladehunt.window.core.util.Size2
+import net.bladehunt.window.minestom.event.MinestomEvent
 import net.minestom.server.item.ItemStack
 
 class MinestomInventoryReservation(
     private val inventory: EventNodeContainerInventory
-) : Reservation<ItemStack> {
+) : Reservation<Pair<ItemStack, Interaction<MinestomEvent>?>> {
     override val size: Size2 = Size2(inventory.inventoryType.rowSize, inventory.size / inventory.inventoryType.rowSize)
-    override val absoluteSize: Int2 = Int2(size.x, size.y)
+    override val usedSize: Int2 = Int2(size.x, size.y)
 
-    override fun set(posX: Int, posY: Int, pixel: ItemStack) {
-        inventory[posX, posY] = pixel
+    private val interactions = ArrayReservationImpl<Interaction<MinestomEvent>?>(size)
+
+    override fun set(posX: Int, posY: Int, pixel: Pair<ItemStack, Interaction<MinestomEvent>?>) {
+        inventory[posX, posY] = pixel.first
+        interactions[posX, posY] = pixel.second
     }
 
-    override fun get(posX: Int, posY: Int): ItemStack = inventory[posX, posY]
+    override fun get(posX: Int, posY: Int): Pair<ItemStack, Interaction<MinestomEvent>?> = inventory[posX, posY] to interactions[posX, posY]
 
     override fun remove(posX: Int, posY: Int) {
         inventory[posX, posY] = ItemStack.AIR
@@ -54,7 +60,8 @@ class MinestomInventoryReservation(
 
     override fun clear() = inventory.clear()
 
-    override fun iterator(): Iterator<Pair<Int2, ItemStack>> = inventory.itemStacks.mapIndexed { index, itemStack ->
-        Int2(index % size.x, index / size.y) to itemStack
+    override fun iterator(): Iterator<Pair<Int2, Pair<ItemStack, Interaction<MinestomEvent>?>>> = inventory.itemStacks.mapIndexed { index, itemStack ->
+        val slot = Int2(index % size.x, index / size.y)
+        slot to (itemStack to interactions[slot])
     }.iterator()
 }

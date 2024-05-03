@@ -21,16 +21,11 @@
  * OTHER DEALINGS IN THE SOFTWARE.
  */
 
-package net.bladehunt.window.core.widget
+package net.bladehunt.window.core.interact
 
-import net.bladehunt.window.core.Parent
-import net.bladehunt.window.core.reservation.HookReservation
 import net.bladehunt.window.core.reservation.Reservation
-import net.bladehunt.window.core.util.Size2
 
-interface ParentWidget<Pixel> : Widget<Pixel>, Parent<Widget<Pixel>> {
-    fun createReservation(size: Size2): HookReservation<Pixel>
-
-    fun updateOne(reservation: Reservation<Pixel>, posX: Int, posY: Int, pixel: Pixel)
-    fun removeOne(reservation: Reservation<Pixel>, posX: Int, posY: Int)
+interface Interactable<T> {
+    val interactionReservation: Reservation<Interaction<T>>
+    fun handleInteraction(event: T)
 }

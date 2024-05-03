@@ -21,16 +21,21 @@
  * OTHER DEALINGS IN THE SOFTWARE.
  */
 
-package net.bladehunt.window.core.util
+package net.bladehunt.window.core.widget
 
-data class Int2(val x: Int, val y: Int) {
-    operator fun plus(other: Int2): Int2 = Int2(x + other.x, y + other.y)
-    operator fun minus(other: Int2): Int2 = Int2(x - other.x, y - other.y)
+import net.bladehunt.window.core.reservation.Reservation
+import net.bladehunt.window.core.util.Size2
 
-    operator fun times(other: Int2): Int2 = Int2(x * other.x, y * other.y)
+interface WidgetParent<T> {
+    val widgets: Collection<WidgetInstance<T>>
+
+    fun createReservation(size: Size2): Reservation<T>
+    fun addWidgetInstance(widgetInstance: WidgetInstance<T>)
+    fun calculateFlex()
+
+    fun addWidget(widget: Widget<T, out WidgetInstance<T>>) = addWidgetInstance(
+        widget.createInstance(
+            createReservation(widget.defaultSize)
+        )
+    )
 }
-
-operator fun <T> MutableMap<Int2, T>.set(x: Int, y: Int, value: T) {
-    this[Int2(x, y)] = value
-}
-operator fun <T> MutableMap<Int2, T>.get(x: Int, y: Int): T? = this[Int2(x, y)]

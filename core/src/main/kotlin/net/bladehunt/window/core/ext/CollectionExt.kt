@@ -21,39 +21,16 @@
  * OTHER DEALINGS IN THE SOFTWARE.
  */
 
-package net.bladehunt.window.minestom
+package net.bladehunt.window.core.ext
 
-import net.bladehunt.reakt.reactivity.Signal
 import net.bladehunt.window.core.util.Int2
-import net.bladehunt.window.minestom.dsl.button
-import net.bladehunt.window.minestom.dsl.window
-import net.minestom.server.MinecraftServer
-import net.minestom.server.event.player.AsyncPlayerConfigurationEvent
-import net.minestom.server.event.player.PlayerStartSneakingEvent
-import net.minestom.server.inventory.InventoryType
 
-fun main() {
-    val server = MinecraftServer.init()
-
-    val instance = MinecraftServer.getInstanceManager().createInstanceContainer()
-
-    val offset = Signal(Int2(0, 0))
-
-    val win = window(InventoryType.CHEST_6_ROW) {
-        button {
-            println("hi")
-        }
-    }
-
-    MinecraftServer.getGlobalEventHandler().addListener(AsyncPlayerConfigurationEvent::class.java) { event ->
-        event.spawningInstance = instance
-        val player = event.player
-        player.scheduleNextTick {
-            player.eventNode().addListener(PlayerStartSneakingEvent::class.java) { sneakEvent ->
-                player.openInventory(win.inventory)
-            }
-        }
-    }
-
-    server.start("127.0.0.1", 25565)
+operator fun <T> MutableMap<Int2, T>.set(x: Int, y: Int, value: T) {
+    this[Int2(x, y)] = value
 }
+operator fun <T> MutableMap<Int2, T>.get(x: Int, y: Int): T? = this[Int2(x, y)]
+
+operator fun <T> Array<Array<T>>.set(x: Int, y: Int, value: T) {
+    this[x][y] = value
+}
+operator fun <T> Array<Array<T>>.get(x: Int, y: Int, value: T) = this[x][y]

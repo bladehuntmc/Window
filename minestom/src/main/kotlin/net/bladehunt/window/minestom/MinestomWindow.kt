@@ -23,68 +23,67 @@
 
 package net.bladehunt.window.minestom
 
-import net.bladehunt.kotstom.dsl.listenOnly
 import net.bladehunt.kotstom.util.EventNodeContainerInventory
-import net.bladehunt.window.core.interaction.Interactable
-import net.bladehunt.window.core.interaction.Interaction
-import net.bladehunt.window.core.widget.Column
-import net.bladehunt.window.core.reservation.HookReservation
 import net.bladehunt.window.core.reservation.ArrayReservationImpl
+import net.bladehunt.window.core.reservation.HookReservation
 import net.bladehunt.window.core.reservation.Reservation
-import net.bladehunt.window.core.reservation.ResizableHookReservation
+import net.bladehunt.window.core.reservation.Resizable
 import net.bladehunt.window.core.util.Size2
-import net.bladehunt.window.minestom.event.MinestomEvent
+import net.bladehunt.window.core.widget.WidgetInstance
+import net.bladehunt.window.core.widget.WidgetParent
 import net.kyori.adventure.text.Component
-import net.minestom.server.Viewable
-import net.minestom.server.entity.Player
-import net.minestom.server.event.inventory.InventoryPreClickEvent
 import net.minestom.server.inventory.InventoryType
-import net.minestom.server.inventory.click.Click
 import net.minestom.server.item.ItemStack
 
 class MinestomWindow(
-    val inventory: EventNodeContainerInventory
-) : Column<ItemStack>(
-    MinestomInventoryReservation(inventory)
-), Interactable<MinestomEvent>, Viewable {
-    constructor(
-        inventoryType: InventoryType,
-        title: Component = Component.text("Window")
-    ) : this(EventNodeContainerInventory(inventoryType, title))
-    override fun createReservation(size: Size2): HookReservation<ItemStack> {
-        return ResizableHookReservation(ArrayReservationImpl<ItemStack>(size), this::updateOne, this::removeOne)
+    inventoryType: InventoryType,
+    title: Component = Component.text("Window"),
+) : WidgetParent<ItemStack>, WidgetInstance<ItemStack> {
+    val inventory = EventNodeContainerInventory(inventoryType, title)
+
+    private val offsets = hashMapOf<Reservation<ItemStack>, Int>()
+    private val _widgets = mutableListOf<WidgetInstance<ItemStack>>()
+
+    override val reservation: Reservation<ItemStack> = MinestomInventoryReservation(inventory)
+
+    override val widgets: Collection<WidgetInstance<ItemStack>>
+        get() = _widgets.toList()
+
+    override fun createReservation(size: Size2): Reservation<ItemStack> {
+        return HookReservation(ArrayReservationImpl(size), this::onSet, this::onRemove)
     }
-    init {
-        inventory.eventNode().listenOnly<InventoryPreClickEvent> {
-            when (val clickInfo = it.clickInfo) {
-                is Click.Info.Left -> {
-                    onInteract(MinestomEvent.PreClickEvent(clickInfo.slot, inventory.getItemStack(clickInfo.slot)))
-                }
-                else -> {}
-            }
+
+    override fun addWidgetInstance(widgetInstance: WidgetInstance<ItemStack>) {
+        _widgets.add(widgetInstance)
+    }
+
+    override fun calculateFlex() {
+        val flexWidgets = _widgets.filter { it.reservation.size.flexY && it.reservation is Resizable }
+        flexWidgets.forEach { widget ->
+            (widget.reservation as Resizable).resize(
+                widget.reservation.size.x,
+                flexWidgets.size / this.reservation.size.y
+            )
         }
     }
 
-    override val interactionReservation: Reservation<Interaction<MinestomEvent>> = MinestomInventoryInteractionReservation(inventory)
+    override fun render() {
+        calculateFlex()
 
-    override fun onInteract(event: MinestomEvent) {
-        when (event) {
-            is MinestomEvent.PreClickEvent -> {
-                println("you clicked ${event.slot}")
-            }
+        var previousPosY = 0
+        _widgets.forEach {
+            offsets[it.reservation] = previousPosY
+            previousPosY += it.reservation.size.y
+            it.render()
         }
     }
 
-    override fun addViewer(player: Player): Boolean {
-        player.openInventory(inventory)
-        return true
+    private fun onSet(reservation: Reservation<ItemStack>, posX: Int, posY: Int, itemStack: ItemStack) {
+        val offset = offsets[reservation] ?: return
+        this.reservation[posX, posY + offset] = itemStack
     }
-
-    override fun removeViewer(player: Player): Boolean {
-        if (player.openInventory != inventory) return false
-        player.closeInventory()
-        return true
+    private fun onRemove(reservation: Reservation<ItemStack>, posX: Int, posY: Int) {
+        val offset = offsets[reservation] ?: return
+        this.reservation[posX, posY + offset] = ItemStack.AIR
     }
-
-    override fun getViewers(): MutableSet<Player> = inventory.viewers
 }

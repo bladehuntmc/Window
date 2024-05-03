@@ -21,14 +21,21 @@
  * OTHER DEALINGS IN THE SOFTWARE.
  */
 
-package net.bladehunt.window.core.util
+package net.bladehunt.window.core.util;
 
-data class Size2(val x: Int, val flexX: Boolean, val y: Int, val flexY: Boolean) {
-    constructor(x: Int? = null, y: Int? = null) : this(
-        x ?: 0,
-        x == null,
-        y ?: 0,
-        y == null,
-    )
-    fun asInt2(): Int2 = Int2(x, y)
+import org.jetbrains.annotations.Contract;
+import org.jetbrains.annotations.NotNull;
+
+public record Size2(int x, boolean flexX, int y, boolean flexY) {
+    public Size2(int x, int y) {
+        this(x, x < 0, y, y < 0);
+    }
+    public Size2() {
+        this(0, 0);
+    }
+
+    @Contract(" -> new")
+    public @NotNull Int2 toInt2() {
+        return new Int2(x, y);
+    }
 }

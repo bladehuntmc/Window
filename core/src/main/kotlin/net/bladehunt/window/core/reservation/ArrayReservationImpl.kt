@@ -26,10 +26,15 @@ package net.bladehunt.window.core.reservation
 import net.bladehunt.window.core.util.Int2
 import net.bladehunt.window.core.util.Size2
 
+inline fun <reified T> ArrayReservationImpl(size: Size2): ArrayReservationImpl<T> = ArrayReservationImpl(size) { sizeX, sizeY ->
+    Array(sizeX) { Array(sizeY) { null } }
+}
 class ArrayReservationImpl<Pixel>(
-    override val size: Size2,
+    size: Size2,
     private val arrayFactory: (sizeX: Int, sizeY: Int) -> Array<Array<Pixel?>>
 ) : Reservation<Pixel>, Resizable {
+    override var size: Size2 = size
+        private set
     constructor(size: Size2, pixelClass: Class<Pixel>) : this(
         size,
         { sizeX, sizeY ->
@@ -37,14 +42,8 @@ class ArrayReservationImpl<Pixel>(
         }
     )
 
-    companion object {
-        inline operator fun <reified T> invoke(size: Size2): ArrayReservationImpl<T> = ArrayReservationImpl(size) { sizeX, sizeY ->
-            Array(sizeX) { Array(sizeY) { null } }
-        }
-    }
-
     private var pixels: Array<Array<Pixel?>> = arrayFactory(size.x, size.y)
-    override val absoluteSize: Int2
+    override val usedSize: Int2
         get() {
             var totalX = 0
             var totalY = 0
@@ -68,6 +67,7 @@ class ArrayReservationImpl<Pixel>(
             newArray[x][y] = value
         }
         pixels = newArray
+        this.size = Size2(sizeX, this.size.flexX, sizeY, this.size.flexY)
     }
 
     override fun get(posX: Int, posY: Int): Pixel? = pixels[posX][posY]

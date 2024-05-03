@@ -24,27 +24,36 @@
 package net.bladehunt.window.minestom.example
 
 import kotlinx.coroutines.runBlocking
-import net.bladehunt.reakt.reactivity.Signal
-import net.bladehunt.window.core.util.Int2
-import net.bladehunt.window.minestom.dsl.button
-import net.bladehunt.window.minestom.dsl.window
+import net.bladehunt.window.minestom.MinestomWindow
+import net.bladehunt.window.minestom.widget.Button
 import net.minestom.server.MinecraftServer
 import net.minestom.server.event.player.AsyncPlayerConfigurationEvent
 import net.minestom.server.event.player.PlayerStartSneakingEvent
 import net.minestom.server.inventory.InventoryType
+import net.minestom.server.item.ItemStack
+import net.minestom.server.item.Material
 
 fun main() = runBlocking {
     val server = MinecraftServer.init()
 
     val instance = MinecraftServer.getInstanceManager().createInstanceContainer()
 
-    val offset = Signal(Int2(0, 0))
+    val win = MinestomWindow(InventoryType.CHEST_6_ROW)
 
-    val win = window(InventoryType.CHEST_6_ROW) {
-        button {
+    win.addWidget(
+        Button(
+            { ItemStack.of(Material.STONE) },
+            {}
+        )
+    )
+    win.addWidget(
+        Button(
+            { ItemStack.of(Material.SNOWBALL) },
+            {}
+        )
+    )
 
-        }
-    }
+    win.render()
 
     MinecraftServer.getGlobalEventHandler().addListener(AsyncPlayerConfigurationEvent::class.java) { event ->
         event.spawningInstance = instance

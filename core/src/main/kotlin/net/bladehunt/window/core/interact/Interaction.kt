@@ -21,15 +21,8 @@
  * OTHER DEALINGS IN THE SOFTWARE.
  */
 
-package net.bladehunt.window.core.decoration
+package net.bladehunt.window.core.interact
 
-data class Padding<Pixel>(
-    val top: Int,
-    val right: Int,
-    val left: Int,
-    val bottom: Int,
-    val pixel: Pixel
-) {
-    constructor(amount: Int, item: Pixel) : this (amount, amount, amount, amount, item)
-    constructor(x: Int, y: Int, item: Pixel) : this (y, x, x, y, item)
+fun interface Interaction<T> {
+    fun interact(interaction: T)
 }
