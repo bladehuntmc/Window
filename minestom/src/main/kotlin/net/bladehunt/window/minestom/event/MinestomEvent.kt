@@ -23,8 +23,15 @@
 
 package net.bladehunt.window.minestom.event
 
-import net.minestom.server.item.ItemStack
+import net.minestom.server.entity.Player
+import net.minestom.server.event.inventory.InventoryPreClickEvent
 
 sealed interface MinestomEvent {
-    data class PreClickEvent(val slot: Int, val itemStack: ItemStack) : MinestomEvent
+    val player: Player
+
+    @JvmInline
+    value class PreClickEvent(val event: InventoryPreClickEvent) : MinestomEvent {
+        override val player: Player
+            get() = event.player
+    }
 }

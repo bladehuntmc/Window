@@ -29,7 +29,7 @@ import net.bladehunt.window.core.reservation.HookReservation
 import net.bladehunt.window.core.reservation.Reservation
 import net.bladehunt.window.core.reservation.Resizable
 import net.bladehunt.window.core.util.Size2
-import net.bladehunt.window.core.widget.WidgetInstance
+import net.bladehunt.window.core.widget.Widget
 import net.bladehunt.window.core.widget.WidgetParent
 import net.kyori.adventure.text.Component
 import net.minestom.server.inventory.InventoryType
@@ -38,23 +38,23 @@ import net.minestom.server.item.ItemStack
 class MinestomWindow(
     inventoryType: InventoryType,
     title: Component = Component.text("Window"),
-) : WidgetParent<ItemStack>, WidgetInstance<ItemStack> {
+) : WidgetParent<WindowItem>, Widget<WindowItem> {
     val inventory = EventNodeContainerInventory(inventoryType, title)
 
-    private val offsets = hashMapOf<Reservation<ItemStack>, Int>()
-    private val _widgets = mutableListOf<WidgetInstance<ItemStack>>()
+    private val offsets = hashMapOf<Reservation<WindowItem>, Int>()
+    private val _widgets = mutableListOf<Widget<WindowItem>>()
 
-    override val reservation: Reservation<ItemStack> = MinestomInventoryReservation(inventory)
+    override val reservation: Reservation<WindowItem> = MinestomInventoryReservation(inventory)
 
-    override val widgets: Collection<WidgetInstance<ItemStack>>
+    override val widgets: Collection<Widget<WindowItem>>
         get() = _widgets.toList()
 
-    override fun createReservation(size: Size2): Reservation<ItemStack> {
+    override fun createReservation(size: Size2): Reservation<WindowItem> {
         return HookReservation(ArrayReservationImpl(size), this::onSet, this::onRemove)
     }
 
-    override fun addWidgetInstance(widgetInstance: WidgetInstance<ItemStack>) {
-        _widgets.add(widgetInstance)
+    override fun addWidget(widget: Widget<WindowItem>) {
+        _widgets.add(widget)
     }
 
     override fun calculateFlex() {
@@ -78,12 +78,12 @@ class MinestomWindow(
         }
     }
 
-    private fun onSet(reservation: Reservation<ItemStack>, posX: Int, posY: Int, itemStack: ItemStack) {
+    private fun onSet(reservation: Reservation<WindowItem>, posX: Int, posY: Int, item: WindowItem) {
         val offset = offsets[reservation] ?: return
-        this.reservation[posX, posY + offset] = itemStack
+        this.reservation[posX, posY + offset] = item
     }
-    private fun onRemove(reservation: Reservation<ItemStack>, posX: Int, posY: Int) {
+    private fun onRemove(reservation: Reservation<WindowItem>, posX: Int, posY: Int) {
         val offset = offsets[reservation] ?: return
-        this.reservation[posX, posY + offset] = ItemStack.AIR
+        this.reservation[posX, posY + offset] = ItemStack.AIR to null
     }
 }

@@ -27,15 +27,10 @@ import net.bladehunt.window.core.reservation.Reservation
 import net.bladehunt.window.core.util.Size2
 
 interface WidgetParent<T> {
-    val widgets: Collection<WidgetInstance<T>>
+    val widgets: Collection<Widget<T>>
 
     fun createReservation(size: Size2): Reservation<T>
-    fun addWidgetInstance(widgetInstance: WidgetInstance<T>)
     fun calculateFlex()
 
-    fun addWidget(widget: Widget<T, out WidgetInstance<T>>) = addWidgetInstance(
-        widget.createInstance(
-            createReservation(widget.defaultSize)
-        )
-    )
+    fun addWidget(widget: Widget<T>)
 }

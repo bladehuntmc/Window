@@ -43,13 +43,19 @@ fun main() = runBlocking {
     win.addWidget(
         Button(
             { ItemStack.of(Material.STONE) },
-            {}
+            { event ->
+                event.player.sendMessage("You clicked the stone")
+            },
+            win.createReservation(Button.DEFAULT_SIZE)
         )
     )
     win.addWidget(
         Button(
             { ItemStack.of(Material.SNOWBALL) },
-            {}
+            { event ->
+                event.player.sendMessage("You clicked the snowball")
+            },
+            win.createReservation(Button.DEFAULT_SIZE)
         )
     )
 

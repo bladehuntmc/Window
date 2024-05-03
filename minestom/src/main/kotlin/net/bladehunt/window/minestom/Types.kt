@@ -21,20 +21,10 @@
  * OTHER DEALINGS IN THE SOFTWARE.
  */
 
-package net.bladehunt.window.core.widget
+package net.bladehunt.window.minestom
 
-import net.bladehunt.reakt.pubsub.EventPublisher
-import net.bladehunt.reakt.pubsub.event.Event
-import net.bladehunt.reakt.reactivity.ReactiveContext
-import net.bladehunt.window.core.reservation.Reservation
+import net.bladehunt.window.core.interact.Interaction
+import net.bladehunt.window.minestom.event.MinestomEvent
+import net.minestom.server.item.ItemStack
 
-interface WidgetInstance<T> : ReactiveContext {
-    val reservation: Reservation<T>
-
-    fun render()
-    override fun onSubscribe(publisher: EventPublisher) {}
-    override fun onUnsubscribe(publisher: EventPublisher) {}
-    override fun onEvent(event: Event) {
-        render()
-    }
-}
+typealias WindowItem = Pair<ItemStack, Interaction<MinestomEvent>?>

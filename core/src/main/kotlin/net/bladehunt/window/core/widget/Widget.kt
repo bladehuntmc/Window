@@ -23,13 +23,18 @@
 
 package net.bladehunt.window.core.widget
 
+import net.bladehunt.reakt.pubsub.EventPublisher
+import net.bladehunt.reakt.pubsub.event.Event
+import net.bladehunt.reakt.reactivity.ReactiveContext
 import net.bladehunt.window.core.reservation.Reservation
-import net.bladehunt.window.core.util.Size2
 
-interface Widget<T, W : WidgetInstance<T>> {
-    val defaultSize: Size2
-    fun createInstance(reservation: Reservation<T>): W
-    fun render(instance: W) {
-        instance.render()
+interface Widget<T> : ReactiveContext {
+    val reservation: Reservation<T>
+
+    fun render()
+    override fun onSubscribe(publisher: EventPublisher) {}
+    override fun onUnsubscribe(publisher: EventPublisher) {}
+    override fun onEvent(event: Event) {
+        render()
     }
 }

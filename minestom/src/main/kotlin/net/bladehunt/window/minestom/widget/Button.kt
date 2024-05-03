@@ -23,23 +23,25 @@
 
 package net.bladehunt.window.minestom.widget
 
+import net.bladehunt.window.core.interact.Interaction
 import net.bladehunt.window.core.reservation.Reservation
 import net.bladehunt.window.core.util.Size2
 import net.bladehunt.window.core.widget.Widget
-import net.bladehunt.window.core.widget.WidgetInstance
+import net.bladehunt.window.minestom.WindowItem
+import net.bladehunt.window.minestom.event.MinestomEvent
 import net.minestom.server.item.ItemStack
 
 class Button(
-    val itemFactory: Button.Instance.() -> ItemStack,
-    val onClick: Button.Instance.() -> Unit
-) : Widget<ItemStack, Button.Instance> {
-    override val defaultSize: Size2 = Size2(1, 1)
-
-    inner class Instance(override val reservation: Reservation<ItemStack>) : WidgetInstance<ItemStack> {
-        override fun render() {
-            reservation[0, 0] = itemFactory()
-        }
+    val itemFactory: Button.() -> ItemStack,
+    val onClick: Button.(MinestomEvent) -> Unit,
+    override val reservation: Reservation<WindowItem>
+) : Widget<WindowItem> {
+    companion object {
+        @JvmStatic val DEFAULT_SIZE: Size2 = Size2(1, 1)
     }
 
-    override fun createInstance(reservation: Reservation<ItemStack>): Instance = Instance(reservation)
+    private val interaction = Interaction<MinestomEvent> { onClick(it) }
+    override fun render() {
+        reservation[0, 0] = itemFactory() to interaction
+    }
 }
