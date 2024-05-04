@@ -24,8 +24,11 @@
 package net.bladehunt.window.minestom.example
 
 import kotlinx.coroutines.runBlocking
-import net.bladehunt.window.minestom.MinestomWindow
-import net.bladehunt.window.minestom.widget.Button
+import net.bladehunt.kotstom.GlobalEventHandler
+import net.bladehunt.kotstom.InstanceManager
+import net.bladehunt.kotstom.dsl.listen
+import net.bladehunt.window.minestom.dsl.button
+import net.bladehunt.window.minestom.dsl.window
 import net.minestom.server.MinecraftServer
 import net.minestom.server.event.player.AsyncPlayerConfigurationEvent
 import net.minestom.server.event.player.PlayerStartSneakingEvent
@@ -36,40 +39,29 @@ import net.minestom.server.item.Material
 fun main() = runBlocking {
     val server = MinecraftServer.init()
 
-    val instance = MinecraftServer.getInstanceManager().createInstanceContainer()
+    val instance = InstanceManager.createInstanceContainer()
 
-    val win = MinestomWindow(InventoryType.CHEST_6_ROW)
-
-    win.addWidget(
-        Button(
-            { ItemStack.of(Material.STONE) },
-            { event ->
+    val win = window(InventoryType.CHEST_6_ROW) {
+        button {
+            item = { ItemStack.of(Material.STONE) }
+            onClick = { event ->
                 event.player.sendMessage("You clicked the stone")
-            },
-            win.createReservation(Button.DEFAULT_SIZE)
-        )
-    )
-    win.addWidget(
-        Button(
-            { ItemStack.of(Material.SNOWBALL) },
-            { event ->
+            }
+        }
+        button {
+            item = { ItemStack.of(Material.SNOWBALL) }
+            onClick = { event ->
                 event.player.sendMessage("You clicked the snowball")
-            },
-            win.createReservation(Button.DEFAULT_SIZE)
-        )
-    )
-
-    win.render()
-
-    MinecraftServer.getGlobalEventHandler().addListener(AsyncPlayerConfigurationEvent::class.java) { event ->
-        event.spawningInstance = instance
-        val player = event.player
-        player.scheduleNextTick {
-            player.eventNode().addListener(PlayerStartSneakingEvent::class.java) { sneakEvent ->
-                player.openInventory(win.inventory)
             }
         }
     }
 
+    GlobalEventHandler.listen<AsyncPlayerConfigurationEvent> { event ->
+        event.spawningInstance = instance
+        val player = event.player
+        player.eventNode().listen<PlayerStartSneakingEvent> {
+            player.openInventory(win.inventory)
+        }
+    }
     server.start("127.0.0.1", 25565)
 }

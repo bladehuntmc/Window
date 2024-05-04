@@ -23,6 +23,9 @@
 
 package net.bladehunt.window.minestom
 
+import net.bladehunt.kotstom.dsl.listen
+import net.bladehunt.kotstom.extension.rowSize
+import net.bladehunt.kotstom.extension.slots
 import net.bladehunt.kotstom.util.EventNodeContainerInventory
 import net.bladehunt.window.core.reservation.ArrayReservationImpl
 import net.bladehunt.window.core.reservation.HookReservation
@@ -31,15 +34,30 @@ import net.bladehunt.window.core.reservation.Resizable
 import net.bladehunt.window.core.util.Size2
 import net.bladehunt.window.core.widget.Widget
 import net.bladehunt.window.core.widget.WidgetParent
+import net.bladehunt.window.minestom.event.MinestomEvent
 import net.kyori.adventure.text.Component
+import net.minestom.server.event.inventory.InventoryPreClickEvent
 import net.minestom.server.inventory.InventoryType
+import net.minestom.server.inventory.click.Click
 import net.minestom.server.item.ItemStack
 
 class MinestomWindow(
     inventoryType: InventoryType,
     title: Component = Component.text("Window"),
 ) : WidgetParent<WindowItem>, Widget<WindowItem> {
-    val inventory = EventNodeContainerInventory(inventoryType, title)
+    val inventory = EventNodeContainerInventory(inventoryType, title).also { inventory ->
+        val rows = inventory.inventoryType.rowSize
+        inventory.eventNode().apply {
+            listen<InventoryPreClickEvent> { event ->
+                val slots = event.clickInfo.slots
+                if (slots.size == 1) {
+                    val slot = slots.first()
+                    reservation[slot % rows, slot / rows]?.second?.interact(MinestomEvent.PreClickEvent(event))
+                }
+                event.isCancelled = true
+            }
+        }
+    }
 
     private val offsets = hashMapOf<Reservation<WindowItem>, Int>()
     private val _widgets = mutableListOf<Widget<WindowItem>>()
@@ -49,11 +67,13 @@ class MinestomWindow(
     override val widgets: Collection<Widget<WindowItem>>
         get() = _widgets.toList()
 
-    override fun createReservation(size: Size2): Reservation<WindowItem> {
-        return HookReservation(ArrayReservationImpl(size), this::onSet, this::onRemove)
+    override fun createReservation(size: Size2): Reservation<WindowItem> = HookReservation(
+        ArrayReservationImpl(size), this::onSet, this::onRemove
+    ).also { reservation ->
+        offsets[reservation] = size.y
     }
 
-    override fun addWidget(widget: Widget<WindowItem>) {
+    override fun <W : Widget<WindowItem>> addWidget(widget: W) {
         _widgets.add(widget)
     }
 

@@ -22,3 +22,24 @@
  */
 
 package net.bladehunt.window.minestom.dsl
+
+import net.bladehunt.window.core.util.Size2
+import net.bladehunt.window.minestom.MinestomWindow
+import net.bladehunt.window.minestom.widget.Button
+import net.minestom.server.inventory.InventoryType
+
+inline fun window(
+    inventoryType: InventoryType,
+    block: MinestomWindow.() -> Unit
+): MinestomWindow = MinestomWindow(inventoryType).apply {
+    block()
+    render()
+}
+
+inline fun MinestomWindow.button(
+    size: Size2 = Button.DEFAULT_SIZE,
+    block: Button.() -> Unit
+): Button = Button(createReservation(size)).also { button ->
+    button.block()
+    addWidget(button)
+}

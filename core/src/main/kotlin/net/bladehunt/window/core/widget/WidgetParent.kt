@@ -32,5 +32,5 @@ interface WidgetParent<T> {
     fun createReservation(size: Size2): Reservation<T>
     fun calculateFlex()
 
-    fun addWidget(widget: Widget<T>)
+    fun <W : Widget<T>> addWidget(widget: W)
 }
