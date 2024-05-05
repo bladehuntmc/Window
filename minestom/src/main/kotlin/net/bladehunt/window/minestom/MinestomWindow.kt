@@ -38,7 +38,6 @@ import net.bladehunt.window.minestom.event.MinestomEvent
 import net.kyori.adventure.text.Component
 import net.minestom.server.event.inventory.InventoryPreClickEvent
 import net.minestom.server.inventory.InventoryType
-import net.minestom.server.inventory.click.Click
 import net.minestom.server.item.ItemStack
 
 class MinestomWindow(
@@ -68,7 +67,7 @@ class MinestomWindow(
         get() = _widgets.toList()
 
     override fun createReservation(size: Size2): Reservation<WindowItem> = HookReservation(
-        ArrayReservationImpl(size), this::onSet, this::onRemove
+        ArrayReservationImpl(size), this::onSet, this::onRemove, { _, _, _ -> render() }
     ).also { reservation ->
         offsets[reservation] = size.y
     }
@@ -88,6 +87,7 @@ class MinestomWindow(
     }
 
     override fun render() {
+        reservation.clear()
         calculateFlex()
 
         var previousPosY = 0

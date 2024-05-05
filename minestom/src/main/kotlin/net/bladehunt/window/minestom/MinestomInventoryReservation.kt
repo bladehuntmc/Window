@@ -52,13 +52,17 @@ class MinestomInventoryReservation(
 
     override fun remove(posX: Int, posY: Int) {
         inventory[posX, posY] = ItemStack.AIR
+        interactions[posX, posY] = null
     }
 
     override fun isEmpty(): Boolean = inventory.itemStacks.all { it.isAir }
 
     override fun isNotEmpty(): Boolean = inventory.itemStacks.any { !it.isAir }
 
-    override fun clear() = inventory.clear()
+    override fun clear() {
+        inventory.clear()
+        interactions.clear()
+    }
 
     override fun iterator(): Iterator<Pair<Int2, Pair<ItemStack, Interaction<MinestomEvent>?>>> = inventory.itemStacks.mapIndexed { index, itemStack ->
         val slot = Int2(index % size.x, index / size.y)

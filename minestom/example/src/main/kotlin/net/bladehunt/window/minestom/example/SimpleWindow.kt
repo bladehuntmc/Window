@@ -27,6 +27,8 @@ import kotlinx.coroutines.runBlocking
 import net.bladehunt.kotstom.GlobalEventHandler
 import net.bladehunt.kotstom.InstanceManager
 import net.bladehunt.kotstom.dsl.listen
+import net.bladehunt.window.core.reservation.Resizable
+import net.bladehunt.window.core.util.Size2
 import net.bladehunt.window.minestom.dsl.button
 import net.bladehunt.window.minestom.dsl.window
 import net.minestom.server.MinecraftServer
@@ -42,16 +44,25 @@ fun main() = runBlocking {
     val instance = InstanceManager.createInstanceContainer()
 
     val win = window(InventoryType.CHEST_6_ROW) {
-        button {
+        val stone = button {
             item = { ItemStack.of(Material.STONE) }
             onClick = { event ->
                 event.player.sendMessage("You clicked the stone")
+                (this.reservation as Resizable).resize(1, 1)
             }
         }
         button {
             item = { ItemStack.of(Material.SNOWBALL) }
             onClick = { event ->
                 event.player.sendMessage("You clicked the snowball")
+                (stone.reservation as Resizable).resize(2, 2)
+            }
+        }
+        button {
+            item = { ItemStack.of(Material.DIAMOND) }
+            onClick = { event ->
+                event.player.sendMessage("You clicked the diamond")
+                (stone.reservation as Resizable).resize(3, 3)
             }
         }
     }

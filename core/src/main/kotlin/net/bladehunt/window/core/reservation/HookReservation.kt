@@ -23,11 +23,21 @@
 
 package net.bladehunt.window.core.reservation
 
+import net.bladehunt.window.core.util.Size2
+
 open class HookReservation<Pixel>(
     val inner: Reservation<Pixel>,
     private val onSet: (reservation: Reservation<Pixel>, posX: Int, posY: Int, pixel: Pixel) -> Unit,
-    private val onRemove: (reservation: Reservation<Pixel>, posX: Int, posY: Int) -> Unit
-) : Reservation<Pixel> by inner {
+    private val onRemove: (reservation: Reservation<Pixel>, posX: Int, posY: Int) -> Unit,
+    private val onResize: ((reservation: Reservation<Pixel>, old: Size2, new: Size2) -> Unit)? = null
+) : Reservation<Pixel> by inner, Resizable {
+    override fun resize(sizeX: Int, sizeY: Int) {
+        if (inner !is Resizable) throw UnsupportedOperationException("Resizing is not supported")
+        val old = size
+        inner.resize(sizeX, sizeY)
+        onResize?.invoke(this, old, size)
+    }
+
     override fun set(posX: Int, posY: Int, pixel: Pixel) {
         inner[posX, posY] = pixel
         onSet(this, posX, posY, pixel)

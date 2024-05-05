@@ -23,6 +23,7 @@
 
 package net.bladehunt.minestom.example;
 
+import net.bladehunt.window.core.reservation.Resizable;
 import net.bladehunt.window.minestom.MinestomWindow;
 import net.bladehunt.window.minestom.widget.Button;
 import net.kyori.adventure.text.Component;
@@ -46,6 +47,7 @@ public class JavaExample {
                 (button) -> ItemStack.of(Material.STONE),
                 (button, event) -> {
                     event.getPlayer().sendMessage("You clicked the stone");
+                    ((Resizable) button.getReservation()).resize(1, 1);
                     return null;
                 }
         );
@@ -56,10 +58,22 @@ public class JavaExample {
                 (button) -> ItemStack.of(Material.SNOWBALL),
                 (button, event) -> {
                     event.getPlayer().sendMessage("You clicked the snowball");
+                    ((Resizable) stoneButton.getReservation()).resize(2, 2);
                     return null;
                 }
         );
         window.addWidget(snowballButton);
+
+        Button diamondButton = new Button(
+                window.createReservation(Button.DEFAULT_SIZE),
+                (button) -> ItemStack.of(Material.DIAMOND),
+                (button, event) -> {
+                    event.getPlayer().sendMessage("You clicked the diamond");
+                    ((Resizable) stoneButton.getReservation()).resize(3, 3);
+                    return null;
+                }
+        );
+        window.addWidget(diamondButton);
 
         window.render();
 

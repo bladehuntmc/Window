@@ -43,6 +43,11 @@ class Button(
 
     private val interaction = Interaction<MinestomEvent> { onClick(it) }
     override fun render() {
-        reservation[0, 0] = item() to interaction
+        val size = reservation.size
+        for (x in 0..<size.x) {
+            for (y in 0..<size.y) {
+                reservation[x, y] = item() to interaction
+            }
+        }
     }
 }
