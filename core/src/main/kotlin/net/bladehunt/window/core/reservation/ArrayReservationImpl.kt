@@ -50,6 +50,8 @@ class ArrayReservationImpl<Pixel>(
 
     override fun isNotEmpty(): Boolean = pixels.any { pixelArray -> pixelArray.any { pixel -> pixel != null } }
 
+    override fun isPositionEmpty(posX: Int, posY: Int): Boolean = pixels[posX][posY] == null
+
     override fun clear() {
         pixels.forEach { x, y, _ ->
             pixels[x][y] = null

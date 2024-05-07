@@ -40,5 +40,8 @@ interface Reservation<Pixel> : Iterable<Pair<Int2, Pixel>> {
     fun isEmpty(): Boolean
     fun isNotEmpty(): Boolean
 
+    fun isPositionEmpty(posX: Int, posY: Int): Boolean
+    fun isPositionEmpty(pos: Int2): Boolean = isPositionEmpty(pos.x, pos.y)
+
     fun clear()
 }
