@@ -24,51 +24,17 @@
 package net.bladehunt.window.core.reservation
 
 import net.bladehunt.window.core.util.Int2
-import net.bladehunt.window.core.util.Size2
 
-inline fun <reified T> ArrayReservationImpl(size: Size2): ArrayReservationImpl<T> = ArrayReservationImpl(size) { sizeX, sizeY ->
-    Array(sizeX) { Array(sizeY) { null } }
-}
+inline fun <reified T> ArrayReservationImpl(size: Int2): ArrayReservationImpl<T> = ArrayReservationImpl(
+    size,
+    Array(size.x) { Array(size.y) { null } }
+)
 class ArrayReservationImpl<Pixel>(
-    size: Size2,
-    private val arrayFactory: (sizeX: Int, sizeY: Int) -> Array<Array<Pixel?>>
-) : Reservation<Pixel>, Resizable {
-    override var size: Size2 = size
+    size: Int2,
+    private var pixels: Array<Array<Pixel?>>
+) : Reservation<Pixel> {
+    override var size: Int2 = size
         private set
-    constructor(size: Size2, pixelClass: Class<Pixel>) : this(
-        size,
-        { sizeX, sizeY ->
-            java.lang.reflect.Array.newInstance(pixelClass, sizeX, sizeY) as Array<Array<Pixel?>>
-        }
-    )
-
-    private var pixels: Array<Array<Pixel?>> = arrayFactory(size.x, size.y)
-    override val usedSize: Int2
-        get() {
-            var totalX = 0
-            var totalY = 0
-            pixels.forEach { x, y, value ->
-                if (value == null) return@forEach
-                if (x > totalX) totalX = x
-                if (y > totalX) totalY = y
-            }
-            return Int2(
-                if (size.flexX) totalX else size.x,
-                if (size.flexY) totalY else size.y,
-            )
-        }
-
-    override fun resize(sizeX: Int, sizeY: Int) {
-        if (sizeX < 0 || sizeY < 0) throw IllegalArgumentException("Size dimensions must be non-negative")
-
-        val newArray = arrayFactory(sizeX, sizeY)
-        pixels.forEachNotNull { x, y, value ->
-            if (x >= sizeX || y >= sizeY) return@forEachNotNull
-            newArray[x][y] = value
-        }
-        pixels = newArray
-        this.size = Size2(sizeX, this.size.flexX, sizeY, this.size.flexY)
-    }
 
     override fun get(posX: Int, posY: Int): Pixel? = pixels[posX][posY]
 

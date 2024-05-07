@@ -26,15 +26,23 @@ package net.bladehunt.window.core.widget
 import net.bladehunt.reakt.pubsub.EventPublisher
 import net.bladehunt.reakt.pubsub.event.Event
 import net.bladehunt.reakt.reactivity.ReactiveContext
+import net.bladehunt.window.core.Sized
 import net.bladehunt.window.core.reservation.Reservation
 
-interface Widget<T> : ReactiveContext {
-    val reservation: Reservation<T>
+abstract class Widget<T> : ReactiveContext, Sized {
+    private val updateHandlers: MutableList<(Widget<T>) -> Unit> = arrayListOf()
 
-    fun render()
+    var hasRendered: Boolean = false
+        protected set
+
+    fun addUpdateHandler(handler: (Widget<T>) -> Unit) {
+        updateHandlers.add(handler)
+    }
+
+    abstract fun render(reservation: Reservation<T>)
     override fun onSubscribe(publisher: EventPublisher) {}
     override fun onUnsubscribe(publisher: EventPublisher) {}
     override fun onEvent(event: Event) {
-        render()
+        updateHandlers.forEach { it(this) }
     }
 }

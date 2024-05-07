@@ -23,11 +23,10 @@
 
 package net.bladehunt.window.core.reservation
 
-import net.bladehunt.window.core.Sized
 import net.bladehunt.window.core.util.Int2
 
-interface Reservation<Pixel> : Iterable<Pair<Int2, Pixel>>, Sized {
-    val usedSize: Int2
+interface Reservation<Pixel> : Iterable<Pair<Int2, Pixel>> {
+    val size: Int2
 
     operator fun set(posX: Int, posY: Int, pixel: Pixel)
     operator fun get(posX: Int, posY: Int): Pixel?

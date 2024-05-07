@@ -24,13 +24,11 @@
 package net.bladehunt.window.core.widget
 
 import net.bladehunt.window.core.reservation.Reservation
-import net.bladehunt.window.core.util.Size2
 
 interface WidgetParent<T> {
-    val widgets: Collection<Widget<T>>
+    val children: Collection<Widget<T>>
 
-    fun createReservation(size: Size2): Reservation<T>
-    fun calculateFlex()
+    fun createReservation(): Reservation<T>
 
     fun <W : Widget<T>> addWidget(widget: W)
 }

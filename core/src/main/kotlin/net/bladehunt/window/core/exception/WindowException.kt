@@ -23,4 +23,4 @@
 
 package net.bladehunt.window.core.exception
 
-sealed class WindowException(message: String? = null, cause: Throwable? = null) : Exception(message, cause)
+class WindowException(message: String? = null, cause: Throwable? = null) : Exception(message, cause)
