@@ -23,12 +23,8 @@
 
 package net.bladehunt.window.core.widget
 
-import net.bladehunt.window.core.reservation.Reservation
-
 interface WidgetParent<T> {
     val children: Collection<Widget<T>>
-
-    fun createReservation(): Reservation<T>
 
     fun <W : Widget<T>> addWidget(widget: W)
 }
