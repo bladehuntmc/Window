@@ -58,7 +58,7 @@ class InventoryReservation(
         interactions.clear()
     }
 
-    private fun getAbsoluteSlot(x: Int, y: Int): Int = y * size.y + x
+    private fun getAbsoluteSlot(x: Int, y: Int): Int = y * size.x + x
 
     override fun iterator(): Iterator<Pair<Int2, Pair<ItemStack, Interaction<MinestomEvent>?>>> = updateDiff.itemStacks.mapIndexed { index, itemStack ->
         val slot = Int2(index % size.x, index / size.y)

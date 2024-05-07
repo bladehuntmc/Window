@@ -25,29 +25,18 @@ package net.bladehunt.window.minestom.widget
 
 import net.bladehunt.window.core.interact.Interaction
 import net.bladehunt.window.core.reservation.Reservation
+import net.bladehunt.window.core.util.Int2
 import net.bladehunt.window.core.util.Size2
 import net.bladehunt.window.core.widget.Widget
 import net.bladehunt.window.minestom.WindowItem
-import net.bladehunt.window.minestom.event.MinestomEvent
 import net.minestom.server.item.ItemStack
 import net.minestom.server.item.Material
 
-class Button(
-    override val reservation: Reservation<WindowItem>,
-    var item: Button.() -> ItemStack = { ItemStack.of(Material.STONE) },
-    var onClick: Button.(MinestomEvent) -> Unit = {}
-) : Widget<WindowItem> {
-    companion object {
-        @JvmField val DEFAULT_SIZE: Size2 = Size2(1, 1)
-    }
-
-    private val interaction = Interaction<MinestomEvent> { onClick(it) }
-    override fun render() {
-        val size = reservation.size
-        for (x in 0..<size.x) {
-            for (y in 0..<size.y) {
-                reservation[x, y] = item() to interaction
-            }
-        }
+data class Button(
+    override val size: Size2 = Size2(1, 1)
+) : Widget<WindowItem>() {
+    override fun render(reservation: Reservation<WindowItem>): Int2 {
+        reservation[0, 0] = ItemStack.of(Material.STONE) to Interaction {  }
+        return size.toInt2()
     }
 }

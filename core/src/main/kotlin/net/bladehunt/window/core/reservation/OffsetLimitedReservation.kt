@@ -32,21 +32,17 @@ class OffsetLimitedReservation<Pixel>(
     override val size: Int2
 ) : Reservation<Pixel> {
     override fun get(posX: Int, posY: Int): Pixel? {
-        val x = posX + offsetX
-        val y = posY + offsetY
-        if (x < 0 || x >= size.x || y < 0 || y >= size.y) {
+        if (posX < 0 || posX >= size.x || posY < 0 || posY >= size.y) {
             throw IllegalArgumentException("Position ($posX, $posY) is out of bounds")
         }
-        return parent[x, y]
+        return parent[posX + offsetX, posY + offsetY]
     }
 
     override fun remove(posX: Int, posY: Int) {
-        val x = posX + offsetX
-        val y = posY + offsetY
-        if (x < 0 || x >= size.x || y < 0 || y >= size.y) {
+        if (posX < 0 || posX >= size.x || posY < 0 || posY >= size.y) {
             throw IllegalArgumentException("Position ($posX, $posY) is out of bounds")
         }
-        parent.remove(x, y)
+        parent.remove(posX + offsetX, posY + offsetY)
     }
 
     override fun isEmpty(): Boolean {
@@ -82,12 +78,10 @@ class OffsetLimitedReservation<Pixel>(
     }
 
     override fun set(posX: Int, posY: Int, pixel: Pixel) {
-        val x = posX + offsetX
-        val y = posY + offsetY
-        if (x < 0 || x >= size.x || y < 0 || y >= size.y) {
+        if (posX < 0 || posX >= size.x || posY < 0 || posY >= size.y) {
             throw IllegalArgumentException("Position ($posX, $posY) is out of bounds")
         }
-        parent[x, y] = pixel
+        parent[posX + offsetX, posY + offsetY] = pixel
     }
 
     override fun iterator(): Iterator<Pair<Int2, Pixel>> {
