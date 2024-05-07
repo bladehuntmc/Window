@@ -50,11 +50,22 @@ class WindowInventory(
     }
 
     inner class UpdateDiff {
+        val itemStacks: Array<ItemStack> get() = this@WindowInventory.itemStacks
+
+        val size: Int get() = this@WindowInventory.size
+
+        fun isEmpty(): Boolean = itemStacks.all { it.isAir }
+
+        fun isNotEmpty(): Boolean = itemStacks.any { !it.isAir }
+
         fun clear() {
             for (i in itemStacks.indices) {
                 UNSAFE_itemInsert(i, ItemStack.AIR)
             }
         }
+
+        operator fun get(slot: Int): ItemStack = itemStacks[slot]
+
         operator fun set(slot: Int, itemStack: ItemStack) {
             UNSAFE_itemInsert(slot, itemStack)
         }
