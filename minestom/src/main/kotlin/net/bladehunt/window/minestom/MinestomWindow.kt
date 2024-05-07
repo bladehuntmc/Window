@@ -50,9 +50,6 @@ class MinestomWindow(
                     diff
                 )
             )
-            diff.itemStacks.forEachIndexed { index, itemStack ->
-                println("$index -> $itemStack")
-            }
         }
     }
 

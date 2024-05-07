@@ -23,7 +23,6 @@
 
 package net.bladehunt.minestom.example;
 
-import net.bladehunt.window.core.reservation.Resizable;
 import net.bladehunt.window.minestom.MinestomWindow;
 import net.bladehunt.window.minestom.widget.Button;
 import net.kyori.adventure.text.Component;
@@ -32,8 +31,6 @@ import net.minestom.server.event.player.AsyncPlayerConfigurationEvent;
 import net.minestom.server.event.player.PlayerStartSneakingEvent;
 import net.minestom.server.instance.InstanceContainer;
 import net.minestom.server.inventory.InventoryType;
-import net.minestom.server.item.ItemStack;
-import net.minestom.server.item.Material;
 
 public class JavaExample {
     public static void main(String[] args) {
@@ -42,39 +39,9 @@ public class JavaExample {
         InstanceContainer instance = MinecraftServer.getInstanceManager().createInstanceContainer();
 
         MinestomWindow window = new MinestomWindow(InventoryType.CHEST_6_ROW, Component.text("Window"));
-        Button stoneButton = new Button(
-                window.createReservation(Button.DEFAULT_SIZE),
-                (button) -> ItemStack.of(Material.STONE),
-                (button, event) -> {
-                    event.getPlayer().sendMessage("You clicked the stone");
-                    ((Resizable) button.getReservation()).resize(1, 1);
-                    return null;
-                }
-        );
-        window.addWidget(stoneButton);
-
-        Button snowballButton = new Button(
-                window.createReservation(Button.DEFAULT_SIZE),
-                (button) -> ItemStack.of(Material.SNOWBALL),
-                (button, event) -> {
-                    event.getPlayer().sendMessage("You clicked the snowball");
-                    ((Resizable) stoneButton.getReservation()).resize(2, 2);
-                    return null;
-                }
-        );
-        window.addWidget(snowballButton);
-
-        Button diamondButton = new Button(
-                window.createReservation(Button.DEFAULT_SIZE),
-                (button) -> ItemStack.of(Material.DIAMOND),
-                (button, event) -> {
-                    event.getPlayer().sendMessage("You clicked the diamond");
-                    ((Resizable) stoneButton.getReservation()).resize(3, 3);
-                    return null;
-                }
-        );
-        window.addWidget(diamondButton);
-
+        window.addWidget(new Button());
+        window.addWidget(new Button());
+        window.addWidget(new Button());
         window.render();
 
         MinecraftServer.getGlobalEventHandler().addListener(AsyncPlayerConfigurationEvent.class, event -> {

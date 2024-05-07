@@ -37,9 +37,9 @@ inline fun window(
 }
 
 inline fun MinestomWindow.button(
-    size: Size2 = Button.DEFAULT_SIZE,
+    size: Size2 = Size2(1, 1),
     block: Button.() -> Unit
-): Button = Button(createReservation(size)).also { button ->
+): Button = Button(size).also { button ->
     button.block()
     addWidget(button)
 }
