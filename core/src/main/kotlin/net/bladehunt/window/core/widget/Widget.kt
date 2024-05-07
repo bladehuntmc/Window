@@ -28,21 +28,24 @@ import net.bladehunt.reakt.pubsub.event.Event
 import net.bladehunt.reakt.reactivity.ReactiveContext
 import net.bladehunt.window.core.Sized
 import net.bladehunt.window.core.reservation.Reservation
+import net.bladehunt.window.core.util.Int2
+import java.util.WeakHashMap
 
 abstract class Widget<T> : ReactiveContext, Sized {
-    private val updateHandlers: MutableList<(Widget<T>) -> Unit> = arrayListOf()
+    private val updateHandlers: WeakHashMap<Any, (Widget<T>) -> Unit> = WeakHashMap()
 
     var hasRendered: Boolean = false
         protected set
 
-    fun addUpdateHandler(handler: (Widget<T>) -> Unit) {
-        updateHandlers.add(handler)
+    fun addUpdateHandler(any: Any, handler: (Widget<T>) -> Unit) {
+        updateHandlers[any] = handler
+    }
+    fun requestUpdate() {
+        updateHandlers.values.forEach { it(this) }
     }
 
-    abstract fun render(reservation: Reservation<T>)
+    abstract fun render(reservation: Reservation<T>): Int2
     override fun onSubscribe(publisher: EventPublisher) {}
     override fun onUnsubscribe(publisher: EventPublisher) {}
-    override fun onEvent(event: Event) {
-        updateHandlers.forEach { it(this) }
-    }
+    override fun onEvent(event: Event) = requestUpdate()
 }
