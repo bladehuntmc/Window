@@ -30,22 +30,42 @@ import net.bladehunt.window.core.Sized
 import net.bladehunt.window.core.reservation.Reservation
 import net.bladehunt.window.core.util.Int2
 import java.util.WeakHashMap
+import kotlin.contracts.ExperimentalContracts
+import kotlin.contracts.contract
 
-abstract class Widget<T> : ReactiveContext, Sized {
-    private val updateHandlers: WeakHashMap<Any, (Widget<T>) -> Unit> = WeakHashMap()
+abstract class Widget<T> : Sized, ReactiveContext {
+    private val updateHandlers: WeakHashMap<Any, () -> Unit> = WeakHashMap()
 
-    var hasRendered: Boolean = false
+    open var isDirty: Boolean = true
         protected set
+    private lateinit var previousFinalSize: Int2
 
-    fun addUpdateHandler(any: Any, handler: (Widget<T>) -> Unit) {
+    fun addUpdateHandler(any: Any, handler: () -> Unit) {
         updateHandlers[any] = handler
     }
     fun requestUpdate() {
-        updateHandlers.values.forEach { it(this) }
+        updateHandlers.values.forEach { it() }
     }
 
-    abstract fun render(reservation: Reservation<T>): Int2
+    abstract fun onRender(reservation: Reservation<T>): Int2
+
+    @OptIn(ExperimentalContracts::class)
+    @JvmOverloads
+    fun render(reservation: Reservation<T>, force: Boolean = false): Int2 {
+        contract {
+            returnsNotNull() implies force
+        }
+        if (isDirty || force) {
+            previousFinalSize = onRender(reservation)
+        }
+        return previousFinalSize
+    }
+
     override fun onSubscribe(publisher: EventPublisher) {}
     override fun onUnsubscribe(publisher: EventPublisher) {}
-    override fun onEvent(event: Event) = requestUpdate()
+
+    override fun onEvent(event: Event) {
+        isDirty = true
+        requestUpdate()
+    }
 }

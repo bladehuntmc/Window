@@ -29,14 +29,20 @@ import net.bladehunt.window.core.util.Int2
 import net.bladehunt.window.core.util.Size2
 import net.bladehunt.window.core.widget.Widget
 import net.bladehunt.window.minestom.WindowItem
+import net.bladehunt.window.minestom.event.MinestomEvent
 import net.minestom.server.item.ItemStack
 import net.minestom.server.item.Material
 
-data class Button(
-    override val size: Size2 = Size2(1, 1)
+class Button(
+    itemStack: ItemStack = ItemStack.of(Material.STONE),
+    interaction: Interaction<MinestomEvent> = Interaction { _ -> },
 ) : Widget<WindowItem>() {
-    override fun render(reservation: Reservation<WindowItem>): Int2 {
-        reservation[0, 0] = ItemStack.of(Material.STONE) to Interaction {  }
+    override val size: Size2 = Size2(1, 1)
+    var interaction: Button.() -> Interaction<MinestomEvent> = { interaction }
+    var itemStack: Button.() -> ItemStack = { itemStack }
+
+    override fun onRender(reservation: Reservation<WindowItem>): Int2 {
+        reservation[0, 0] = itemStack() to interaction()
         return size.toInt2()
     }
 }

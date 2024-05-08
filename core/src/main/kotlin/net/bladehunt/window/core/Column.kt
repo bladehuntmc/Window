@@ -31,6 +31,10 @@ import net.bladehunt.window.core.widget.Widget
 import net.bladehunt.window.core.widget.WidgetParent
 
 abstract class Column<T> : Widget<T>(), WidgetParent<T> {
+    override var isDirty: Boolean
+        get() = _children.any { it.isDirty }
+        set(_) {}
+
     private val _children: MutableList<Widget<T>> = arrayListOf()
     override val children: Collection<Widget<T>>
         get() = _children.toList()
@@ -39,7 +43,7 @@ abstract class Column<T> : Widget<T>(), WidgetParent<T> {
         _children.add(widget)
     }
 
-    override fun render(reservation: Reservation<T>): Int2 {
+    override fun onRender(reservation: Reservation<T>): Int2 {
         val flexible = _children.filter { it.size.flexY }
         var each = 0
         var remainder = 0
@@ -55,18 +59,24 @@ abstract class Column<T> : Widget<T>(), WidgetParent<T> {
         var previousPosY = 0
         var maxSizeX = 0
         _children.forEachIndexed { index, widget ->
+            val offsetY = previousPosY
             val res = OffsetLimitedReservation(
                 reservation,
                 0,
-                previousPosY,
+                offsetY,
                 Int2(
                     reservation.size.x,
                     if (widget.size.flexX) each + (if (index < remainder) 1 else 0) else widget.size.y
                 )
             )
-                val final = widget.render(res)
-                if (final.x > maxSizeX) maxSizeX = final.x
-                previousPosY += final.y
+
+            widget.addUpdateHandler(this) {
+                requestUpdate()
+            }
+
+            val final = widget.render(res)
+            if (final.x > maxSizeX) maxSizeX = final.x
+            previousPosY += final.y
         }
         return Int2(maxSizeX, previousPosY)
     }
