@@ -27,6 +27,7 @@ import kotlinx.coroutines.runBlocking
 import net.bladehunt.kotstom.GlobalEventHandler
 import net.bladehunt.kotstom.InstanceManager
 import net.bladehunt.kotstom.dsl.listen
+import net.bladehunt.window.core.interact.Interaction
 import net.bladehunt.window.minestom.dsl.button
 import net.bladehunt.window.minestom.dsl.window
 import net.minestom.server.MinecraftServer
@@ -42,9 +43,24 @@ fun main() = runBlocking {
     val instance = InstanceManager.createInstanceContainer()
 
     val win = window(InventoryType.CHEST_6_ROW) {
-        button {}
-        button {}
-        button {}
+        button {
+            itemStack = ItemStack.of(Material.DIAMOND)
+            interaction = Interaction { event ->
+                event.player.sendMessage("You clicked the diamond")
+            }
+        }
+        button {
+            itemStack = ItemStack.of(Material.SNOW)
+            interaction = Interaction { event ->
+                event.player.sendMessage("You clicked the snow")
+            }
+        }
+        button {
+            itemStack = ItemStack.of(Material.BOOK)
+            interaction = Interaction { event ->
+                event.player.sendMessage("You clicked the book")
+            }
+        }
     }
 
     GlobalEventHandler.listen<AsyncPlayerConfigurationEvent> { event ->

@@ -31,6 +31,8 @@ import net.minestom.server.event.player.AsyncPlayerConfigurationEvent;
 import net.minestom.server.event.player.PlayerStartSneakingEvent;
 import net.minestom.server.instance.InstanceContainer;
 import net.minestom.server.inventory.InventoryType;
+import net.minestom.server.item.ItemStack;
+import net.minestom.server.item.Material;
 
 public class JavaExample {
     public static void main(String[] args) {
@@ -39,9 +41,30 @@ public class JavaExample {
         InstanceContainer instance = MinecraftServer.getInstanceManager().createInstanceContainer();
 
         MinestomWindow window = new MinestomWindow(InventoryType.CHEST_6_ROW, Component.text("Window"));
-        window.addWidget(new Button());
-        window.addWidget(new Button());
-        window.addWidget(new Button());
+        window.addWidget(
+                new Button(
+                        ItemStack.of(Material.DIAMOND),
+                        (event) -> {
+                            event.getPlayer().sendMessage("You clicked the diamond");
+                        }
+                )
+        );
+        window.addWidget(
+                new Button(
+                        ItemStack.of(Material.SNOW),
+                        (event) -> {
+                            event.getPlayer().sendMessage("You clicked the snow");
+                        }
+                )
+        );
+        window.addWidget(
+                new Button(
+                        ItemStack.of(Material.BOOK),
+                        (event) -> {
+                            event.getPlayer().sendMessage("You clicked the book");
+                        }
+                )
+        );
         window.render();
 
         MinecraftServer.getGlobalEventHandler().addListener(AsyncPlayerConfigurationEvent.class, event -> {

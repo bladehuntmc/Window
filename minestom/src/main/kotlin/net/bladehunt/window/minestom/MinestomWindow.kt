@@ -23,13 +23,18 @@
 
 package net.bladehunt.window.minestom
 
+import net.bladehunt.kotstom.dsl.listen
 import net.bladehunt.kotstom.extension.rowSize
+import net.bladehunt.kotstom.extension.slots
 import net.bladehunt.window.core.Column
 import net.bladehunt.window.core.util.Int2
 import net.bladehunt.window.core.util.Size2
+import net.bladehunt.window.minestom.event.MinestomEvent
 import net.bladehunt.window.minestom.inventory.InventoryReservation
 import net.bladehunt.window.minestom.inventory.WindowInventory
 import net.kyori.adventure.text.Component
+import net.minestom.server.MinecraftServer
+import net.minestom.server.event.inventory.InventoryPreClickEvent
 import net.minestom.server.inventory.InventoryType
 
 class MinestomWindow(
@@ -37,19 +42,41 @@ class MinestomWindow(
     title: Component = Component.text("Window"),
 ) : Column<WindowItem>() {
     val inventory = WindowInventory(inventoryType, title)
+    private var listener: (InventoryPreClickEvent) -> Unit = {}
+
+    init {
+        MinecraftServer.getGlobalEventHandler().listen<InventoryPreClickEvent> { event ->
+            listener(event)
+        }
+    }
 
     fun render() {
-        inventory.updateDiff { diff ->
+        inventory.transaction { transaction ->
             val size = Int2(
-                    inventory.inventoryType.rowSize,
-                    inventory.size / inventory.inventoryType.rowSize
-                )
-            render(
-                InventoryReservation(
-                    size,
-                    diff
-                )
+                inventory.inventoryType.rowSize,
+                inventory.size / inventory.inventoryType.rowSize
             )
+            val reservation = InventoryReservation(
+                size,
+                transaction
+            )
+            onRender(
+                reservation
+            )
+            listener = { event: InventoryPreClickEvent ->
+                val slots = event.clickInfo.slots
+                when (slots.size) {
+                    0 -> {}
+                    1 -> {
+                        val (slot) = slots
+                        reservation[slot % inventory.inventoryType.rowSize, slot / inventory.inventoryType.rowSize].second?.interact(
+                            MinestomEvent.PreClickEvent(event)
+                        )
+                        event.isCancelled = true
+                    }
+                    else -> {}
+                }
+            }
         }
     }
 

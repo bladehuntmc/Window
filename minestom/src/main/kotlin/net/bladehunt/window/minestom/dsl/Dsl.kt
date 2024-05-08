@@ -23,7 +23,6 @@
 
 package net.bladehunt.window.minestom.dsl
 
-import net.bladehunt.window.core.util.Size2
 import net.bladehunt.window.minestom.MinestomWindow
 import net.bladehunt.window.minestom.widget.Button
 import net.minestom.server.inventory.InventoryType
@@ -37,9 +36,8 @@ inline fun window(
 }
 
 inline fun MinestomWindow.button(
-    size: Size2 = Size2(1, 1),
     block: Button.() -> Unit
-): Button = Button(size).also { button ->
+): Button = Button().also { button ->
     button.block()
     addWidget(button)
 }

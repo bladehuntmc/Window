@@ -32,35 +32,35 @@ import net.minestom.server.item.ItemStack
 
 class InventoryReservation(
     override val size: Int2,
-    private val updateDiff: WindowInventory.UpdateDiff,
+    private val transaction: WindowInventory.Transaction,
 ) : Reservation<Pair<ItemStack, Interaction<MinestomEvent>?>> {
     private val interactions = ArrayReservationImpl<Interaction<MinestomEvent>?>(size)
 
     override fun set(posX: Int, posY: Int, pixel: Pair<ItemStack, Interaction<MinestomEvent>?>) {
-        updateDiff[getAbsoluteSlot(posX, posY)] = pixel.first
+        transaction[getAbsoluteSlot(posX, posY)] = pixel.first
         interactions[posX, posY] = pixel.second
     }
 
-    override fun get(posX: Int, posY: Int): Pair<ItemStack, Interaction<MinestomEvent>?> = updateDiff[getAbsoluteSlot(posX, posY)] to interactions[posX, posY]
+    override fun get(posX: Int, posY: Int): Pair<ItemStack, Interaction<MinestomEvent>?> = transaction[getAbsoluteSlot(posX, posY)] to interactions[posX, posY]
 
     override fun remove(posX: Int, posY: Int) {
-        updateDiff[getAbsoluteSlot(posX, posY)] = ItemStack.AIR
+        transaction[getAbsoluteSlot(posX, posY)] = ItemStack.AIR
         interactions[posX, posY] = null
     }
 
-    override fun isEmpty(): Boolean = updateDiff.isEmpty()
-    override fun isNotEmpty(): Boolean = updateDiff.isNotEmpty()
+    override fun isEmpty(): Boolean = transaction.isEmpty()
+    override fun isNotEmpty(): Boolean = transaction.isNotEmpty()
 
-    override fun isPositionEmpty(posX: Int, posY: Int): Boolean = updateDiff[getAbsoluteSlot(posX, posY)].isAir
+    override fun isPositionEmpty(posX: Int, posY: Int): Boolean = transaction[getAbsoluteSlot(posX, posY)].isAir
 
     override fun clear() {
-        updateDiff.clear()
+        transaction.clear()
         interactions.clear()
     }
 
     private fun getAbsoluteSlot(x: Int, y: Int): Int = y * size.x + x
 
-    override fun iterator(): Iterator<Pair<Int2, Pair<ItemStack, Interaction<MinestomEvent>?>>> = updateDiff.itemStacks.mapIndexed { index, itemStack ->
+    override fun iterator(): Iterator<Pair<Int2, Pair<ItemStack, Interaction<MinestomEvent>?>>> = transaction.itemStacks.mapIndexed { index, itemStack ->
         val slot = Int2(index % size.x, index / size.y)
         slot to (itemStack to interactions[slot])
     }.iterator()

@@ -36,10 +36,10 @@ class WindowInventory(
 ) : ContainerInventory(inventoryType, title) {
     constructor(inventoryType: InventoryType, title: String) : this(inventoryType, Component.text(title))
 
-    fun updateDiff(block: (UpdateDiff) -> Unit) {
+    fun transaction(block: (Transaction) -> Unit) {
         lock.lock()
         val previous = itemStacks.copyOf()
-        try { block(UpdateDiff()) } catch (_: IllegalArgumentException) {}
+        try { block(Transaction()) } catch (_: IllegalArgumentException) {}
         itemStacks.forEachIndexed { index, itemStack ->
             if (previous[index] != itemStack) updateSlot(index, itemStack)
             EventDispatcher.call(
@@ -49,7 +49,7 @@ class WindowInventory(
         lock.unlock()
     }
 
-    inner class UpdateDiff {
+    inner class Transaction {
         val itemStacks: Array<ItemStack> get() = this@WindowInventory.itemStacks
 
         val size: Int get() = this@WindowInventory.size
