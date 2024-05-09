@@ -27,10 +27,11 @@ import net.bladehunt.window.core.exception.WindowOverflowException
 import net.bladehunt.window.core.layer.Layer
 import net.bladehunt.window.core.render.RenderContext
 import net.bladehunt.window.core.util.Int2
+import net.bladehunt.window.core.util.Size2
 import net.bladehunt.window.core.widget.Widget
 import net.bladehunt.window.core.widget.WidgetParent
 
-abstract class Column<T> : Widget<T>(), WidgetParent<T> {
+open class Column<T>(override val size: Size2) : Widget<T>(), WidgetParent<T> {
     private val _children: MutableList<Widget<T>> = arrayListOf()
     override val children: Collection<Widget<T>>
         get() = _children.toList()
@@ -72,12 +73,12 @@ abstract class Column<T> : Widget<T>(), WidgetParent<T> {
 
             val subLayer = layerProvider(
                 layer.size.x,
-                if (widget.size.flexX) each + (if (index < remainder) 1 else 0) else widget.size.y
+                if (widget.size.flexY) each + (if (index < remainder) 1 else 0) else widget.size.y
             )
 
             val final = widget.render(
                 subLayer,
-                context
+                context.copy(path = listOf(*context.path.toTypedArray(), widget))
             )
 
             subLayer.forEach { (pos, pixel) ->

@@ -21,21 +21,13 @@
  * OTHER DEALINGS IN THE SOFTWARE.
  */
 
-package net.bladehunt.window.core.util;
+package net.bladehunt.window.core
 
-import org.jetbrains.annotations.Contract;
-import org.jetbrains.annotations.NotNull;
+import net.bladehunt.window.core.render.Cache
+import net.bladehunt.window.core.util.Size2
 
-public record Size2(int x, boolean flexX, int y, boolean flexY) {
-    public Size2(int x, int y) {
-        this(x, x <= 0, y, y <= 0);
-    }
-    public Size2() {
-        this(0, 0);
-    }
+abstract class Window<T>(size: Size2) : Column<T>(size) {
+    abstract val cache: Cache<T>
 
-    @Contract(" -> new")
-    public @NotNull Int2 toInt2() {
-        return new Int2(x, y);
-    }
+    abstract fun render()
 }

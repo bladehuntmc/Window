@@ -56,6 +56,11 @@ abstract class Widget<T> : Sized, ReactiveContext {
             context.cache.cache(newContext.path, layer)
             return finalSize
         }
+        var invalidate = false
+        cache.parent?.children?.forEachIndexed { index, node ->
+            if (node.widget == this) invalidate = true
+            if (invalidate) node.size = null
+        }
         return size
     }
 
