@@ -42,7 +42,7 @@ class Button(
     var interaction: Button.() -> Interaction<MinestomEvent> = { interaction }
     var itemStack: Button.() -> ItemStack = { itemStack }
 
-    override fun onRender(layer: Layer<WindowItem>, context: RenderContext<WindowItem>): Int2 {
+    override fun render(layer: Layer<WindowItem>, context: RenderContext<WindowItem>): Int2 {
         layer[0, 0] = itemStack() to interaction()
         return size.toInt2()
     }

@@ -43,32 +43,7 @@ abstract class Widget<T> : Sized, ReactiveContext {
         updateHandlers.values.forEach { it() }
     }
 
-    abstract fun onRender(layer: Layer<T>, context: RenderContext<T>): Int2
-
-    @JvmOverloads
-    fun render(layer: Layer<T>, context: RenderContext<T>, force: Boolean = false): Int2 {
-        val cache = context.cache.search(context.path)
-        val size = cache?.size
-        if (cache == null || size == null || force) {
-            layer.clear()
-            val newContext = context.copy(path = listOf(*context.path.toTypedArray(), this))
-            val finalSize = onRender(layer, newContext)
-            context.cache.cache(context.path, layer, finalSize)
-
-            var invalidate = false
-            cache?.parent?.children?.forEach { node ->
-                if (invalidate) {
-                    node.size = null
-                }
-                if (node.widget == this) invalidate = true
-            }
-            return finalSize
-        }
-        cache.layer?.forEach { (pos, pixel) ->
-            layer[pos] = pixel
-        }
-        return size
-    }
+    abstract fun render(layer: Layer<T>, context: RenderContext<T>): Int2
 
     override fun onSubscribe(publisher: EventPublisher) {}
     override fun onUnsubscribe(publisher: EventPublisher) {}

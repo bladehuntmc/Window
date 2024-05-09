@@ -32,7 +32,7 @@ import net.bladehunt.window.minestom.WindowItem
 
 class Stretch : Widget<WindowItem>() {
     override val size: Size2 = Size2()
-    override fun onRender(layer: Layer<WindowItem>, context: RenderContext<WindowItem>): Int2 {
+    override fun render(layer: Layer<WindowItem>, context: RenderContext<WindowItem>): Int2 {
         return layer.size
     }
 }

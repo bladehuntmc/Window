@@ -23,7 +23,6 @@
 
 package net.bladehunt.window.core
 
-import net.bladehunt.window.core.exception.WindowOverflowException
 import net.bladehunt.window.core.layer.Layer
 import net.bladehunt.window.core.render.RenderContext
 import net.bladehunt.window.core.util.Int2
@@ -46,8 +45,8 @@ open class Row<T>(override val size: Size2) : Widget<T>(), WidgetParent<T> {
         } else _children.add(index, widget)
     }
 
-    override fun onRender(layer: Layer<T>, context: RenderContext<T>): Int2 {
-        val (cache, path, layerProvider) = context
+    override fun render(layer: Layer<T>, context: RenderContext<T>): Int2 {
+        val (_, layerProvider) = context
 
         // Calculate flexes
         val flexible = _children.filter { it.size.flexX }
@@ -66,7 +65,6 @@ open class Row<T>(override val size: Size2) : Widget<T>(), WidgetParent<T> {
         var maxSizeY = 0
         _children.forEachIndexed { index, widget ->
             widget.setUpdateHandler(this) {
-                cache.invalidate(widget)
                 requestUpdate()
             }
 

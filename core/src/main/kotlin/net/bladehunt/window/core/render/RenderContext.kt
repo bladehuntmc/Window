@@ -27,7 +27,6 @@ import net.bladehunt.window.core.layer.Layer
 import net.bladehunt.window.core.widget.Widget
 
 data class RenderContext<T>(
-    val cache: Cache<T>,
     val path: List<Widget<T>>,
     val layerProvider: (sizeX: Int, sizeY: Int) -> Layer<T>
 )

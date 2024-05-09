@@ -29,7 +29,6 @@ import net.bladehunt.kotstom.extension.rowSize
 import net.bladehunt.kotstom.extension.slots
 import net.bladehunt.window.core.Window
 import net.bladehunt.window.core.layer.ArrayLayerImpl
-import net.bladehunt.window.core.render.Cache
 import net.bladehunt.window.core.render.RenderContext
 import net.bladehunt.window.core.util.Int2
 import net.bladehunt.window.core.util.Size2
@@ -37,7 +36,6 @@ import net.bladehunt.window.minestom.event.MinestomEvent
 import net.bladehunt.window.minestom.inventory.InventoryLayer
 import net.bladehunt.window.minestom.inventory.WindowInventory
 import net.kyori.adventure.text.Component
-import net.minestom.server.MinecraftServer
 import net.minestom.server.event.inventory.InventoryPreClickEvent
 import net.minestom.server.inventory.InventoryType
 import net.minestom.server.timer.ExecutionType
@@ -48,8 +46,6 @@ class MinestomWindow(
     inventoryType: InventoryType,
     title: Component = Component.text("Window"),
 ) : Window<WindowItem>(Size2(inventoryType.rowSize, inventoryType.size / inventoryType.rowSize)) {
-    override val cache = Cache<WindowItem>()
-
     val inventory = WindowInventory(inventoryType, title)
     private var listener: (InventoryPreClickEvent) -> Unit = {}
 
@@ -70,7 +66,7 @@ class MinestomWindow(
                 size,
                 transaction
             )
-            onRender(layer, RenderContext(cache, listOf()) { sizeX, sizeY -> ArrayLayerImpl(Int2(sizeX, sizeY)) })
+            render(layer, RenderContext(listOf()) { sizeX, sizeY -> ArrayLayerImpl(Int2(sizeX, sizeY)) })
             listener = { event: InventoryPreClickEvent ->
                 val slots = event.clickInfo.slots
                 when (slots.size) {

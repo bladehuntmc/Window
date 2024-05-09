@@ -23,11 +23,8 @@
 
 package net.bladehunt.window.core
 
-import net.bladehunt.window.core.render.Cache
 import net.bladehunt.window.core.util.Size2
 
 abstract class Window<T>(size: Size2) : Column<T>(size) {
-    abstract val cache: Cache<T>
-
     abstract fun render()
 }
