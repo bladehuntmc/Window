@@ -59,7 +59,6 @@ open class Column<T>(override val size: Size2) : Widget<T>(), WidgetParent<T> {
             }
             each = availableSpace.floorDiv(flexible.size)
             remainder = availableSpace % flexible.size
-            if (each == 0) throw WindowOverflowException("There wasn't enough space to fit the flexible components.")
         }
 
         // Render layers if needed

@@ -53,13 +53,19 @@ abstract class Widget<T> : Sized, ReactiveContext {
             layer.clear()
             val newContext = context.copy(path = listOf(*context.path.toTypedArray(), this))
             val finalSize = onRender(layer, newContext)
-            context.cache.cache(newContext.path, layer)
+            context.cache.cache(context.path, layer, finalSize)
+
+            var invalidate = false
+            cache?.parent?.children?.forEach { node ->
+                if (invalidate) {
+                    node.size = null
+                }
+                if (node.widget == this) invalidate = true
+            }
             return finalSize
         }
-        var invalidate = false
-        cache.parent?.children?.forEachIndexed { index, node ->
-            if (node.widget == this) invalidate = true
-            if (invalidate) node.size = null
+        cache.layer?.forEach { (pos, pixel) ->
+            layer[pos] = pixel
         }
         return size
     }

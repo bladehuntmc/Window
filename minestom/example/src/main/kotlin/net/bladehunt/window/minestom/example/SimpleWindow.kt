@@ -37,6 +37,7 @@ import net.bladehunt.window.core.util.Size2
 import net.bladehunt.window.minestom.dsl.button
 import net.bladehunt.window.minestom.dsl.window
 import net.bladehunt.window.minestom.widget.Button
+import net.bladehunt.window.minestom.widget.Stretch
 import net.minestom.server.MinecraftServer
 import net.minestom.server.event.player.AsyncPlayerConfigurationEvent
 import net.minestom.server.event.player.PlayerStartSneakingEvent
@@ -62,7 +63,8 @@ fun main() = runBlocking {
     }
     val win = window(InventoryType.CHEST_6_ROW) {
         addWidget(bookButton)
-        row {
+        addWidget(Stretch())
+        row(Size2(0, 1)) {
             button {
                 itemStack = {
                     item(material()) {

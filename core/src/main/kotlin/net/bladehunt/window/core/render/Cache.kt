@@ -47,18 +47,20 @@ class Cache<T> {
         return node.layer != null
     }
 
-    fun cache(path: List<Widget<T>>, layer: Layer<T>) {
+    fun cache(path: List<Widget<T>>, layer: Layer<T>, size: Int2) {
         var node: Node<T> = node
         path.forEach { widget ->
             node = node.children.firstOrNull { it.widget?.get() == widget } ?: Node(node, WeakReference(widget)).also(node.children::add)
         }
         node.layer = layer
+        node.size = size
     }
 
     fun invalidate(widget: Widget<T>) {
         node.forEachDepthFirst { node ->
             if (node.widget?.get() == widget) {
                 node.layer = null
+                node.size = null
             }
         }
     }
