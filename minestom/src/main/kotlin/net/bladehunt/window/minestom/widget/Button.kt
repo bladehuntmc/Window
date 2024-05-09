@@ -25,6 +25,7 @@ package net.bladehunt.window.minestom.widget
 
 import net.bladehunt.window.core.interact.Interaction
 import net.bladehunt.window.core.layer.Layer
+import net.bladehunt.window.core.render.RenderContext
 import net.bladehunt.window.core.util.Int2
 import net.bladehunt.window.core.util.Size2
 import net.bladehunt.window.core.widget.Widget
@@ -41,15 +42,8 @@ class Button(
     var interaction: Button.() -> Interaction<MinestomEvent> = { interaction }
     var itemStack: Button.() -> ItemStack = { itemStack }
 
-    var finalSize: Button.() -> Int2 = { size.toInt2() }
-
-    override fun onRender(layer: Layer<WindowItem>): Int2 {
-        val size = finalSize()
-        for (x in 0..<size.x) {
-            for (y in 0..<size.y) {
-                layer[x, y] = itemStack() to interaction()
-            }
-        }
-        return size
+    override fun onRender(layer: Layer<WindowItem>, context: RenderContext<WindowItem>): Int2 {
+        layer[0, 0] = itemStack() to interaction()
+        return size.toInt2()
     }
 }

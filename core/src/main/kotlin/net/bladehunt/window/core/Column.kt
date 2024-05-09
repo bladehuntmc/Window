@@ -24,26 +24,31 @@
 package net.bladehunt.window.core
 
 import net.bladehunt.window.core.exception.WindowOverflowException
-import net.bladehunt.window.core.layer.OffsetLimitedLayer
 import net.bladehunt.window.core.layer.Layer
+import net.bladehunt.window.core.render.RenderContext
 import net.bladehunt.window.core.util.Int2
 import net.bladehunt.window.core.widget.Widget
 import net.bladehunt.window.core.widget.WidgetParent
 
 abstract class Column<T> : Widget<T>(), WidgetParent<T> {
-    override var isDirty: Boolean
-        get() = _children.any { it.isDirty }
-        set(_) {}
-
     private val _children: MutableList<Widget<T>> = arrayListOf()
     override val children: Collection<Widget<T>>
         get() = _children.toList()
 
-    override fun <W : Widget<T>> addWidget(widget: W) {
-        _children.add(widget)
+    override fun <W : Widget<T>> removeWidget(widget: W) {
+        _children.remove(widget)
     }
 
-    override fun onRender(layer: Layer<T>): Int2 {
+    override fun <W : Widget<T>> addWidget(widget: W, index: Int?) {
+        if (index == null) {
+            _children.add(widget)
+        } else _children.add(index, widget)
+    }
+
+    override fun onRender(layer: Layer<T>, context: RenderContext<T>): Int2 {
+        val (cache, path, layerProvider) = context
+
+        // Calculate flexes
         val flexible = _children.filter { it.size.flexY }
         var each = 0
         var remainder = 0
@@ -56,28 +61,33 @@ abstract class Column<T> : Widget<T>(), WidgetParent<T> {
             if (each == 0) throw WindowOverflowException("There wasn't enough space to fit the flexible components.")
         }
 
+        // Render layers if needed
         var previousPosY = 0
         var maxSizeX = 0
         _children.forEachIndexed { index, widget ->
-            val offsetY = previousPosY
-            val res = OffsetLimitedLayer(
-                layer,
-                0,
-                offsetY,
-                Int2(
-                    layer.size.x,
-                    if (widget.size.flexX) each + (if (index < remainder) 1 else 0) else widget.size.y
-                )
-            )
-
-            widget.addUpdateHandler(this) {
+            widget.setUpdateHandler(this) {
+                cache.invalidate(widget)
                 requestUpdate()
             }
 
-            val final = widget.render(res)
+            val subLayer = layerProvider(
+                layer.size.x,
+                if (widget.size.flexX) each + (if (index < remainder) 1 else 0) else widget.size.y
+            )
+
+            val final = widget.render(
+                subLayer,
+                context
+            )
+
+            subLayer.forEach { (pos, pixel) ->
+                layer[pos.x, pos.y + previousPosY] = pixel
+            }
+
             if (final.x > maxSizeX) maxSizeX = final.x
             previousPosY += final.y
         }
+
         return Int2(maxSizeX, previousPosY)
     }
 }

@@ -28,6 +28,9 @@ import net.bladehunt.kotstom.dsl.runnable
 import net.bladehunt.kotstom.extension.rowSize
 import net.bladehunt.kotstom.extension.slots
 import net.bladehunt.window.core.Column
+import net.bladehunt.window.core.layer.ArrayLayerImpl
+import net.bladehunt.window.core.render.Cache
+import net.bladehunt.window.core.render.RenderContext
 import net.bladehunt.window.core.util.Int2
 import net.bladehunt.window.core.util.Size2
 import net.bladehunt.window.minestom.event.MinestomEvent
@@ -37,6 +40,7 @@ import net.kyori.adventure.text.Component
 import net.minestom.server.MinecraftServer
 import net.minestom.server.event.inventory.InventoryPreClickEvent
 import net.minestom.server.inventory.InventoryType
+import net.minestom.server.timer.ExecutionType
 import net.minestom.server.timer.Task
 import net.minestom.server.timer.TaskSchedule
 
@@ -46,6 +50,7 @@ class MinestomWindow(
 ) : Column<WindowItem>() {
     val inventory = WindowInventory(inventoryType, title)
     private var listener: (InventoryPreClickEvent) -> Unit = {}
+    private val cache = Cache<WindowItem>()
 
     init {
         MinecraftServer.getGlobalEventHandler().listen<InventoryPreClickEvent> { event ->
@@ -55,7 +60,7 @@ class MinestomWindow(
 
     fun render() {
         inventory.transaction { transaction ->
-            //transaction.clear()
+            transaction.clear()
             val size = Int2(
                 inventory.inventoryType.rowSize,
                 inventory.size / inventory.inventoryType.rowSize
@@ -64,7 +69,7 @@ class MinestomWindow(
                 size,
                 transaction
             )
-            onRender(layer)
+            onRender(layer, RenderContext(cache, listOf()) { sizeX, sizeY -> ArrayLayerImpl(Int2(sizeX, sizeY)) })
             listener = { event: InventoryPreClickEvent ->
                 val slots = event.clickInfo.slots
                 when (slots.size) {
@@ -82,12 +87,12 @@ class MinestomWindow(
         }
     }
 
-    // Queue section
     private var queue: Task? = null
     override fun requestUpdate() {
         if (queue == null) {
             queue = runnable {
-                delay = TaskSchedule.nextTick()
+                delay = TaskSchedule.immediate()
+                executionType = ExecutionType.TICK_END
                 run {
                     render()
                     queue = null

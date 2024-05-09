@@ -28,19 +28,14 @@ import net.bladehunt.reakt.pubsub.event.Event
 import net.bladehunt.reakt.reactivity.ReactiveContext
 import net.bladehunt.window.core.Sized
 import net.bladehunt.window.core.layer.Layer
+import net.bladehunt.window.core.render.RenderContext
 import net.bladehunt.window.core.util.Int2
 import java.util.WeakHashMap
-import kotlin.contracts.ExperimentalContracts
-import kotlin.contracts.contract
 
 abstract class Widget<T> : Sized, ReactiveContext {
     private val updateHandlers: WeakHashMap<Any, () -> Unit> = WeakHashMap()
 
-    open var isDirty: Boolean = true
-        protected set
-    var previousFinalSize: Int2? = null
-
-    fun addUpdateHandler(any: Any, handler: () -> Unit) {
+    fun setUpdateHandler(any: Any, handler: () -> Unit) {
         updateHandlers[any] = handler
     }
 
@@ -48,27 +43,26 @@ abstract class Widget<T> : Sized, ReactiveContext {
         updateHandlers.values.forEach { it() }
     }
 
-    abstract fun onRender(layer: Layer<T>): Int2
+    abstract fun onRender(layer: Layer<T>, context: RenderContext<T>): Int2
 
-    @OptIn(ExperimentalContracts::class)
     @JvmOverloads
-    fun render(layer: Layer<T>, force: Boolean = false): Int2 {
-        contract {
-            returnsNotNull() implies force
-        }
-        if (isDirty || force) {
+    fun render(layer: Layer<T>, context: RenderContext<T>, force: Boolean = false): Int2 {
+        val cache = context.cache.search(context.path)
+        val size = cache?.size
+        if (cache == null || size == null || force) {
             layer.clear()
-            previousFinalSize = onRender(layer)
-            isDirty = false
+            val newContext = context.copy(path = listOf(*context.path.toTypedArray(), this))
+            val finalSize = onRender(layer, newContext)
+            context.cache.cache(newContext.path, layer)
+            return finalSize
         }
-        return previousFinalSize!!
+        return size
     }
 
     override fun onSubscribe(publisher: EventPublisher) {}
     override fun onUnsubscribe(publisher: EventPublisher) {}
 
     override fun onEvent(event: Event) {
-        isDirty = true
         requestUpdate()
     }
 }

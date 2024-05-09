@@ -26,12 +26,15 @@ package net.bladehunt.window.minestom.example
 import kotlinx.coroutines.runBlocking
 import net.bladehunt.kotstom.GlobalEventHandler
 import net.bladehunt.kotstom.InstanceManager
+import net.bladehunt.kotstom.dsl.item.item
+import net.bladehunt.kotstom.dsl.item.itemName
 import net.bladehunt.kotstom.dsl.listen
+import net.bladehunt.kotstom.extension.asMini
 import net.bladehunt.reakt.reactivity.Signal
 import net.bladehunt.window.core.interact.Interaction
-import net.bladehunt.window.core.util.Int2
 import net.bladehunt.window.minestom.dsl.button
 import net.bladehunt.window.minestom.dsl.window
+import net.bladehunt.window.minestom.widget.Button
 import net.minestom.server.MinecraftServer
 import net.minestom.server.event.player.AsyncPlayerConfigurationEvent
 import net.minestom.server.event.player.PlayerStartSneakingEvent
@@ -44,42 +47,55 @@ fun main() = runBlocking {
 
     val instance = InstanceManager.createInstanceContainer()
     val (material, setMaterial) = Signal(Material.DIAMOND)
-    val (size, setSize) = Signal(Int2(1, 1))
 
+    val bookButton = Button().apply {
+        itemStack = {
+            ItemStack.of(Material.BOOK)
+        }
+        interaction = {
+            Interaction { event ->
+                event.player.sendMessage("You clicked the book")
+            }
+        }
+    }
     val win = window(InventoryType.CHEST_6_ROW) {
+        addWidget(bookButton)
         button {
             itemStack = {
-                ItemStack.of(Material.BOOK)
-            }
-            interaction = {
-                Interaction { event ->
-                    event.player.sendMessage("You clicked the book")
+                item(material()) {
+                    itemName = "<green>Click to randomize".asMini()
                 }
-            }
-        }
-        button {
-            itemStack = {
-                ItemStack.of(Material.SNOW)
-            }
-            interaction = {
-                Interaction { event ->
-                    val newSize = if (size().y == 1) Int2(2, 2) else Int2(1, 1)
-                    setSize(newSize)
-                    event.player.sendMessage("You clicked the snow")
-                }
-            }
-            finalSize = {
-                size()
-            }
-        }
-        button {
-            itemStack = {
-                ItemStack.of(material())
             }
             interaction = {
                 Interaction { event ->
                     event.player.sendMessage("You clicked the ${material().name().lowercase()}")
                     setMaterial(Material.values().random())
+                }
+            }
+        }
+        button {
+            itemStack = {
+                item(Material.STONE_AXE) {
+                    itemName = "<green>Create Book".asMini()
+                }
+            }
+            interaction = {
+                Interaction { event ->
+                    addWidget(bookButton, 0)
+                    requestUpdate()
+                }
+            }
+        }
+        button {
+            itemStack = {
+                item(Material.BARRIER) {
+                    itemName = "<red>Remove Book".asMini()
+                }
+            }
+            interaction = {
+                Interaction { event ->
+                    removeWidget(bookButton)
+                    requestUpdate()
                 }
             }
         }

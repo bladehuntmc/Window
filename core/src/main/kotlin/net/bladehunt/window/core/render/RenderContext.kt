@@ -21,13 +21,13 @@
  * OTHER DEALINGS IN THE SOFTWARE.
  */
 
-package net.bladehunt.window.core.widget
+package net.bladehunt.window.core.render
 
-interface WidgetParent<T> {
-    val children: Collection<Widget<T>>
+import net.bladehunt.window.core.layer.Layer
+import net.bladehunt.window.core.widget.Widget
 
-    fun <W : Widget<T>> removeWidget(widget: W)
-
-    fun <W : Widget<T>> addWidget(widget: W) = addWidget(widget, null)
-    fun <W : Widget<T>> addWidget(widget: W, index: Int? = null)
-}
+data class RenderContext<T>(
+    val cache: Cache<T>,
+    val path: List<Widget<T>>,
+    val layerProvider: (sizeX: Int, sizeY: Int) -> Layer<T>
+)
