@@ -23,6 +23,23 @@
 
 package net.bladehunt.window.core.dsl
 
+import net.bladehunt.window.core.Column
+import net.bladehunt.window.core.Row
+import net.bladehunt.window.core.util.Size2
+import net.bladehunt.window.core.widget.WidgetParent
+
 @Target(AnnotationTarget.TYPE, AnnotationTarget.FUNCTION)
 @DslMarker
 annotation class WindowDsl
+
+@WindowDsl
+inline fun <T> WidgetParent<T>.column(size: Size2 = Size2(), block: @WindowDsl Column<T>.() -> Unit): Column<T> = Column<T>(size).apply {
+    block()
+    this@column.addWidget(this)
+}
+
+@WindowDsl
+inline fun <T> WidgetParent<T>.row(size: Size2 = Size2(), block: @WindowDsl Row<T>.() -> Unit): Row<T> = Row<T>(size).apply {
+    block()
+    this@row.addWidget(this)
+}

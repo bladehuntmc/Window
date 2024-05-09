@@ -31,7 +31,9 @@ import net.bladehunt.kotstom.dsl.item.itemName
 import net.bladehunt.kotstom.dsl.listen
 import net.bladehunt.kotstom.extension.asMini
 import net.bladehunt.reakt.reactivity.Signal
+import net.bladehunt.window.core.dsl.row
 import net.bladehunt.window.core.interact.Interaction
+import net.bladehunt.window.core.util.Size2
 import net.bladehunt.window.minestom.dsl.button
 import net.bladehunt.window.minestom.dsl.window
 import net.bladehunt.window.minestom.widget.Button
@@ -60,42 +62,44 @@ fun main() = runBlocking {
     }
     val win = window(InventoryType.CHEST_6_ROW) {
         addWidget(bookButton)
-        button {
-            itemStack = {
-                item(material()) {
-                    itemName = "<green>Click to randomize".asMini()
+        row {
+            button {
+                itemStack = {
+                    item(material()) {
+                        itemName = "<green>Click to randomize".asMini()
+                    }
+                }
+                interaction = {
+                    Interaction { event ->
+                        event.player.sendMessage("You clicked the ${material().name().lowercase()}")
+                        setMaterial(Material.values().random())
+                    }
                 }
             }
-            interaction = {
-                Interaction { event ->
-                    event.player.sendMessage("You clicked the ${material().name().lowercase()}")
-                    setMaterial(Material.values().random())
+            button {
+                itemStack = {
+                    item(Material.STONE_AXE) {
+                        itemName = "<green>Create Book".asMini()
+                    }
+                }
+                interaction = {
+                    Interaction { event ->
+                        this@window.addWidget(bookButton, 0)
+                        requestUpdate()
+                    }
                 }
             }
-        }
-        button {
-            itemStack = {
-                item(Material.STONE_AXE) {
-                    itemName = "<green>Create Book".asMini()
+            button {
+                itemStack = {
+                    item(Material.BARRIER) {
+                        itemName = "<red>Remove Book".asMini()
+                    }
                 }
-            }
-            interaction = {
-                Interaction { event ->
-                    addWidget(bookButton, 0)
-                    requestUpdate()
-                }
-            }
-        }
-        button {
-            itemStack = {
-                item(Material.BARRIER) {
-                    itemName = "<red>Remove Book".asMini()
-                }
-            }
-            interaction = {
-                Interaction { event ->
-                    removeWidget(bookButton)
-                    requestUpdate()
+                interaction = {
+                    Interaction { event ->
+                        this@window.removeWidget(bookButton)
+                        requestUpdate()
+                    }
                 }
             }
         }

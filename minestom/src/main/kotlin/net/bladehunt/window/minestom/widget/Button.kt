@@ -38,7 +38,7 @@ class Button(
     itemStack: ItemStack = ItemStack.of(Material.STONE),
     interaction: Interaction<MinestomEvent> = Interaction { _ -> },
 ) : Widget<WindowItem>() {
-    override val size: Size2 = Size2(1, true, 1, true)
+    override val size: Size2 = Size2(1, false, 1, false)
     var interaction: Button.() -> Interaction<MinestomEvent> = { interaction }
     var itemStack: Button.() -> ItemStack = { itemStack }
 

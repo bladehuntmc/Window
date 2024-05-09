@@ -27,7 +27,7 @@ import net.bladehunt.kotstom.dsl.listen
 import net.bladehunt.kotstom.dsl.runnable
 import net.bladehunt.kotstom.extension.rowSize
 import net.bladehunt.kotstom.extension.slots
-import net.bladehunt.window.core.Column
+import net.bladehunt.window.core.Window
 import net.bladehunt.window.core.layer.ArrayLayerImpl
 import net.bladehunt.window.core.render.Cache
 import net.bladehunt.window.core.render.RenderContext
@@ -47,10 +47,11 @@ import net.minestom.server.timer.TaskSchedule
 class MinestomWindow(
     inventoryType: InventoryType,
     title: Component = Component.text("Window"),
-) : Column<WindowItem>() {
+) : Window<WindowItem>(Size2(inventoryType.rowSize, inventoryType.size / inventoryType.rowSize)) {
+    override val cache = Cache<WindowItem>()
+
     val inventory = WindowInventory(inventoryType, title)
     private var listener: (InventoryPreClickEvent) -> Unit = {}
-    private val cache = Cache<WindowItem>()
 
     init {
         MinecraftServer.getGlobalEventHandler().listen<InventoryPreClickEvent> { event ->
@@ -58,7 +59,7 @@ class MinestomWindow(
         }
     }
 
-    fun render() {
+    override fun render() {
         inventory.transaction { transaction ->
             transaction.clear()
             val size = Int2(
@@ -101,5 +102,4 @@ class MinestomWindow(
         }
     }
 
-    override val size: Size2 = Size2(inventoryType.rowSize, inventoryType.size / inventoryType.rowSize)
 }
