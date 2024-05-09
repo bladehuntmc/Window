@@ -23,17 +23,17 @@
 
 package net.bladehunt.window.minestom.inventory
 
+import net.bladehunt.kotstom.util.EventNodeContainerInventory
 import net.kyori.adventure.text.Component
 import net.minestom.server.event.EventDispatcher
 import net.minestom.server.event.inventory.InventoryItemChangeEvent
-import net.minestom.server.inventory.ContainerInventory
 import net.minestom.server.inventory.InventoryType
 import net.minestom.server.item.ItemStack
 
 class WindowInventory(
     inventoryType: InventoryType,
     title: Component = Component.text("Window")
-) : ContainerInventory(inventoryType, title) {
+) : EventNodeContainerInventory(inventoryType, title) {
     constructor(inventoryType: InventoryType, title: String) : this(inventoryType, Component.text(title))
 
     fun transaction(block: (Transaction) -> Unit) {

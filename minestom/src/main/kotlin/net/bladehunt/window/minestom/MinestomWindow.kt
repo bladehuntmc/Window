@@ -54,7 +54,7 @@ class MinestomWindow(
     private var listener: (InventoryPreClickEvent) -> Unit = {}
 
     init {
-        MinecraftServer.getGlobalEventHandler().listen<InventoryPreClickEvent> { event ->
+        inventory.eventNode().listen<InventoryPreClickEvent> { event ->
             listener(event)
         }
     }
