@@ -24,7 +24,7 @@
 package net.bladehunt.window.minestom.widget
 
 import net.bladehunt.window.core.interact.Interaction
-import net.bladehunt.window.core.reservation.Reservation
+import net.bladehunt.window.core.layer.Layer
 import net.bladehunt.window.core.util.Int2
 import net.bladehunt.window.core.util.Size2
 import net.bladehunt.window.core.widget.Widget
@@ -43,11 +43,11 @@ class Button(
 
     var finalSize: Button.() -> Int2 = { size.toInt2() }
 
-    override fun onRender(reservation: Reservation<WindowItem>): Int2 {
+    override fun onRender(layer: Layer<WindowItem>): Int2 {
         val size = finalSize()
         for (x in 0..<size.x) {
             for (y in 0..<size.y) {
-                reservation[x, y] = itemStack() to interaction()
+                layer[x, y] = itemStack() to interaction()
             }
         }
         return size

@@ -24,17 +24,17 @@
 package net.bladehunt.window.minestom.inventory
 
 import net.bladehunt.window.core.interact.Interaction
-import net.bladehunt.window.core.reservation.ArrayReservationImpl
-import net.bladehunt.window.core.reservation.Reservation
+import net.bladehunt.window.core.layer.ArrayLayerImpl
+import net.bladehunt.window.core.layer.Layer
 import net.bladehunt.window.core.util.Int2
 import net.bladehunt.window.minestom.event.MinestomEvent
 import net.minestom.server.item.ItemStack
 
-class InventoryReservation(
+class InventoryLayer(
     override val size: Int2,
     private val transaction: WindowInventory.Transaction,
-) : Reservation<Pair<ItemStack, Interaction<MinestomEvent>?>> {
-    private val interactions = ArrayReservationImpl<Interaction<MinestomEvent>?>(size)
+) : Layer<Pair<ItemStack, Interaction<MinestomEvent>?>> {
+    private val interactions = ArrayLayerImpl<Interaction<MinestomEvent>?>(size)
 
     override fun set(posX: Int, posY: Int, pixel: Pair<ItemStack, Interaction<MinestomEvent>?>) {
         transaction[getAbsoluteSlot(posX, posY)] = pixel.first

@@ -27,7 +27,7 @@ import net.bladehunt.reakt.pubsub.EventPublisher
 import net.bladehunt.reakt.pubsub.event.Event
 import net.bladehunt.reakt.reactivity.ReactiveContext
 import net.bladehunt.window.core.Sized
-import net.bladehunt.window.core.reservation.Reservation
+import net.bladehunt.window.core.layer.Layer
 import net.bladehunt.window.core.util.Int2
 import java.util.WeakHashMap
 import kotlin.contracts.ExperimentalContracts
@@ -48,17 +48,17 @@ abstract class Widget<T> : Sized, ReactiveContext {
         updateHandlers.values.forEach { it() }
     }
 
-    abstract fun onRender(reservation: Reservation<T>): Int2
+    abstract fun onRender(layer: Layer<T>): Int2
 
     @OptIn(ExperimentalContracts::class)
     @JvmOverloads
-    fun render(reservation: Reservation<T>, force: Boolean = false): Int2 {
+    fun render(layer: Layer<T>, force: Boolean = false): Int2 {
         contract {
             returnsNotNull() implies force
         }
         if (isDirty || force) {
-            reservation.clear()
-            previousFinalSize = onRender(reservation)
+            layer.clear()
+            previousFinalSize = onRender(layer)
             isDirty = false
         }
         return previousFinalSize!!

@@ -23,9 +23,9 @@
 
 package net.bladehunt.window.core.interact
 
-import net.bladehunt.window.core.reservation.Reservation
+import net.bladehunt.window.core.layer.Layer
 
 interface Interactable<T> {
-    val interactionReservation: Reservation<Interaction<T>>
+    val interactionLayer: Layer<Interaction<T>>
     fun handleInteraction(event: T)
 }

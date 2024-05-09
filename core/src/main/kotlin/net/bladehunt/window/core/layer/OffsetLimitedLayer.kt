@@ -21,16 +21,16 @@
  * OTHER DEALINGS IN THE SOFTWARE.
  */
 
-package net.bladehunt.window.core.reservation
+package net.bladehunt.window.core.layer
 
 import net.bladehunt.window.core.util.Int2
 
-class OffsetLimitedReservation<Pixel>(
-    val parent: Reservation<Pixel>,
+class OffsetLimitedLayer<Pixel>(
+    val parent: Layer<Pixel>,
     val offsetX: Int,
     val offsetY: Int,
     override val size: Int2
-) : Reservation<Pixel> {
+) : Layer<Pixel> {
     override fun get(posX: Int, posY: Int): Pixel? {
         if (posX < 0 || posX >= size.x || posY < 0 || posY >= size.y) {
             throw IllegalArgumentException("Position ($posX, $posY) is out of bounds")

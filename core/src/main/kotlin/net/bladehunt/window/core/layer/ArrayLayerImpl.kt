@@ -21,20 +21,20 @@
  * OTHER DEALINGS IN THE SOFTWARE.
  */
 
-package net.bladehunt.window.core.reservation
+package net.bladehunt.window.core.layer
 
 import net.bladehunt.window.core.ext.forEach
 import net.bladehunt.window.core.ext.forEachNotNull
 import net.bladehunt.window.core.util.Int2
 
-inline fun <reified T> ArrayReservationImpl(size: Int2): ArrayReservationImpl<T> = ArrayReservationImpl(
+inline fun <reified T> ArrayLayerImpl(size: Int2): ArrayLayerImpl<T> = ArrayLayerImpl(
     size,
     Array(size.x) { Array(size.y) { null } }
 )
-class ArrayReservationImpl<Pixel>(
+class ArrayLayerImpl<Pixel>(
     size: Int2,
     private var pixels: Array<Array<Pixel?>>
-) : Reservation<Pixel> {
+) : Layer<Pixel> {
     override var size: Int2 = size
         private set
 

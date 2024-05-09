@@ -21,13 +21,13 @@
  * OTHER DEALINGS IN THE SOFTWARE.
  */
 
-package net.bladehunt.window.core.reservation
+package net.bladehunt.window.core.layer
 
-open class HookReservation<Pixel>(
-    private val inner: Reservation<Pixel>,
-    private val onSet: (reservation: Reservation<Pixel>, posX: Int, posY: Int, pixel: Pixel) -> Unit,
-    private val onRemove: (reservation: Reservation<Pixel>, posX: Int, posY: Int) -> Unit
-) : Reservation<Pixel> by inner {
+open class HookLayer<Pixel>(
+    private val inner: Layer<Pixel>,
+    private val onSet: (layer: Layer<Pixel>, posX: Int, posY: Int, pixel: Pixel) -> Unit,
+    private val onRemove: (layer: Layer<Pixel>, posX: Int, posY: Int) -> Unit
+) : Layer<Pixel> by inner {
     override fun set(posX: Int, posY: Int, pixel: Pixel) {
         inner[posX, posY] = pixel
         onSet(this, posX, posY, pixel)

@@ -21,11 +21,11 @@
  * OTHER DEALINGS IN THE SOFTWARE.
  */
 
-package net.bladehunt.window.core.reservation
+package net.bladehunt.window.core.layer
 
 import net.bladehunt.window.core.util.Int2
 
-interface Reservation<Pixel> : Iterable<Pair<Int2, Pixel>> {
+interface Layer<Pixel> : Iterable<Pair<Int2, Pixel>> {
     val size: Int2
 
     operator fun set(posX: Int, posY: Int, pixel: Pixel)

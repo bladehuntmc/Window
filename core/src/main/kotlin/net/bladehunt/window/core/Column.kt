@@ -24,8 +24,8 @@
 package net.bladehunt.window.core
 
 import net.bladehunt.window.core.exception.WindowOverflowException
-import net.bladehunt.window.core.reservation.OffsetLimitedReservation
-import net.bladehunt.window.core.reservation.Reservation
+import net.bladehunt.window.core.layer.OffsetLimitedLayer
+import net.bladehunt.window.core.layer.Layer
 import net.bladehunt.window.core.util.Int2
 import net.bladehunt.window.core.widget.Widget
 import net.bladehunt.window.core.widget.WidgetParent
@@ -43,12 +43,12 @@ abstract class Column<T> : Widget<T>(), WidgetParent<T> {
         _children.add(widget)
     }
 
-    override fun onRender(reservation: Reservation<T>): Int2 {
+    override fun onRender(layer: Layer<T>): Int2 {
         val flexible = _children.filter { it.size.flexY }
         var each = 0
         var remainder = 0
         if (flexible.isNotEmpty()) {
-            val availableSpace = reservation.size.y - _children.sumOf { widget ->
+            val availableSpace = layer.size.y - _children.sumOf { widget ->
                 if (flexible.contains(widget)) 0 else widget.size.y
             }
             each = availableSpace.floorDiv(flexible.size)
@@ -60,12 +60,12 @@ abstract class Column<T> : Widget<T>(), WidgetParent<T> {
         var maxSizeX = 0
         _children.forEachIndexed { index, widget ->
             val offsetY = previousPosY
-            val res = OffsetLimitedReservation(
-                reservation,
+            val res = OffsetLimitedLayer(
+                layer,
                 0,
                 offsetY,
                 Int2(
-                    reservation.size.x,
+                    layer.size.x,
                     if (widget.size.flexX) each + (if (index < remainder) 1 else 0) else widget.size.y
                 )
             )

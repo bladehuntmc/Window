@@ -23,17 +23,15 @@
 
 package net.bladehunt.window.minestom
 
-import net.bladehunt.kotstom.SchedulerManager
 import net.bladehunt.kotstom.dsl.listen
 import net.bladehunt.kotstom.dsl.runnable
 import net.bladehunt.kotstom.extension.rowSize
 import net.bladehunt.kotstom.extension.slots
-import net.bladehunt.kotstom.util.MinestomRunnable
 import net.bladehunt.window.core.Column
 import net.bladehunt.window.core.util.Int2
 import net.bladehunt.window.core.util.Size2
 import net.bladehunt.window.minestom.event.MinestomEvent
-import net.bladehunt.window.minestom.inventory.InventoryReservation
+import net.bladehunt.window.minestom.inventory.InventoryLayer
 import net.bladehunt.window.minestom.inventory.WindowInventory
 import net.kyori.adventure.text.Component
 import net.minestom.server.MinecraftServer
@@ -62,18 +60,18 @@ class MinestomWindow(
                 inventory.inventoryType.rowSize,
                 inventory.size / inventory.inventoryType.rowSize
             )
-            val reservation = InventoryReservation(
+            val layer = InventoryLayer(
                 size,
                 transaction
             )
-            onRender(reservation)
+            onRender(layer)
             listener = { event: InventoryPreClickEvent ->
                 val slots = event.clickInfo.slots
                 when (slots.size) {
                     0 -> {}
                     1 -> {
                         val (slot) = slots
-                        reservation[slot % inventory.inventoryType.rowSize, slot / inventory.inventoryType.rowSize].second?.interact(
+                        layer[slot % inventory.inventoryType.rowSize, slot / inventory.inventoryType.rowSize].second?.interact(
                             MinestomEvent.PreClickEvent(event)
                         )
                         event.isCancelled = true
