@@ -34,3 +34,18 @@ operator fun <T> Array<Array<T>>.set(x: Int, y: Int, value: T) {
     this[x][y] = value
 }
 operator fun <T> Array<Array<T>>.get(x: Int, y: Int, value: T) = this[x][y]
+
+
+inline fun <T> Array<Array<T>>.forEach(block: (x: Int, y: Int, value: T?) -> Unit) {
+    for (x in this.indices) {
+        for (y in this[x].indices) {
+            block(x, y, this[x][y])
+        }
+    }
+}
+inline fun <T> Array<Array<T?>>.forEachNotNull(block: (x: Int, y: Int, value: T) -> Unit) {
+    forEach { x, y, value ->
+        if (value == null) return@forEach
+        block(x, y, value)
+    }
+}

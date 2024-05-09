@@ -23,6 +23,8 @@
 
 package net.bladehunt.window.core.reservation
 
+import net.bladehunt.window.core.ext.forEach
+import net.bladehunt.window.core.ext.forEachNotNull
 import net.bladehunt.window.core.util.Int2
 
 inline fun <reified T> ArrayReservationImpl(size: Int2): ArrayReservationImpl<T> = ArrayReservationImpl(
@@ -63,19 +65,6 @@ class ArrayReservationImpl<Pixel>(
             pixels.forEachNotNull { x, y, value ->
                 yield(Int2(x, y) to value)
             }
-        }
-    }
-    private inline fun Array<Array<Pixel?>>.forEach(block: (x: Int, y: Int, value: Pixel?) -> Unit) {
-        for (x in this.indices) {
-            for (y in this[x].indices) {
-                block(x, y, this[x][y])
-            }
-        }
-    }
-    private inline fun Array<Array<Pixel?>>.forEachNotNull(block: (x: Int, y: Int, value: Pixel) -> Unit) {
-        forEach { x, y, value ->
-            if (value == null) return@forEach
-            block(x, y, value)
         }
     }
 }
