@@ -23,9 +23,12 @@
 
 package net.bladehunt.window.minestom
 
+import net.bladehunt.kotstom.SchedulerManager
 import net.bladehunt.kotstom.dsl.listen
+import net.bladehunt.kotstom.dsl.runnable
 import net.bladehunt.kotstom.extension.rowSize
 import net.bladehunt.kotstom.extension.slots
+import net.bladehunt.kotstom.util.MinestomRunnable
 import net.bladehunt.window.core.Column
 import net.bladehunt.window.core.util.Int2
 import net.bladehunt.window.core.util.Size2
@@ -36,6 +39,8 @@ import net.kyori.adventure.text.Component
 import net.minestom.server.MinecraftServer
 import net.minestom.server.event.inventory.InventoryPreClickEvent
 import net.minestom.server.inventory.InventoryType
+import net.minestom.server.timer.Task
+import net.minestom.server.timer.TaskSchedule
 
 class MinestomWindow(
     inventoryType: InventoryType,
@@ -52,6 +57,7 @@ class MinestomWindow(
 
     fun render() {
         inventory.transaction { transaction ->
+            //transaction.clear()
             val size = Int2(
                 inventory.inventoryType.rowSize,
                 inventory.size / inventory.inventoryType.rowSize
@@ -60,9 +66,7 @@ class MinestomWindow(
                 size,
                 transaction
             )
-            onRender(
-                reservation
-            )
+            onRender(reservation)
             listener = { event: InventoryPreClickEvent ->
                 val slots = event.clickInfo.slots
                 when (slots.size) {
@@ -77,6 +81,20 @@ class MinestomWindow(
                     else -> {}
                 }
             }
+        }
+    }
+
+    // Queue section
+    private var queue: Task? = null
+    override fun requestUpdate() {
+        if (queue == null) {
+            queue = runnable {
+                delay = TaskSchedule.nextTick()
+                run {
+                    render()
+                    queue = null
+                }
+            }.schedule()
         }
     }
 

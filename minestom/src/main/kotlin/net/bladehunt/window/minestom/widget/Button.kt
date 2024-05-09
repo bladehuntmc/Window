@@ -37,12 +37,19 @@ class Button(
     itemStack: ItemStack = ItemStack.of(Material.STONE),
     interaction: Interaction<MinestomEvent> = Interaction { _ -> },
 ) : Widget<WindowItem>() {
-    override val size: Size2 = Size2(1, 1)
+    override val size: Size2 = Size2(1, true, 1, true)
     var interaction: Button.() -> Interaction<MinestomEvent> = { interaction }
     var itemStack: Button.() -> ItemStack = { itemStack }
 
+    var finalSize: Button.() -> Int2 = { size.toInt2() }
+
     override fun onRender(reservation: Reservation<WindowItem>): Int2 {
-        reservation[0, 0] = itemStack() to interaction()
-        return size.toInt2()
+        val size = finalSize()
+        for (x in 0..<size.x) {
+            for (y in 0..<size.y) {
+                reservation[x, y] = itemStack() to interaction()
+            }
+        }
+        return size
     }
 }

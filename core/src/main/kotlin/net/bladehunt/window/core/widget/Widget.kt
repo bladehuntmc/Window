@@ -38,12 +38,13 @@ abstract class Widget<T> : Sized, ReactiveContext {
 
     open var isDirty: Boolean = true
         protected set
-    private lateinit var previousFinalSize: Int2
+    var previousFinalSize: Int2? = null
 
     fun addUpdateHandler(any: Any, handler: () -> Unit) {
         updateHandlers[any] = handler
     }
-    fun requestUpdate() {
+
+    open fun requestUpdate() {
         updateHandlers.values.forEach { it() }
     }
 
@@ -56,9 +57,11 @@ abstract class Widget<T> : Sized, ReactiveContext {
             returnsNotNull() implies force
         }
         if (isDirty || force) {
+            reservation.clear()
             previousFinalSize = onRender(reservation)
+            isDirty = false
         }
-        return previousFinalSize
+        return previousFinalSize!!
     }
 
     override fun onSubscribe(publisher: EventPublisher) {}
