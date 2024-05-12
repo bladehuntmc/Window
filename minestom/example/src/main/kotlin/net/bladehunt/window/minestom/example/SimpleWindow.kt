@@ -36,7 +36,7 @@ import net.bladehunt.window.core.dsl.row
 import net.bladehunt.window.core.interact.InteractionHandler
 import net.bladehunt.window.core.util.Size2
 import net.bladehunt.window.core.widget.Button
-import net.bladehunt.window.minestom.dsl.window
+import net.bladehunt.window.minestom.window
 import net.minestom.server.MinecraftServer
 import net.minestom.server.event.player.AsyncPlayerConfigurationEvent
 import net.minestom.server.event.player.PlayerStartSneakingEvent

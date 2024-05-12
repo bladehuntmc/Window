@@ -18,5 +18,6 @@ include(
     "minestom",
     "minestom:example",
     "minestom:components",
-    "paper"
+    "paper",
+    "paper:example"
 )

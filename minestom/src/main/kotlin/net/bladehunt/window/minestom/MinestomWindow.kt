@@ -60,10 +60,7 @@ class MinestomWindow(
     override fun render() {
         inventory.transaction { transaction ->
             transaction.clear()
-            val size = Int2(
-                inventory.inventoryType.rowSize,
-                inventory.size / inventory.inventoryType.rowSize
-            )
+            val size = size.toInt2()
             val layer = InventoryLayer(
                 size,
                 transaction

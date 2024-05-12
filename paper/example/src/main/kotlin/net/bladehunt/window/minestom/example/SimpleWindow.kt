@@ -21,17 +21,25 @@
  * OTHER DEALINGS IN THE SOFTWARE.
  */
 
-package net.bladehunt.window.minestom.dsl
+package net.bladehunt.window.minestom.example
 
-import net.bladehunt.window.core.dsl.WindowDsl
-import net.bladehunt.window.minestom.MinestomWindow
-import net.minestom.server.inventory.InventoryType
+import kotlinx.coroutines.runBlocking
+import net.bladehunt.window.core.dsl.button
+import net.bladehunt.window.core.dsl.column
+import net.bladehunt.window.core.interact.InteractionHandler
+import net.bladehunt.window.paper.window
+import org.bukkit.Material
+import org.bukkit.inventory.ItemStack
 
-@WindowDsl
-inline fun window(
-    inventoryType: InventoryType,
-    block: @WindowDsl MinestomWindow.() -> Unit
-): MinestomWindow = MinestomWindow(inventoryType).apply {
-    block()
-    render()
+fun main() = runBlocking {
+    window(null, org.bukkit.event.inventory.InventoryType.LOOM) {
+        column {
+            button {
+                display = {
+                    ItemStack(Material.ACACIA_BUTTON)
+                }
+                interaction = InteractionHandler { event -> }
+            }
+        }
+    }
 }
