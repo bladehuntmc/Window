@@ -32,37 +32,44 @@ import net.bladehunt.window.core.util.Int2
 import net.bladehunt.window.core.util.Size2
 import net.kyori.adventure.text.Component
 import org.bukkit.event.inventory.InventoryClickEvent
-import org.bukkit.event.inventory.InventoryEvent
-import org.bukkit.event.inventory.InventoryInteractEvent
 import org.bukkit.event.inventory.InventoryType
+import org.bukkit.inventory.Inventory
+import org.bukkit.inventory.InventoryHolder
 import org.bukkit.inventory.ItemStack
 import org.bukkit.plugin.Plugin
 
 class PaperWindow(
     plugin: Plugin,
-    inventoryType: InventoryType,
-    size: Int = inventoryType.defaultSize
-) : Window<Interactable<ItemStack, InventoryInteractEvent>>(Size2(9, size / 9)) {
-    private val interactionLayer = ArrayLayerImpl<InteractionHandler<InventoryInteractEvent>>(this.size.toInt2())
+    inventoryType: InventoryType = InventoryType.CHEST,
+    rowSize: Int = 9,
+    size: Int = 27,
+    title: Component = Component.empty()
+) : InventoryHolder, Window<Interactable<ItemStack, InventoryClickEvent>>(Size2(rowSize, inventoryType.defaultSize / rowSize)) {
 
-    val inventory = object : WindowInventory(plugin, inventoryType, Component.text("Window")) {
-        override fun onEvent(event: InventoryEvent) {
-            event as InventoryClickEvent
-            interactionLayer[get2d(event.slot)]?.interact(event)
-        }
-    }
+    private val inventory: Inventory =
+        if (inventoryType == InventoryType.CHEST) plugin.server.createInventory(this, size, title)
+        else plugin.server.createInventory(this, inventoryType, title)
+
+    override fun getInventory(): Inventory = inventory
+
+    private val interactionLayer = ArrayLayerImpl<InteractionHandler<InventoryClickEvent>>(this.size.toInt2())
 
     override fun render() {
-        val newContents = ArrayLayerImpl<Interactable<ItemStack, InventoryInteractEvent>>(size.toInt2())
+        val newContents = ArrayLayerImpl<Interactable<ItemStack, InventoryClickEvent>>(size.toInt2())
         render(newContents, RenderContext(listOf()) { sizeX, sizeY -> ArrayLayerImpl(Int2(sizeX, sizeY)) })
 
         newContents.forEach { (pos, pixel) ->
-            inventory.inventory.setItem(pos.x, pixel.pixel)
+            inventory.setItem(getAbsolutePos(pos.x, pos.y), pixel.pixel)
             val interactionHandler = pixel.interactionHandler ?: return@forEach
             interactionLayer[pos] = interactionHandler
         }
     }
 
-    fun get2d(slot: Int): Int2 = Int2(slot % size.x, slot / size.x)
-    fun getAbsolutePos(x: Int, y: Int): Int = y * size.x + x
+    fun onClick(event: InventoryClickEvent) {
+        event.isCancelled = true
+        interactionLayer[get2d(event.slot)]?.interact(event)
+    }
+
+    private fun get2d(slot: Int): Int2 = Int2(slot % size.x, slot / size.x)
+    private fun getAbsolutePos(x: Int, y: Int): Int = y * size.x + x
 }
