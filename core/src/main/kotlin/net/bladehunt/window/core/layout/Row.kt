@@ -21,7 +21,7 @@
  * OTHER DEALINGS IN THE SOFTWARE.
  */
 
-package net.bladehunt.window.core
+package net.bladehunt.window.core.layout
 
 import net.bladehunt.window.core.layer.Layer
 import net.bladehunt.window.core.render.RenderContext
@@ -30,7 +30,7 @@ import net.bladehunt.window.core.util.Size2
 import net.bladehunt.window.core.widget.Widget
 import net.bladehunt.window.core.widget.WidgetParent
 
-open class Column<T>(override val size: Size2) : Widget<T>(), WidgetParent<T> {
+open class Row<T>(override val size: Size2) : Widget<T>(), WidgetParent<T> {
     private val _children: MutableList<Widget<T>> = arrayListOf()
     override val children: Collection<Widget<T>>
         get() = _children.toList()
@@ -49,27 +49,28 @@ open class Column<T>(override val size: Size2) : Widget<T>(), WidgetParent<T> {
         val (_, layerProvider) = context
 
         // Calculate flexes
-        val flexible = _children.filter { it.size.flexY }
+        val flexible = _children.filter { it.size.flexX }
         var each = 0
         var remainder = 0
         if (flexible.isNotEmpty()) {
-            val availableSpace = layer.size.y - _children.sumOf { widget ->
-                if (flexible.contains(widget)) 0 else widget.size.y
+            val availableSpace = layer.size.x - _children.sumOf { widget ->
+                if (flexible.contains(widget)) 0 else widget.size.x
             }
             each = availableSpace.floorDiv(flexible.size)
             remainder = availableSpace % flexible.size
         }
 
-        var previousPosY = 0
-        var maxSizeX = 0
+        // Render layers if needed
+        var previousPosX = 0
+        var maxSizeY = 0
         _children.forEachIndexed { index, widget ->
             widget.setUpdateHandler(this) {
                 requestUpdate()
             }
 
             val subLayer = layerProvider(
-                layer.size.x,
-                if (widget.size.flexY) each + (if (index < remainder) 1 else 0) else widget.size.y
+                if (widget.size.flexX) each + (if (index < remainder) 1 else 0) else widget.size.x,
+                layer.size.y
             )
 
             val final = widget.render(
@@ -78,13 +79,13 @@ open class Column<T>(override val size: Size2) : Widget<T>(), WidgetParent<T> {
             )
 
             subLayer.forEach { (pos, pixel) ->
-                layer[pos.x, pos.y + previousPosY] = pixel
+                layer[pos.x + previousPosX, pos.y] = pixel
             }
 
-            if (final.x > maxSizeX) maxSizeX = final.x
-            previousPosY += final.y
+            if (final.y > maxSizeY) maxSizeY = final.y
+            previousPosX += final.x
         }
 
-        return Int2(maxSizeX, previousPosY)
+        return Int2(previousPosX, maxSizeY)
     }
 }

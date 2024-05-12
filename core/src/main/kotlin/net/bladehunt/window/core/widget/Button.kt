@@ -21,18 +21,27 @@
  * OTHER DEALINGS IN THE SOFTWARE.
  */
 
-package net.bladehunt.window.minestom.widget
+package net.bladehunt.window.core.widget
 
+import net.bladehunt.window.core.interact.Interactable
+import net.bladehunt.window.core.interact.InteractionHandler
 import net.bladehunt.window.core.layer.Layer
 import net.bladehunt.window.core.render.RenderContext
 import net.bladehunt.window.core.util.Int2
 import net.bladehunt.window.core.util.Size2
-import net.bladehunt.window.core.widget.Widget
-import net.bladehunt.window.minestom.WindowItem
 
-class Stretch : Widget<WindowItem>() {
-    override val size: Size2 = Size2()
-    override fun render(layer: Layer<WindowItem>, context: RenderContext<WindowItem>): Int2 {
-        return layer.size
+class Button<Pixel, Event> : Widget<Interactable<Pixel, Event>>() {
+    override val size: Size2 = Size2(1, 1)
+
+    var display: (Button<Pixel, Event>.() -> Pixel)? = null
+
+    var interaction: InteractionHandler<Event>? = null
+
+    override fun render(
+        layer: Layer<Interactable<Pixel, Event>>,
+        context: RenderContext<Interactable<Pixel, Event>>
+    ): Int2 {
+        layer[0, 0] = Interactable(display!!.invoke(this), interaction)
+        return size.toInt2()
     }
 }

@@ -23,12 +23,14 @@
 
 package net.bladehunt.minestom.example;
 
+import net.bladehunt.window.core.widget.Button;
 import net.bladehunt.window.minestom.MinestomWindow;
-import net.bladehunt.window.minestom.widget.Button;
 import net.kyori.adventure.text.Component;
 import net.minestom.server.MinecraftServer;
 import net.minestom.server.event.player.AsyncPlayerConfigurationEvent;
 import net.minestom.server.event.player.PlayerStartSneakingEvent;
+import net.minestom.server.event.trait.InventoryEvent;
+import net.minestom.server.event.trait.PlayerEvent;
 import net.minestom.server.instance.InstanceContainer;
 import net.minestom.server.inventory.InventoryType;
 import net.minestom.server.item.ItemStack;
@@ -41,30 +43,15 @@ public class JavaExample {
         InstanceContainer instance = MinecraftServer.getInstanceManager().createInstanceContainer();
 
         MinestomWindow window = new MinestomWindow(InventoryType.CHEST_6_ROW, Component.text("Window"));
-        window.addWidget(
-                new Button(
-                        ItemStack.of(Material.DIAMOND),
-                        (event) -> {
-                            event.getPlayer().sendMessage("You clicked the diamond");
-                        }
-                )
-        );
-        window.addWidget(
-                new Button(
-                        ItemStack.of(Material.SNOW),
-                        (event) -> {
-                            event.getPlayer().sendMessage("You clicked the snow");
-                        }
-                )
-        );
-        window.addWidget(
-                new Button(
-                        ItemStack.of(Material.BOOK),
-                        (event) -> {
-                            event.getPlayer().sendMessage("You clicked the book");
-                        }
-                )
-        );
+
+        Button<ItemStack, InventoryEvent> bookButton = new Button<>();
+        bookButton.setDisplay((button) -> ItemStack.of(Material.BOOK));
+        bookButton.setInteraction((interaction) -> {
+            if (interaction instanceof PlayerEvent event) {
+                event.getPlayer().sendMessage("You clicked the book!");
+            }
+        });
+        window.addWidget(bookButton);
         window.render();
 
         MinecraftServer.getGlobalEventHandler().addListener(AsyncPlayerConfigurationEvent.class, event -> {

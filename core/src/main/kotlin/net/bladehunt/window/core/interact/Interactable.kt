@@ -23,9 +23,7 @@
 
 package net.bladehunt.window.core.interact
 
-import net.bladehunt.window.core.layer.Layer
-
-interface Interactable<T> {
-    val interactionLayer: Layer<Interaction<T>>
-    fun handleInteraction(event: T)
-}
+data class Interactable<Pixel, T>(
+    val pixel: Pixel,
+    val interactionHandler: InteractionHandler<T>?
+)

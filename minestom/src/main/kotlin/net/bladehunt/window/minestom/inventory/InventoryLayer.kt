@@ -23,29 +23,34 @@
 
 package net.bladehunt.window.minestom.inventory
 
-import net.bladehunt.window.core.interact.Interaction
+import net.bladehunt.window.core.interact.Interactable
+import net.bladehunt.window.core.interact.InteractionHandler
 import net.bladehunt.window.core.layer.ArrayLayerImpl
 import net.bladehunt.window.core.layer.Layer
 import net.bladehunt.window.core.util.Int2
-import net.bladehunt.window.minestom.event.MinestomEvent
+import net.minestom.server.event.trait.InventoryEvent
 import net.minestom.server.item.ItemStack
 
 class InventoryLayer(
     override val size: Int2,
     private val transaction: WindowInventory.Transaction,
-) : Layer<Pair<ItemStack, Interaction<MinestomEvent>?>> {
-    private val interactions = ArrayLayerImpl<Interaction<MinestomEvent>?>(size)
+) : Layer<Interactable<ItemStack, InventoryEvent>> {
+    private val interactions = ArrayLayerImpl<InteractionHandler<InventoryEvent>>(size)
 
-    override fun set(posX: Int, posY: Int, pixel: Pair<ItemStack, Interaction<MinestomEvent>?>) {
-        transaction[getAbsoluteSlot(posX, posY)] = pixel.first
-        interactions[posX, posY] = pixel.second
+    override fun set(posX: Int, posY: Int, pixel: Interactable<ItemStack, InventoryEvent>) {
+        transaction[getAbsoluteSlot(posX, posY)] = pixel.pixel
+
+        if (pixel.interactionHandler != null)
+            interactions[posX, posY] = pixel.interactionHandler!!
+        else
+            interactions.remove(posX, posY)
     }
 
-    override fun get(posX: Int, posY: Int): Pair<ItemStack, Interaction<MinestomEvent>?> = transaction[getAbsoluteSlot(posX, posY)] to interactions[posX, posY]
+    override fun get(posX: Int, posY: Int): Interactable<ItemStack, InventoryEvent> = Interactable(transaction[getAbsoluteSlot(posX, posY)], interactions[posX, posY])
 
     override fun remove(posX: Int, posY: Int) {
         transaction[getAbsoluteSlot(posX, posY)] = ItemStack.AIR
-        interactions[posX, posY] = null
+        interactions.remove(posX, posY)
     }
 
     override fun isEmpty(): Boolean = transaction.isEmpty()
@@ -60,8 +65,11 @@ class InventoryLayer(
 
     private fun getAbsoluteSlot(x: Int, y: Int): Int = y * size.x + x
 
-    override fun iterator(): Iterator<Pair<Int2, Pair<ItemStack, Interaction<MinestomEvent>?>>> = transaction.itemStacks.mapIndexed { index, itemStack ->
-        val slot = Int2(index % size.x, index / size.y)
-        slot to (itemStack to interactions[slot])
-    }.iterator()
+    override fun iterator(): Iterator<Pair<Int2, Interactable<ItemStack, InventoryEvent>>> = iterator {
+        for (x in 0..<size.x) {
+            for (y in 0..<size.y) {
+                yield(Int2(x, y) to Interactable(transaction[getAbsoluteSlot(x, y)], interactions[x, y]))
+            }
+        }
+    }
 }

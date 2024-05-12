@@ -21,8 +21,10 @@
  * OTHER DEALINGS IN THE SOFTWARE.
  */
 
-package net.bladehunt.window.core.interact
+package net.bladehunt.window.core.layout
 
-fun interface Interaction<T> {
-    fun interact(interaction: T)
+import net.bladehunt.window.core.util.Size2
+
+abstract class Window<T>(size: Size2) : Column<T>(size) {
+    abstract fun render()
 }

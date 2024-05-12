@@ -24,10 +24,7 @@
 package net.bladehunt.window.minestom.dsl
 
 import net.bladehunt.window.core.dsl.WindowDsl
-import net.bladehunt.window.core.widget.WidgetParent
 import net.bladehunt.window.minestom.MinestomWindow
-import net.bladehunt.window.minestom.WindowItem
-import net.bladehunt.window.minestom.widget.Button
 import net.minestom.server.inventory.InventoryType
 
 @WindowDsl
@@ -37,12 +34,4 @@ inline fun window(
 ): MinestomWindow = MinestomWindow(inventoryType).apply {
     block()
     render()
-}
-
-@WindowDsl
-inline fun WidgetParent<WindowItem>.button(
-    block: @WindowDsl Button.() -> Unit
-): Button = Button().also { button ->
-    button.block()
-    addWidget(button)
 }

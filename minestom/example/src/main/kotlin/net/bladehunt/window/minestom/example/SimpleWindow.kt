@@ -31,16 +31,17 @@ import net.bladehunt.kotstom.dsl.item.itemName
 import net.bladehunt.kotstom.dsl.listen
 import net.bladehunt.kotstom.extension.asMini
 import net.bladehunt.reakt.reactivity.Signal
+import net.bladehunt.window.core.dsl.button
 import net.bladehunt.window.core.dsl.row
-import net.bladehunt.window.core.interact.Interaction
+import net.bladehunt.window.core.interact.InteractionHandler
 import net.bladehunt.window.core.util.Size2
-import net.bladehunt.window.minestom.dsl.button
+import net.bladehunt.window.core.widget.Button
 import net.bladehunt.window.minestom.dsl.window
-import net.bladehunt.window.minestom.widget.Button
-import net.bladehunt.window.minestom.widget.Stretch
 import net.minestom.server.MinecraftServer
 import net.minestom.server.event.player.AsyncPlayerConfigurationEvent
 import net.minestom.server.event.player.PlayerStartSneakingEvent
+import net.minestom.server.event.trait.InventoryEvent
+import net.minestom.server.event.trait.PlayerEvent
 import net.minestom.server.inventory.InventoryType
 import net.minestom.server.item.ItemStack
 import net.minestom.server.item.Material
@@ -51,57 +52,50 @@ fun main() = runBlocking {
     val instance = InstanceManager.createInstanceContainer()
     val (material, setMaterial) = Signal(Material.DIAMOND)
 
-    val bookButton = Button().apply {
-        itemStack = {
+    val bookButton = Button<ItemStack, InventoryEvent>().apply {
+        display = {
             ItemStack.of(Material.BOOK)
         }
-        interaction = {
-            Interaction { event ->
-                event.player.sendMessage("You clicked the book")
-            }
+        interaction = InteractionHandler { event ->
+            if (event !is PlayerEvent) return@InteractionHandler
+            event.player.sendMessage("You clicked the book!")
         }
     }
     val win = window(InventoryType.CHEST_6_ROW) {
         addWidget(bookButton)
-        addWidget(Stretch())
         row(Size2(0, 1)) {
             button {
-                itemStack = {
+                display = {
                     item(material()) {
                         itemName = "<green>Click to randomize".asMini()
                     }
                 }
-                interaction = {
-                    Interaction { event ->
-                        event.player.sendMessage("You clicked the ${material().name().lowercase()}")
-                        setMaterial(Material.values().random())
-                    }
+                interaction = InteractionHandler { event ->
+                    if (event !is PlayerEvent) return@InteractionHandler
+                    event.player.sendMessage("You clicked the ${material().name().lowercase()}")
+                    setMaterial(Material.values().random())
                 }
             }
             button {
-                itemStack = {
+                display = {
                     item(Material.STONE_AXE) {
                         itemName = "<green>Create Book".asMini()
                     }
                 }
-                interaction = {
-                    Interaction { event ->
-                        this@window.addWidget(bookButton, 0)
-                        requestUpdate()
-                    }
+                interaction = InteractionHandler { event ->
+                    this@window.addWidget(bookButton, 0)
+                    requestUpdate()
                 }
             }
             button {
-                itemStack = {
+                display = {
                     item(Material.BARRIER) {
                         itemName = "<red>Remove Book".asMini()
                     }
                 }
-                interaction = {
-                    Interaction { event ->
-                        this@window.removeWidget(bookButton)
-                        requestUpdate()
-                    }
+                interaction = InteractionHandler { event ->
+                    this@window.removeWidget(bookButton)
+                    requestUpdate()
                 }
             }
         }
