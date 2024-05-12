@@ -37,9 +37,10 @@ import org.bukkit.inventory.Inventory
 import org.bukkit.inventory.InventoryHolder
 import org.bukkit.inventory.ItemStack
 import org.bukkit.plugin.Plugin
+import org.bukkit.scheduler.BukkitRunnable
 
 class PaperWindow(
-    plugin: Plugin,
+    private val plugin: Plugin,
     inventoryType: InventoryType = InventoryType.CHEST,
     rowSize: Int = 9,
     size: Int = 27,
@@ -68,6 +69,19 @@ class PaperWindow(
     fun onClick(event: InventoryClickEvent) {
         event.isCancelled = true
         interactionLayer[get2d(event.slot)]?.interact(event)
+    }
+
+    private var runnable: BukkitRunnable? = null
+
+    override fun requestUpdate() {
+        if (runnable != null) return
+        runnable = object : BukkitRunnable() {
+            override fun run() {
+                render()
+                runnable = null
+            }
+        }
+        runnable!!.runTaskLater(plugin, 1)
     }
 
     private fun get2d(slot: Int): Int2 = Int2(slot % size.x, slot / size.x)
