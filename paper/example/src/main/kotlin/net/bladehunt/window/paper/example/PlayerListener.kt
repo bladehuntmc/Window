@@ -21,25 +21,39 @@
  * OTHER DEALINGS IN THE SOFTWARE.
  */
 
-package net.bladehunt.window.minestom.example
+package net.bladehunt.window.paper.example
 
-import kotlinx.coroutines.runBlocking
 import net.bladehunt.window.core.dsl.button
-import net.bladehunt.window.core.dsl.column
 import net.bladehunt.window.core.interact.InteractionHandler
 import net.bladehunt.window.paper.window
 import org.bukkit.Material
+import org.bukkit.event.EventHandler
+import org.bukkit.event.Listener
+import org.bukkit.event.inventory.InventoryType
+import org.bukkit.event.player.PlayerToggleSneakEvent
 import org.bukkit.inventory.ItemStack
 
-fun main() = runBlocking {
-    window(null, org.bukkit.event.inventory.InventoryType.LOOM) {
-        column {
+object PlayerListener : Listener {
+    @EventHandler
+    fun onPlayerSneak(event: PlayerToggleSneakEvent) {
+        val win = window(WindowPlugin.instance, InventoryType.CHEST) {
             button {
                 display = {
                     ItemStack(Material.ACACIA_BUTTON)
                 }
-                interaction = InteractionHandler { event -> }
+                interaction = InteractionHandler { event ->
+                    event.whoClicked.sendMessage("You clicked the acacia button")
+                }
+            }
+            button {
+                display = {
+                    ItemStack(Material.STONE)
+                }
+                interaction = InteractionHandler { event ->
+                    event.whoClicked.sendMessage("You clicked the stone button")
+                }
             }
         }
+        event.player.openInventory(win.inventory)
     }
 }

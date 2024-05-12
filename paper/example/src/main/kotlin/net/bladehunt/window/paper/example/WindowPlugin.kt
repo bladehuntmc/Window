@@ -21,22 +21,21 @@
  * OTHER DEALINGS IN THE SOFTWARE.
  */
 
-package net.bladehunt.window.paper
+package net.bladehunt.window.paper.example
 
-import net.bladehunt.window.core.dsl.WindowDsl
-import net.kyori.adventure.text.Component
-import org.bukkit.event.inventory.InventoryType
-import org.bukkit.plugin.Plugin
+import net.bladehunt.window.paper.PaperWindowPlatform
+import org.bukkit.plugin.java.JavaPlugin
 
-@WindowDsl
-inline fun window(
-    plugin: Plugin,
-    inventoryType: InventoryType = InventoryType.CHEST,
-    rowSize: Int = 9,
-    size: Int = 27,
-    title: Component = Component.empty(),
-    block: @WindowDsl PaperWindow.() -> Unit
-): PaperWindow = PaperWindow(plugin, inventoryType, rowSize, size, title).apply {
-    block()
-    render()
+class WindowPlugin : JavaPlugin() {
+    companion object {
+        lateinit var instance: WindowPlugin
+    }
+    override fun onEnable() {
+        instance = this
+        PaperWindowPlatform.init(this)
+        server.pluginManager.registerEvents(PlayerListener, this)
+    }
+
+    override fun onDisable() {
+    }
 }
