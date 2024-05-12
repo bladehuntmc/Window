@@ -24,6 +24,7 @@
 package net.bladehunt.window.core.layout
 
 import net.bladehunt.window.core.layer.Layer
+import net.bladehunt.window.core.layer.OffsetLimitedLayer
 import net.bladehunt.window.core.render.RenderContext
 import net.bladehunt.window.core.util.Int2
 import net.bladehunt.window.core.util.Size2
@@ -46,8 +47,6 @@ open class Column<T>(override val size: Size2) : Widget<T>(), WidgetParent<T> {
     }
 
     override fun render(layer: Layer<T>, context: RenderContext<T>): Int2 {
-        val (_, layerProvider) = context
-
         // Calculate flexes
         val flexible = _children.filter { it.size.flexY }
         var each = 0
@@ -67,19 +66,18 @@ open class Column<T>(override val size: Size2) : Widget<T>(), WidgetParent<T> {
                 requestUpdate()
             }
 
-            val subLayer = layerProvider(
-                layer.size.x,
-                if (widget.size.flexY) each + (if (index < remainder) 1 else 0) else widget.size.y
-            )
-
             val final = widget.render(
-                subLayer,
+                OffsetLimitedLayer(
+                    layer,
+                    0,
+                    previousPosY,
+                    Int2(
+                        layer.size.x,
+                        if (widget.size.flexY) each + (if (index < remainder) 1 else 0) else widget.size.y
+                    )
+                ),
                 context.copy(path = listOf(*context.path.toTypedArray(), widget))
             )
-
-            subLayer.forEach { (pos, pixel) ->
-                layer[pos.x, pos.y + previousPosY] = pixel
-            }
 
             if (final.x > maxSizeX) maxSizeX = final.x
             previousPosY += final.y
