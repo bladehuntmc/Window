@@ -25,7 +25,6 @@ package net.bladehunt.window.minestom.inventory
 
 import net.bladehunt.window.core.interact.Interactable
 import net.bladehunt.window.core.interact.InteractionHandler
-import net.bladehunt.window.core.layer.ArrayLayerImpl
 import net.bladehunt.window.core.layer.Layer
 import net.bladehunt.window.core.util.Int2
 import net.minestom.server.event.trait.InventoryEvent
@@ -34,16 +33,15 @@ import net.minestom.server.item.ItemStack
 class InventoryLayer(
     override val size: Int2,
     private val transaction: WindowInventory.Transaction,
+    private val interactions: Layer<InteractionHandler<InventoryEvent>>
 ) : Layer<Interactable<ItemStack, InventoryEvent>> {
-    private val interactions = ArrayLayerImpl<InteractionHandler<InventoryEvent>>(size)
 
     override fun set(posX: Int, posY: Int, pixel: Interactable<ItemStack, InventoryEvent>) {
         transaction[getAbsoluteSlot(posX, posY)] = pixel.pixel
 
-        if (pixel.interactionHandler != null)
+        if (pixel.interactionHandler != null) {
             interactions[posX, posY] = pixel.interactionHandler!!
-        else
-            interactions.remove(posX, posY)
+        } else interactions.remove(posX, posY)
     }
 
     override fun get(posX: Int, posY: Int): Interactable<ItemStack, InventoryEvent> = Interactable(transaction[getAbsoluteSlot(posX, posY)], interactions[posX, posY])
