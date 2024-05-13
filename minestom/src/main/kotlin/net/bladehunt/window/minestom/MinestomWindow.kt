@@ -65,7 +65,7 @@ class MinestomWindow(
                 size,
                 transaction
             )
-            render(layer, RenderContext(listOf()) { sizeX, sizeY -> ArrayLayerImpl(Int2(sizeX, sizeY)) })
+            render(layer, RenderContext(this, { sizeX, sizeY -> ArrayLayerImpl(Int2(sizeX, sizeY)) }))
             listener = { event: InventoryPreClickEvent ->
                 val slots = event.clickInfo.slots
                 when (slots.size) {

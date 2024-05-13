@@ -21,15 +21,17 @@
  * OTHER DEALINGS IN THE SOFTWARE.
  */
 
-package net.bladehunt.window.core.render
+package net.bladehunt.window.core.router
 
-import net.bladehunt.window.core.layer.Layer
 import net.bladehunt.window.core.widget.Widget
 
-data class RenderContext<T>(
-    val previous: Widget<T>,
-    val layerProvider: (sizeX: Int, sizeY: Int) -> Layer<T>,
-    val contexts: Map<Class<*>, Any> = mapOf()
+data class LayoutContext<T>(
+    val nextRoutes: List<Route<T>> = emptyList(),
+    val widget: Widget<T>? = null
 ) {
-    inline fun <reified C> getContext(): C? = contexts[C::class.java] as C?
+    fun next(): LayoutContext<T>? {
+        if (nextRoutes.isEmpty()) return null
+        if (nextRoutes.size == 1) return LayoutContext(widget = nextRoutes.first().widget)
+        return LayoutContext(nextRoutes.subList(1, nextRoutes.size - 1))
+    }
 }

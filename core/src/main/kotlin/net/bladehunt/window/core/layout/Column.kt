@@ -76,7 +76,7 @@ open class Column<T>(override val size: Size2) : Widget<T>(), WidgetParent<T> {
                         if (widget.size.flexY) each + (if (index < remainder) 1 else 0) else widget.size.y
                     )
                 ),
-                context.copy(path = listOf(*context.path.toTypedArray(), widget))
+                context.copy(previous = this)
             )
 
             if (final.x > maxSizeX) maxSizeX = final.x

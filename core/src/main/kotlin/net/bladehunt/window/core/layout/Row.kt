@@ -77,7 +77,7 @@ open class Row<T>(override val size: Size2) : Widget<T>(), WidgetParent<T> {
                         layer.size.y
                     )
                 ),
-                context.copy(path = listOf(*context.path.toTypedArray(), widget))
+                context.copy(previous = this)
             )
 
             if (final.y > maxSizeY) maxSizeY = final.y

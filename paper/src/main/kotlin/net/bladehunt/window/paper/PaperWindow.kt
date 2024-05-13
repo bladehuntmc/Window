@@ -57,7 +57,7 @@ class PaperWindow(
 
     override fun render() {
         val newContents = ArrayLayerImpl<Interactable<ItemStack, InventoryClickEvent>>(size.toInt2())
-        render(newContents, RenderContext(listOf()) { sizeX, sizeY -> ArrayLayerImpl(Int2(sizeX, sizeY)) })
+        render(newContents, RenderContext(this, { sizeX, sizeY -> ArrayLayerImpl(Int2(sizeX, sizeY)) }))
 
         newContents.forEach { (pos, pixel) ->
             inventory.setItem(getAbsolutePos(pos.x, pos.y), pixel.pixel)
