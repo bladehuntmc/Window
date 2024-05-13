@@ -21,10 +21,10 @@
  * OTHER DEALINGS IN THE SOFTWARE.
  */
 
-package net.bladehunt.window.core
+package net.bladehunt.window.core.widget
 
 import net.bladehunt.window.core.util.Size2
 
-interface Sized {
-    val size: Size2
+interface Resizable : Sized {
+    override var size: Size2
 }
