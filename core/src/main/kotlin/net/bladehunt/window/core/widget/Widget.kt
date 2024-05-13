@@ -32,8 +32,6 @@ import java.util.WeakHashMap
 abstract class Widget<T> : Sized, ReactiveContext {
     private val updateHandlers: WeakHashMap<Any, () -> Unit> = WeakHashMap()
 
-    var hasChangedSize: Boolean = true
-        protected set
     var isDirty: Boolean = true
         protected set
 

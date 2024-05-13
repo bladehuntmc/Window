@@ -42,7 +42,6 @@ class Button<Pixel, Event>(
                         phase.layer[x, y] = Interactable(display!!.invoke(this), interaction)
                     }
                 }
-                hasChangedSize = false
                 isDirty = false
             }
         }
@@ -50,7 +49,6 @@ class Button<Pixel, Event>(
 
     override var size: Size2 = size
         set(value) {
-            hasChangedSize = true
             isDirty = true
             field = value
             requestUpdate()
