@@ -44,14 +44,16 @@ public class JavaExample {
 
         MinestomWindow window = new MinestomWindow(InventoryType.CHEST_6_ROW, Component.text("Window"));
 
-        Button<ItemStack, InventoryEvent> bookButton = new Button<>();
-        bookButton.setDisplay((button) -> ItemStack.of(Material.BOOK));
-        bookButton.setInteraction((interaction) -> {
-            if (interaction instanceof PlayerEvent event) {
-                event.getPlayer().sendMessage("You clicked the book!");
-            }
-        });
+        Button<ItemStack, InventoryEvent> bookButton = new Button<>(
+                button -> ItemStack.of(Material.BOOK),
+                interaction -> {
+                    if (interaction instanceof PlayerEvent event) {
+                        event.getPlayer().sendMessage("You clicked the book!");
+                    }
+                }
+        );
         window.addWidget(bookButton);
+
         window.render();
 
         MinecraftServer.getGlobalEventHandler().addListener(AsyncPlayerConfigurationEvent.class, event -> {

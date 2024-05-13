@@ -30,12 +30,11 @@ import net.bladehunt.window.core.render.RenderContext
 import net.bladehunt.window.core.util.Int2
 import net.bladehunt.window.core.util.Size2
 
-class Button<Pixel, Event> : Widget<Interactable<Pixel, Event>>() {
-    override val size: Size2 = Size2(1, 1)
-
-    var display: (Button<Pixel, Event>.() -> Pixel)? = null
-
+class Button<Pixel, Event>(
+    var display: (Button<Pixel, Event>.() -> Pixel)? = null,
     var interaction: InteractionHandler<Event>? = null
+) : Widget<Interactable<Pixel, Event>>() {
+    override val size: Size2 = Size2(1, 1)
 
     override fun render(
         layer: Layer<Interactable<Pixel, Event>>,

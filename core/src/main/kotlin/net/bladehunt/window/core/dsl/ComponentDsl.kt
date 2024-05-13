@@ -23,6 +23,27 @@
 
 package net.bladehunt.window.core.dsl
 
-@Target(AnnotationTarget.TYPE, AnnotationTarget.FUNCTION)
-@DslMarker
-annotation class WindowDsl
+import net.bladehunt.window.core.interact.Interactable
+import net.bladehunt.window.core.layout.Column
+import net.bladehunt.window.core.layout.Row
+import net.bladehunt.window.core.util.Size2
+import net.bladehunt.window.core.widget.Button
+import net.bladehunt.window.core.widget.WidgetParent
+
+@WindowDsl
+inline fun <T> WidgetParent<T>.column(size: Size2 = Size2(), block: @WindowDsl Column<T>.() -> Unit): Column<T> = Column<T>(size).apply {
+    block()
+    this@column.addWidget(this)
+}
+
+@WindowDsl
+inline fun <T> WidgetParent<T>.row(size: Size2 = Size2(), block: @WindowDsl Row<T>.() -> Unit): Row<T> = Row<T>(size).apply {
+    block()
+    this@row.addWidget(this)
+}
+
+@WindowDsl
+inline fun <T, E> WidgetParent<Interactable<T, E>>.button(block: Button<T, E>.() -> Unit): Button<T, E> = Button<T, E>().also { button ->
+    button.block()
+    this@button.addWidget(button)
+}
