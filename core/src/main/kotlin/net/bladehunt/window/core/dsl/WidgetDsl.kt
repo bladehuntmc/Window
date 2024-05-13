@@ -28,7 +28,14 @@ import net.bladehunt.window.core.layout.Column
 import net.bladehunt.window.core.layout.Row
 import net.bladehunt.window.core.util.Size2
 import net.bladehunt.window.core.widget.Button
+import net.bladehunt.window.core.widget.Switch
 import net.bladehunt.window.core.widget.WidgetParent
+
+@WindowDsl
+inline fun <T> WidgetParent<T>.switch(block: @WindowDsl Switch<T>.() -> Unit): Switch<T> = Switch<T>().apply {
+    block()
+    this@switch.addWidget(this)
+}
 
 @WindowDsl
 inline fun <T> WidgetParent<T>.column(size: Size2 = Size2(), block: @WindowDsl Column<T>.() -> Unit): Column<T> = Column<T>(size).apply {
