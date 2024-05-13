@@ -26,29 +26,18 @@ package net.bladehunt.window.minestom.example
 import kotlinx.coroutines.runBlocking
 import net.bladehunt.kotstom.GlobalEventHandler
 import net.bladehunt.kotstom.InstanceManager
-import net.bladehunt.kotstom.dsl.item.customName
 import net.bladehunt.kotstom.dsl.item.item
-import net.bladehunt.kotstom.dsl.item.itemName
 import net.bladehunt.kotstom.dsl.listen
-import net.bladehunt.kotstom.extension.asMini
 import net.bladehunt.reakt.reactivity.Signal
 import net.bladehunt.window.core.dsl.*
-import net.bladehunt.window.core.interact.Interactable
 import net.bladehunt.window.core.interact.InteractionHandler
-import net.bladehunt.window.core.layout.Column
-import net.bladehunt.window.core.router.Outlet
-import net.bladehunt.window.core.router.Router
 import net.bladehunt.window.core.util.Size2
-import net.bladehunt.window.core.widget.Button
 import net.bladehunt.window.minestom.window
-import net.kyori.adventure.text.Component
 import net.minestom.server.MinecraftServer
 import net.minestom.server.event.player.AsyncPlayerConfigurationEvent
 import net.minestom.server.event.player.PlayerStartSneakingEvent
-import net.minestom.server.event.trait.InventoryEvent
 import net.minestom.server.event.trait.PlayerEvent
 import net.minestom.server.inventory.InventoryType
-import net.minestom.server.item.ItemStack
 import net.minestom.server.item.Material
 
 fun main() = runBlocking {
@@ -58,50 +47,67 @@ fun main() = runBlocking {
     val (material, setMaterial) = Signal(Material.DIAMOND)
 
     val win = window(InventoryType.CHEST_6_ROW) {
-        router router@{
-            route {
-                widget = Column<Interactable<ItemStack, InventoryEvent>>(Size2()).apply col@{
-                    this@col.row {
-                        button {
-                            display = {
-                                item(Material.ARROW) {
-                                    customName = Component.text("First Route")
-                                }
-                            }
-                            interaction = InteractionHandler {
-                                this@router.path = ""
-                            }
-                        }
-                        button {
-                            display = {
-                                item(Material.ARROW) {
-                                    customName = Component.text("Second Route")
-                                }
-                            }
-                            interaction = InteractionHandler {
-                                this@router.path = "hello"
-                            }
-                        }
-                    }
-                    this@col.addWidget(Outlet())
+        button {
+            size = Size2(1, 1)
+            display = {
+                item(Material.BOOK) {  }
+            }
+            interaction = InteractionHandler { event ->
+                event as PlayerEvent
+                event.player.sendMessage("You clicked the book")
+            }
+        }
+        button {
+            size = Size2(1, 1)
+            display = {
+                item(Material.DIAMOND) {  }
+            }
+            interaction = InteractionHandler { event ->
+                event as PlayerEvent
+                event.player.sendMessage("You clicked the diamond")
+            }
+        }
+        row {
+            button {
+                size = Size2(1, 1)
+                display = {
+                    item(Material.STONE) {  }
+                }
+                interaction = InteractionHandler { event ->
+                    event as PlayerEvent
+                    event.player.sendMessage("You clicked the stone")
                 }
             }
-            route("hello") {
-                widget = Column<Interactable<ItemStack, InventoryEvent>>(Size2()).apply {
-                    row(Size2(0, 1)) {
-                        button {
-                            display = {
-                                item(material()) {
-                                    itemName = "<green>Click to randomize".asMini()
-                                }
-                            }
-                            interaction = InteractionHandler { event ->
-                                if (event !is PlayerEvent) return@InteractionHandler
-                                event.player.sendMessage("You clicked the ${material().name().lowercase()}")
-                                setMaterial(Material.values().random())
-                            }
-                        }
-                    }
+            button {
+                size = Size2(1, 1)
+                display = {
+                    item(Material.STONE) {  }
+                }
+                interaction = InteractionHandler { event ->
+                    event as PlayerEvent
+                    event.player.sendMessage("You clicked the stone")
+                }
+            }
+        }
+        row {
+            button {
+                size = Size2(0, 0)
+                display = {
+                    item(Material.ARROW) {  }
+                }
+                interaction = InteractionHandler { event ->
+                    event as PlayerEvent
+                    event.player.sendMessage("You clicked the arrow")
+                }
+            }
+            button {
+                size = Size2(1, 1)
+                display = {
+                    item(Material.STONE) {  }
+                }
+                interaction = InteractionHandler { event ->
+                    event as PlayerEvent
+                    event.player.sendMessage("You clicked the stone")
                 }
             }
         }

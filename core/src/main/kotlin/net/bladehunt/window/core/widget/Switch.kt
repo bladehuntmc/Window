@@ -23,36 +23,41 @@
 
 package net.bladehunt.window.core.widget
 
+import net.bladehunt.reakt.reactivity.Signal
 import net.bladehunt.window.core.Phase
-import net.bladehunt.window.core.interact.Interactable
-import net.bladehunt.window.core.interact.InteractionHandler
 import net.bladehunt.window.core.util.Size2
 
-class Button<Pixel, Event>(
-    var display: (Button<Pixel, Event>.() -> Pixel)? = null,
-    var interaction: InteractionHandler<Event>? = null,
-    size: Size2 = Size2(1, 1)
-) : Widget<Interactable<Pixel, Event>>(), Resizable {
-    override fun render(phase: Phase<Interactable<Pixel, Event>>) {
+class Switch<T> : WidgetParent<T>, Widget<T>() {
+    override val size: Size2 = Size2()
+    var index by Signal(0)
+
+    private val _children = arrayListOf<Widget<T>>()
+    override val children: Collection<Widget<T>>
+        get() = _children.toList()
+
+    override fun <W : Widget<T>> addWidget(widget: W, index: Int?) {
+        _children.add(widget)
+    }
+
+    override fun <W : Widget<T>> removeWidget(widget: W) {
+        _children.remove(widget)
+    }
+
+    override fun render(phase: Phase<T>) {
         when (phase) {
-            is Phase.BuildPhase -> {}
+            is Phase.BuildPhase -> {
+                phase.node.children.firstOrNull()?.widget?.removeUpdateHandler(this)
+                phase.node.children.clear()
+                val widget = _children.getOrNull(index) ?: return
+                val node = phase.node.createChild(widget, widget.size)
+                widget.render(phase.copy(node = node))
+                widget.setUpdateHandler(this, this::requestUpdate)
+                phase.node.size = node.size
+            }
             is Phase.RenderPhase -> {
-                for (x in 0..<phase.layer.size.x) {
-                    for (y in 0..<phase.layer.size.y) {
-                        phase.layer[x, y] = Interactable(display!!.invoke(this), interaction)
-                    }
-                }
-                hasChangedSize = false
-                isDirty = false
+                val node = phase.node.children.firstOrNull() ?: return
+                node.widget?.render(phase.copy(node = node))
             }
         }
     }
-
-    override var size: Size2 = size
-        set(value) {
-            hasChangedSize = true
-            isDirty = true
-            field = value
-            requestUpdate()
-        }
 }

@@ -27,10 +27,12 @@ import net.bladehunt.kotstom.dsl.listen
 import net.bladehunt.kotstom.dsl.runnable
 import net.bladehunt.kotstom.extension.rowSize
 import net.bladehunt.kotstom.extension.slots
+import net.bladehunt.window.core.Context
+import net.bladehunt.window.core.Phase
 import net.bladehunt.window.core.interact.Interactable
+import net.bladehunt.window.core.interact.InteractionHandler
 import net.bladehunt.window.core.layout.Window
 import net.bladehunt.window.core.layer.ArrayLayerImpl
-import net.bladehunt.window.core.render.RenderContext
 import net.bladehunt.window.core.util.Int2
 import net.bladehunt.window.core.util.Size2
 import net.bladehunt.window.minestom.inventory.InventoryLayer
@@ -49,35 +51,40 @@ class MinestomWindow(
     title: Component = Component.text("Window"),
 ) : Window<Interactable<ItemStack, InventoryEvent>>(Size2(inventoryType.rowSize, inventoryType.size / inventoryType.rowSize)) {
     val inventory = WindowInventory(inventoryType, title)
-    private var listener: (InventoryPreClickEvent) -> Unit = {}
+    val interactionLayer = ArrayLayerImpl<InteractionHandler<InventoryEvent>>(size.toInt2())
 
     init {
-        inventory.eventNode().listen<InventoryPreClickEvent> { event ->
-            listener(event)
+        inventory.eventNode().listen<InventoryPreClickEvent> { event: InventoryPreClickEvent ->
+            val slots = event.clickInfo.slots
+            when (slots.size) {
+                0 -> {}
+                1 -> {
+                    val (slot) = slots
+                    val clickedPosX = slot % inventory.inventoryType.rowSize
+                    val clickedPosY = slot / inventory.inventoryType.rowSize
+                    val handler = interactionLayer[clickedPosX, clickedPosY]
+                    handler?.interact(event)
+                    event.isCancelled = true
+                }
+                else -> {}
+            }
         }
     }
+
+    override val parentNode: Node<Interactable<ItemStack, InventoryEvent>> = Node(widget = this, size = size)
 
     override fun render() {
         inventory.transaction { transaction ->
             transaction.clear()
             val size = size.toInt2()
+            interactionLayer.clear()
             val layer = InventoryLayer(
                 size,
-                transaction
+                transaction,
+                interactionLayer
             )
-            render(layer, RenderContext(this, { sizeX, sizeY -> ArrayLayerImpl(Int2(sizeX, sizeY)) }))
-            listener = { event: InventoryPreClickEvent ->
-                val slots = event.clickInfo.slots
-                when (slots.size) {
-                    0 -> {}
-                    1 -> {
-                        val (slot) = slots
-                        layer[slot % inventory.inventoryType.rowSize, slot / inventory.inventoryType.rowSize].interactionHandler?.interact(event)
-                        event.isCancelled = true
-                    }
-                    else -> {}
-                }
-            }
+            render(Phase.BuildPhase(this, Context(), parentNode))
+            render(Phase.RenderPhase(this, Context(), parentNode, layer))
         }
     }
 

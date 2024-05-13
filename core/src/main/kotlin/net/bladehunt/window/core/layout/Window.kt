@@ -24,7 +24,39 @@
 package net.bladehunt.window.core.layout
 
 import net.bladehunt.window.core.util.Size2
+import net.bladehunt.window.core.widget.Widget
 
 abstract class Window<T>(size: Size2) : Column<T>(size) {
+    abstract val parentNode: Node<T>
+
     abstract fun render()
+
+    data class Node<T>(
+        val parent: Node<T>? = null,
+        val widget: Widget<T>? = null,
+        var size: Size2 = Size2(),
+        val children: MutableList<Node<T>> = arrayListOf()
+    ) {
+        fun createChild(widget: Widget<T>, size: Size2): Node<T> = Node(
+            this,
+            widget,
+            size
+        ).also(children::add)
+        fun removeChild(node: Node<T>) = children.remove(node)
+        fun removeChild(widget: Widget<T>) = children.removeIf { it == widget }
+
+        fun searchLevel(widget: Widget<T>): Node<T>? = children.firstOrNull { it.widget == widget }
+        fun hasChild(widget: Widget<T>): Boolean = children.any { it.widget == widget }
+
+        fun traverseDepthFirst(visit: (Node<T>) -> Unit) {
+            visit(this)
+            children.forEach {
+                it.traverseDepthFirst(visit)
+            }
+        }
+
+        override fun toString(): String {
+            return "Node(widget=$widget, size=$size, children=$children)"
+        }
+    }
 }

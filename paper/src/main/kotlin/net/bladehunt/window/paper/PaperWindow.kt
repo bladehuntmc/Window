@@ -23,11 +23,12 @@
 
 package net.bladehunt.window.paper
 
+import net.bladehunt.window.core.Context
+import net.bladehunt.window.core.Phase
 import net.bladehunt.window.core.interact.Interactable
 import net.bladehunt.window.core.interact.InteractionHandler
 import net.bladehunt.window.core.layer.ArrayLayerImpl
 import net.bladehunt.window.core.layout.Window
-import net.bladehunt.window.core.render.RenderContext
 import net.bladehunt.window.core.util.Int2
 import net.bladehunt.window.core.util.Size2
 import net.kyori.adventure.text.Component
@@ -54,11 +55,12 @@ class PaperWindow(
     override fun getInventory(): Inventory = inventory
 
     private val interactionLayer = ArrayLayerImpl<InteractionHandler<InventoryClickEvent>>(this.size.toInt2())
+    override val parentNode: Node<Interactable<ItemStack, InventoryClickEvent>> = Node(widget = this, size = this.size)
 
     override fun render() {
         val newContents = ArrayLayerImpl<Interactable<ItemStack, InventoryClickEvent>>(size.toInt2())
-        render(newContents, RenderContext(this, { sizeX, sizeY -> ArrayLayerImpl(Int2(sizeX, sizeY)) }))
-
+        render(Phase.BuildPhase(this, Context(), parentNode))
+        render(Phase.RenderPhase(this, Context(), parentNode, newContents))
         newContents.forEach { (pos, pixel) ->
             inventory.setItem(getAbsolutePos(pos.x, pos.y), pixel.pixel)
             val interactionHandler = pixel.interactionHandler ?: return@forEach

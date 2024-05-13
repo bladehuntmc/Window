@@ -21,40 +21,36 @@
  * OTHER DEALINGS IN THE SOFTWARE.
  */
 
-package net.bladehunt.window.core.widget
+package net.bladehunt.window.core
 
-import net.bladehunt.reakt.pubsub.EventPublisher
-import net.bladehunt.reakt.pubsub.event.Event
-import net.bladehunt.reakt.reactivity.ReactiveContext
-import net.bladehunt.window.core.Phase
-import java.util.WeakHashMap
+import net.bladehunt.window.core.layer.Layer
+import net.bladehunt.window.core.layout.Window
 
-abstract class Widget<T> : Sized, ReactiveContext {
-    private val updateHandlers: WeakHashMap<Any, () -> Unit> = WeakHashMap()
+sealed interface Phase<T> {
+    val window: Window<T>
+    val context: Context
 
-    var hasChangedSize: Boolean = true
-        protected set
-    var isDirty: Boolean = true
-        protected set
+    /**
+     * In this phase, nodes should be appended to the parent.
+     */
+    data class BuildPhase<T>(
+        override val window: Window<T>,
+        override val context: Context,
+        val node: Window.Node<T>
+    ) : Phase<T>
 
-    fun setUpdateHandler(any: Any, handler: () -> Unit) {
-        updateHandlers[any] = handler
-    }
-    fun removeUpdateHandler(any: Any) {
-        updateHandlers.remove(any)
-    }
+    /**
+     * In this phase, widgets should be rendered to the layer
+     * At this point, the size of the node shouldn't be changed.
+     */
+    data class RenderPhase<T>(
+        override val window: Window<T>,
+        override val context: Context,
+        val node: Window.Node<T>,
+        val layer: Layer<T>
+    ) : Phase<T>
 
-    open fun requestUpdate() {
-        updateHandlers.values.forEach { it() }
-    }
-
-    abstract fun render(phase: Phase<T>)
-
-    override fun onSubscribe(publisher: EventPublisher) {}
-    override fun onUnsubscribe(publisher: EventPublisher) {}
-
-    override fun onEvent(event: Event) {
-        isDirty = true
-        requestUpdate()
-    }
+    fun component1(): Window<T>
+    fun component2(): Context
+    fun component3(): Window.Node<T>
 }

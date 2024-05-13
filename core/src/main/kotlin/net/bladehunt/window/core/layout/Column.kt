@@ -23,9 +23,8 @@
 
 package net.bladehunt.window.core.layout
 
-import net.bladehunt.window.core.layer.Layer
+import net.bladehunt.window.core.Phase
 import net.bladehunt.window.core.layer.OffsetLimitedLayer
-import net.bladehunt.window.core.render.RenderContext
 import net.bladehunt.window.core.util.Int2
 import net.bladehunt.window.core.util.Size2
 import net.bladehunt.window.core.widget.Widget
@@ -41,18 +40,21 @@ open class Column<T>(override val size: Size2) : Widget<T>(), WidgetParent<T> {
     }
 
     override fun <W : Widget<T>> addWidget(widget: W, index: Int?) {
+        if (_children.contains(widget)) return
         if (index == null) {
             _children.add(widget)
         } else _children.add(index, widget)
     }
 
-    override fun render(layer: Layer<T>, context: RenderContext<T>): Int2 {
-        // Calculate flexes
-        val flexible = _children.filter { it.size.flexY }
+    private fun render(phase: Phase.RenderPhase<T>) {
+        val layer = phase.layer
+
+        // Finalize flexes
+        val flexible = phase.node.children.filter { it.size.flexY }
         var each = 0
         var remainder = 0
         if (flexible.isNotEmpty()) {
-            val availableSpace = layer.size.y - _children.sumOf { widget ->
+            val availableSpace = layer.size.y - phase.node.children.sumOf { widget ->
                 if (flexible.contains(widget)) 0 else widget.size.y
             }
             each = availableSpace.floorDiv(flexible.size)
@@ -60,29 +62,64 @@ open class Column<T>(override val size: Size2) : Widget<T>(), WidgetParent<T> {
         }
 
         var previousPosY = 0
-        var maxSizeX = 0
-        _children.forEachIndexed { index, widget ->
+        phase.node.children.forEachIndexed { index, node ->
+            val widget = node.widget ?: return@forEachIndexed
             widget.setUpdateHandler(this) {
                 requestUpdate()
             }
 
-            val final = widget.render(
-                OffsetLimitedLayer(
-                    layer,
-                    0,
-                    previousPosY,
-                    Int2(
-                        layer.size.x,
-                        if (widget.size.flexY) each + (if (index < remainder) 1 else 0) else widget.size.y
-                    )
-                ),
-                context.copy(previous = this)
+            val offsetLayer = OffsetLimitedLayer(
+                layer,
+                0,
+                previousPosY,
+                Int2(
+                    if (node.size.flexX) layer.size.x else node.size.x,
+                    if (node.size.flexY) each + (if (index < remainder) 1 else 0) else node.size.y
+                )
+            )
+            widget.render(
+                phase.copy(node = node, layer = offsetLayer)
             )
 
-            if (final.x > maxSizeX) maxSizeX = final.x
-            previousPosY += final.y
+            previousPosY += offsetLayer.size.y
         }
+    }
 
-        return Int2(maxSizeX, previousPosY)
+    override fun render(phase: Phase<T>) {
+        when (phase) {
+            is Phase.BuildPhase -> {
+                val node = phase.node
+                _children.forEach { widget ->
+                    val childNode = node.searchLevel(widget) ?: node.createChild(widget, widget.size)
+                    widget.render(phase.copy(node = childNode))
+                }
+                var sizeX = 0
+                var flexX = false
+                var sizeY = 0
+                var flexY = false
+                if (size.flexY) {
+                    sizeY = 0
+                    for (child in node.children) {
+                        if (child.size.flexX) {
+                            flexX = true
+                            sizeX = size.x
+                        }
+                        if (!flexX) sizeX = child.size.x
+                        if (child.size.flexY) {
+                            flexY = true
+                            sizeY = size.y
+                        }
+                        if (!flexY) sizeY += child.size.y
+                    }
+                }
+                node.size = Size2(
+                    if (size.flexX) sizeX else size.x,
+                    flexX && size.flexX,
+                    if (size.flexY) sizeY else size.y,
+                    flexY && size.flexY,
+                )
+            }
+            is Phase.RenderPhase -> render(phase)
+        }
     }
 }

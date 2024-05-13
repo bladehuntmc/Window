@@ -21,24 +21,23 @@
  * OTHER DEALINGS IN THE SOFTWARE.
  */
 
-package net.bladehunt.window.core.router
+package net.bladehunt.window.core
 
-import net.bladehunt.window.core.widget.Widget
-
-class Route<T>(
-    val name: String,
-    var widget: Widget<T>? = null
+data class Context(
+    private val contexts: Map<Class<*>, Any> = mapOf()
 ) {
-    val children: MutableMap<String, Route<T>> = hashMapOf()
-
-    fun addRoute(route: Route<T>) {
-        children[route.name] = route
-    }
-
-    fun getRoute(path: String): Route<T>? {
-        val split = path.split("/", limit = 1)
-        if (split.size == 1) return this
-
-        return children[split[0]]?.getRoute(split[1])
-    }
+    fun <T> useContext(clazz: Class<T>): T? = contexts[clazz]?.let { it as? T }
+    inline fun <reified T> useContext() = useContext(T::class.java)
+    fun <T> withoutContext(clazz: Class<T>): Context = copy(
+        contexts = HashMap(contexts).also {
+            it.remove(clazz)
+        }
+    )
+    inline fun <reified T> withoutContext(): Context = withoutContext(T::class.java)
+    fun <T> withContext(clazz: Class<T>, value: T): Context = copy(
+        contexts = HashMap(contexts).also {
+            it[clazz] = value
+        }
+    )
+    inline fun <reified T> withContext(value: T): Context = withContext(T::class.java, value)
 }

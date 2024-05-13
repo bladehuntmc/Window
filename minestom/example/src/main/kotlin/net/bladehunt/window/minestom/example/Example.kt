@@ -24,111 +24,80 @@
 package net.bladehunt.window.minestom.example
 
 import kotlinx.coroutines.runBlocking
+import net.bladehunt.kotstom.GlobalEventHandler
+import net.bladehunt.kotstom.InstanceManager
+import net.bladehunt.kotstom.dsl.item.customName
+import net.bladehunt.kotstom.dsl.item.item
+import net.bladehunt.kotstom.dsl.item.itemName
+import net.bladehunt.kotstom.dsl.listen
+import net.bladehunt.kotstom.extension.asMini
+import net.bladehunt.reakt.reactivity.Signal
+import net.bladehunt.window.core.dsl.*
+import net.bladehunt.window.core.interact.Interactable
+import net.bladehunt.window.core.interact.InteractionHandler
+import net.bladehunt.window.core.layout.Column
+import net.bladehunt.window.core.util.Size2
+import net.bladehunt.window.core.widget.Switch
+import net.bladehunt.window.minestom.window
+import net.kyori.adventure.text.Component
+import net.minestom.server.MinecraftServer
+import net.minestom.server.event.player.AsyncPlayerConfigurationEvent
+import net.minestom.server.event.player.PlayerStartSneakingEvent
+import net.minestom.server.event.trait.InventoryEvent
+import net.minestom.server.event.trait.PlayerEvent
+import net.minestom.server.inventory.InventoryType
+import net.minestom.server.item.ItemStack
+import net.minestom.server.item.Material
 
 fun main() = runBlocking {
-    /*
     val server = MinecraftServer.init()
 
-    val instance = MinecraftServer.getInstanceManager().createInstanceContainer()
-
-    val materials = arrayOf(
-        Material.WHITE_STAINED_GLASS_PANE,
-        Material.LIGHT_GRAY_STAINED_GLASS_PANE,
-        Material.GRAY_STAINED_GLASS_PANE
-    )
-    val titles = arrayOf(
-        "First Example",
-        "Second Example",
-        "Third Example"
-    )
-
-    val backgroundMaterial = Signal(materials[0])
-    val navbarMaterial = Signal(materials[1])
-    val title = Signal(titles[0])
+    val instance = InstanceManager.createInstanceContainer()
+    val (material, setMaterial) = Signal(Material.DIAMOND)
 
     val win = window(InventoryType.CHEST_6_ROW) {
-        title { Component.text(title()) }
-        container {
-            background { ItemStack.of(backgroundMaterial()) }
-            padding { Padding(1, 1, 1, 0, ItemStack.of(Material.BLACK_STAINED_GLASS_PANE)) }
+        switch {
             column {
-                row {
-                    size = Size2(y = 1)
-                    materials.forEach { material ->
-                        button {
-                            display {
-                                ItemStack.builder(material)
-                                    .displayName(Component.text("Change background"))
-                                    .meta { if (backgroundMaterial() == material) it.enchantment(Enchantment.EFFICIENCY, 1) }
-                                    .build()
-                            }
-                            onClick = {
-                                backgroundMaterial.value = material
-                            }
-                        }
+                button {
+                    size = Size2(0, 0)
+                    display = {
+                        item(material()) {}
+                    }
+                    interaction = InteractionHandler { event ->
+                        this@switch.index = 1
                     }
                 }
-                row {
-                    size = Size2(y = 1)
-                    materials.forEach { material ->
-                        button {
-                            display {
-                                ItemStack.builder(material)
-                                    .displayName(Component.text("Change navbar"))
-                                    .meta { if (navbarMaterial() == material) it.enchantment(Enchantment.EFFICIENCY, 1) }
-                                    .build()
-                            }
-                            onClick = {
-                                navbarMaterial.value = material
-                            }
+                button {
+                    display = {
+                        item(Material.STONE) {
                         }
                     }
-                }
-                row {
-                    size = Size2(y = 1)
-                    titles.forEach { str ->
-                        button {
-                            display {
-                                ItemStack.builder(Material.BOOK)
-                                    .displayName(Component.text("Change navbar"))
-                                    .lore(Component.text(str))
-                                    .meta { if (title() == str) it.enchantment(Enchantment.EFFICIENCY, 1) }
-                                    .build()
-                            }
-                            onClick = {
-                                title.value = str
-                            }
-                        }
+                    interaction = InteractionHandler { event ->
+                        setMaterial(Material.values().random())
                     }
                 }
             }
-        }
-        navbar {
-            fill { ItemStack.of(navbarMaterial()) }
-            navItem {
-                display = {
-                    ItemStack.of(Material.ARROW)
-                }
-            }
-            navItem {
-                display = {
-                    ItemStack.of(Material.ARROW)
+            column {
+                button {
+                    size = Size2(3, 3)
+                    display = {
+                        item(Material.STONE) {
+                        }
+                    }
+                    interaction = InteractionHandler { event ->
+                        this@switch.index = 0
+                    }
                 }
             }
         }
     }
 
-    MinecraftServer.getGlobalEventHandler().addListener(AsyncPlayerConfigurationEvent::class.java) { event ->
+    GlobalEventHandler.listen<AsyncPlayerConfigurationEvent> { event ->
         event.spawningInstance = instance
         val player = event.player
-        player.scheduleNextTick {
-            player.eventNode().addListener(PlayerStartSneakingEvent::class.java) { sneakEvent ->
-                player.openInventory(win.inventory)
-            }
+        player.eventNode().listen<PlayerStartSneakingEvent> {
+            player.openInventory(win.inventory)
         }
     }
-
     server.start("127.0.0.1", 25565)
-
-     */
 }
