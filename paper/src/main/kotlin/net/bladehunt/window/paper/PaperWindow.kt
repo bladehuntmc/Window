@@ -57,6 +57,8 @@ class PaperWindow(
     private val interactionLayer = ArrayLayerImpl<InteractionHandler<InventoryClickEvent>>(this.size.toInt2())
     override val parentNode: Node<Interactable<ItemStack, InventoryClickEvent>> = Node(widget = this, size = this.size)
 
+    override fun createArrayLayer(sizeX: Int, sizeY: Int): ArrayLayerImpl<Interactable<ItemStack, InventoryClickEvent>> = ArrayLayerImpl(Int2(sizeX, sizeY))
+
     override fun render() {
         val newContents = ArrayLayerImpl<Interactable<ItemStack, InventoryClickEvent>>(size.toInt2())
         render(Phase.BuildPhase(this, Context(), parentNode))

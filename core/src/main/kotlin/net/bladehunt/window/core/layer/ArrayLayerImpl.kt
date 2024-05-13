@@ -23,8 +23,10 @@
 
 package net.bladehunt.window.core.layer
 
+import net.bladehunt.window.core.exception.WindowException
 import net.bladehunt.window.core.ext.forEach
 import net.bladehunt.window.core.ext.forEachNotNull
+import net.bladehunt.window.core.layout.Window
 import net.bladehunt.window.core.util.Int2
 
 inline fun <reified T> ArrayLayerImpl(size: Int2): ArrayLayerImpl<T> = ArrayLayerImpl(
@@ -57,6 +59,14 @@ class ArrayLayerImpl<Pixel>(
     override fun clear() {
         pixels.forEach { x, y, _ ->
             pixels[x][y] = null
+        }
+    }
+
+    override fun copyTo(other: Layer<Pixel>) {
+        if (other.size != size) throw WindowException("Layers must be the same size to copy")
+        pixels.forEach { x, y, value ->
+            if (value == null) other.remove(x, y)
+            else other[x, y] = value
         }
     }
 

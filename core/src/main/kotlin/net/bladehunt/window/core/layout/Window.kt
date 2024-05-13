@@ -23,6 +23,7 @@
 
 package net.bladehunt.window.core.layout
 
+import net.bladehunt.window.core.layer.ArrayLayerImpl
 import net.bladehunt.window.core.util.Size2
 import net.bladehunt.window.core.widget.Widget
 
@@ -30,6 +31,8 @@ abstract class Window<T>(size: Size2) : Column<T>(size) {
     abstract val parentNode: Node<T>
 
     abstract fun render()
+
+    abstract fun createArrayLayer(sizeX: Int, sizeY: Int): ArrayLayerImpl<T>
 
     data class Node<T>(
         val parent: Node<T>? = null,

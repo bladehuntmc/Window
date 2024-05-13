@@ -43,5 +43,7 @@ interface Layer<Pixel> : Iterable<Pair<Int2, Pixel>> {
     fun isPositionEmpty(posX: Int, posY: Int): Boolean
     fun isPositionEmpty(pos: Int2): Boolean = isPositionEmpty(pos.x, pos.y)
 
+    fun copyTo(other: Layer<Pixel>)
+
     fun clear()
 }

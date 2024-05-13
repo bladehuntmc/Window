@@ -23,6 +23,7 @@
 
 package net.bladehunt.window.core.layer
 
+import net.bladehunt.window.core.exception.WindowException
 import net.bladehunt.window.core.util.Int2
 
 class OffsetLimitedLayer<Pixel>(
@@ -67,6 +68,17 @@ class OffsetLimitedLayer<Pixel>(
             throw IllegalArgumentException("Position ($posX, $posY) is out of bounds")
         }
         return parent.isPositionEmpty(x, y)
+    }
+
+    override fun copyTo(other: Layer<Pixel>) {
+        if (other.size != size) throw WindowException("Layers must be the same size to copy")
+        for (x in 0..<size.x) {
+            for (y in 0..<size.y) {
+                val value = parent[x + offsetX, y + offsetY]
+                if (value == null) other.remove(x, y)
+                else other[x, y] = value
+            }
+        }
     }
 
     override fun clear() {

@@ -73,6 +73,8 @@ class MinestomWindow(
 
     override val parentNode: Node<Interactable<ItemStack, InventoryEvent>> = Node(widget = this, size = size)
 
+    override fun createArrayLayer(sizeX: Int, sizeY: Int): ArrayLayerImpl<Interactable<ItemStack, InventoryEvent>> = ArrayLayerImpl(Int2(sizeX, sizeY))
+
     override fun render() {
         inventory.transaction { transaction ->
             transaction.clear()

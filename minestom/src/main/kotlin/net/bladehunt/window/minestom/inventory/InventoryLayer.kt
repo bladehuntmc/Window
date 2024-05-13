@@ -56,6 +56,10 @@ class InventoryLayer(
 
     override fun isPositionEmpty(posX: Int, posY: Int): Boolean = transaction[getAbsoluteSlot(posX, posY)].isAir
 
+    override fun copyTo(other: Layer<Interactable<ItemStack, InventoryEvent>>) {
+        throw UnsupportedOperationException("This operation is not supported for inventory layers")
+    }
+
     override fun clear() {
         transaction.clear()
         interactions.clear()
