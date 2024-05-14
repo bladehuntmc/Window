@@ -23,7 +23,7 @@
 
 package net.bladehunt.minestom.example;
 
-import net.bladehunt.window.core.util.FlexedInts;
+import net.bladehunt.window.core.util.FlexPair;
 import net.bladehunt.window.core.widget.Button;
 import net.bladehunt.window.minestom.MinestomWindow;
 import net.kyori.adventure.text.Component;
@@ -52,7 +52,7 @@ public class JavaExample {
                         event.getPlayer().sendMessage("You clicked the book!");
                     }
                 },
-                new FlexedInts(1, 1)
+                new FlexPair(1, 1)
         );
         window.addWidget(bookButton);
 

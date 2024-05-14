@@ -33,12 +33,11 @@ import net.bladehunt.window.core.interact.Interactable
 import net.bladehunt.window.core.interact.InteractionHandler
 import net.bladehunt.window.core.layout.Window
 import net.bladehunt.window.core.layer.ArrayLayerImpl
-import net.bladehunt.window.core.util.PairedInts
-import net.bladehunt.window.core.util.FlexedInts
+import net.bladehunt.window.core.util.IntPair
+import net.bladehunt.window.core.util.FlexPair
 import net.bladehunt.window.minestom.inventory.InventoryLayer
 import net.bladehunt.window.minestom.inventory.WindowInventory
 import net.kyori.adventure.text.Component
-import net.minestom.server.MinecraftServer
 import net.minestom.server.event.inventory.InventoryPreClickEvent
 import net.minestom.server.event.trait.InventoryEvent
 import net.minestom.server.inventory.InventoryType
@@ -51,7 +50,7 @@ class MinestomWindow(
     inventoryType: InventoryType,
     title: Component = Component.text("Window"),
 ) : Window<Interactable<ItemStack, InventoryEvent>>(
-    FlexedInts(
+    FlexPair(
         inventoryType.rowSize,
         inventoryType.size / inventoryType.rowSize
     )
@@ -80,7 +79,7 @@ class MinestomWindow(
     override val parentNode: Node<Interactable<ItemStack, InventoryEvent>> = Node(widget = this, size = size)
 
     override fun createArrayLayer(sizeX: Int, sizeY: Int): ArrayLayerImpl<Interactable<ItemStack, InventoryEvent>> = ArrayLayerImpl(
-        PairedInts(sizeX, sizeY)
+        IntPair(sizeX, sizeY)
     )
 
     override fun render() {

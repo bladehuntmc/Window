@@ -25,13 +25,13 @@ package net.bladehunt.window.core.layout
 
 import net.bladehunt.window.core.Phase
 import net.bladehunt.window.core.layer.OffsetLimitedLayer
-import net.bladehunt.window.core.util.PairedInts
-import net.bladehunt.window.core.util.FlexedInts
+import net.bladehunt.window.core.util.IntPair
+import net.bladehunt.window.core.util.FlexPair
 import net.bladehunt.window.core.widget.Widget
 import net.bladehunt.window.core.widget.WidgetParent
 import kotlin.math.max
 
-class Auto<T>(override val size: FlexedInts) : WidgetParent<T>, Widget<T>() {
+class Auto<T>(override val size: FlexPair) : WidgetParent<T>, Widget<T>() {
     private val _children: MutableList<Widget<T>> = arrayListOf()
     override val children: Collection<Widget<T>>
         get() = _children.toList()
@@ -70,7 +70,7 @@ class Auto<T>(override val size: FlexedInts) : WidgetParent<T>, Widget<T>() {
                 layer,
                 pointerX,
                 pointerY,
-                PairedInts(
+                IntPair(
                     if (child.size.flexX) 1 else child.size.x,
                     if (child.size.flexY) 1 else child.size.y
                 )

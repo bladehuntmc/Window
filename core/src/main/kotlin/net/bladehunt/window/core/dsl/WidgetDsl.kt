@@ -28,7 +28,7 @@ import net.bladehunt.window.core.layout.Auto
 import net.bladehunt.window.core.layout.Column
 import net.bladehunt.window.core.layout.Container
 import net.bladehunt.window.core.layout.Row
-import net.bladehunt.window.core.util.FlexedInts
+import net.bladehunt.window.core.util.FlexPair
 import net.bladehunt.window.core.widget.Button
 import net.bladehunt.window.core.widget.Switch
 import net.bladehunt.window.core.widget.WidgetParent
@@ -39,22 +39,22 @@ inline fun <T> WidgetParent<T>.switch(block: @WindowDsl Switch<T>.() -> Unit): S
     .apply(this::addWidget)
 
 @WindowDsl
-inline fun <T> WidgetParent<T>.column(size: FlexedInts = FlexedInts(), block: @WindowDsl Column<T>.() -> Unit): Column<T> = Column<T>(size)
+inline fun <T> WidgetParent<T>.column(size: FlexPair = FlexPair(), block: @WindowDsl Column<T>.() -> Unit): Column<T> = Column<T>(size)
     .apply(block)
     .apply(this::addWidget)
 
 @WindowDsl
-inline fun <T> WidgetParent<T>.row(size: FlexedInts = FlexedInts(), block: @WindowDsl Row<T>.() -> Unit): Row<T> = Row<T>(size)
+inline fun <T> WidgetParent<T>.row(size: FlexPair = FlexPair(), block: @WindowDsl Row<T>.() -> Unit): Row<T> = Row<T>(size)
     .apply(block)
     .apply(this::addWidget)
 
 @WindowDsl
-inline fun <T> WidgetParent<T>.auto(size: FlexedInts = FlexedInts(), block: @WindowDsl Auto<T>.() -> Unit): Auto<T> = Auto<T>(size)
+inline fun <T> WidgetParent<T>.auto(size: FlexPair = FlexPair(), block: @WindowDsl Auto<T>.() -> Unit): Auto<T> = Auto<T>(size)
     .apply(block)
     .apply(this::addWidget)
 
 @WindowDsl
-inline fun <T> WidgetParent<T>.container(size: FlexedInts = FlexedInts(), block: @WindowDsl Container<T>.() -> Unit): Container<T> = Container<T>(size)
+inline fun <T> WidgetParent<T>.container(size: FlexPair = FlexPair(), block: @WindowDsl Container<T>.() -> Unit): Container<T> = Container<T>(size)
     .apply(block)
     .apply(this::addWidget)
 

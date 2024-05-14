@@ -32,7 +32,7 @@ import net.bladehunt.kotstom.dsl.listen
 import net.bladehunt.reakt.reactivity.Signal
 import net.bladehunt.window.core.dsl.*
 import net.bladehunt.window.core.interact.InteractionHandler
-import net.bladehunt.window.core.util.FlexedInts
+import net.bladehunt.window.core.util.FlexPair
 import net.bladehunt.window.minestom.window
 import net.kyori.adventure.text.Component
 import net.minestom.server.MinecraftServer
@@ -51,7 +51,7 @@ fun main() = runBlocking {
     val win = window(InventoryType.CHEST_6_ROW) {
         val switch = switch {
             button {
-                size = FlexedInts()
+                size = FlexPair()
                 display = {
                     item(material()) {}
                 }
@@ -69,7 +69,7 @@ fun main() = runBlocking {
                     }
                 }
                 button {
-                    size = FlexedInts()
+                    size = FlexPair()
                     display = {
                         item(material()) {}
                     }

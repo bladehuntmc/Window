@@ -23,25 +23,25 @@
 
 package net.bladehunt.window.core.layer
 
-import net.bladehunt.window.core.util.PairedInts
+import net.bladehunt.window.core.util.IntPair
 
-interface Layer<Pixel> : Iterable<Pair<PairedInts, Pixel>> {
-    val size: PairedInts
+interface Layer<Pixel> : Iterable<Pair<IntPair, Pixel>> {
+    val size: IntPair
 
     operator fun set(posX: Int, posY: Int, pixel: Pixel)
     operator fun get(posX: Int, posY: Int): Pixel?
 
-    operator fun set(pos: PairedInts, pixel: Pixel) = set(pos.x, pos.y, pixel)
-    operator fun get(pos: PairedInts): Pixel? = get(pos.x, pos.y)
+    operator fun set(pos: IntPair, pixel: Pixel) = set(pos.x, pos.y, pixel)
+    operator fun get(pos: IntPair): Pixel? = get(pos.x, pos.y)
 
     fun remove(posX: Int, posY: Int)
-    fun remove(pos: PairedInts) = remove(pos.x, pos.y)
+    fun remove(pos: IntPair) = remove(pos.x, pos.y)
 
     fun isEmpty(): Boolean
     fun isNotEmpty(): Boolean
 
     fun isPositionEmpty(posX: Int, posY: Int): Boolean
-    fun isPositionEmpty(pos: PairedInts): Boolean = isPositionEmpty(pos.x, pos.y)
+    fun isPositionEmpty(pos: IntPair): Boolean = isPositionEmpty(pos.x, pos.y)
 
     fun copyTo(other: Layer<Pixel>)
 

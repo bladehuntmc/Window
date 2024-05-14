@@ -26,12 +26,12 @@ package net.bladehunt.window.core.widget
 import net.bladehunt.window.core.Phase
 import net.bladehunt.window.core.interact.Interactable
 import net.bladehunt.window.core.interact.InteractionHandler
-import net.bladehunt.window.core.util.FlexedInts
+import net.bladehunt.window.core.util.FlexPair
 
 class Button<Pixel, Event>(
     var display: (Button<Pixel, Event>.() -> Pixel)? = null,
     var interaction: InteractionHandler<Event>? = null,
-    size: FlexedInts = FlexedInts(
+    size: FlexPair = FlexPair(
         1,
         1
     )
@@ -50,7 +50,7 @@ class Button<Pixel, Event>(
         }
     }
 
-    override var size: FlexedInts = size
+    override var size: FlexPair = size
         set(value) {
             isDirty = true
             field = value

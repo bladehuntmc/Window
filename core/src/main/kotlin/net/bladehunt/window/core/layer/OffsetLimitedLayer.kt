@@ -24,13 +24,13 @@
 package net.bladehunt.window.core.layer
 
 import net.bladehunt.window.core.exception.WindowException
-import net.bladehunt.window.core.util.PairedInts
+import net.bladehunt.window.core.util.IntPair
 
 class OffsetLimitedLayer<Pixel>(
     val parent: Layer<Pixel>,
     val offsetX: Int,
     val offsetY: Int,
-    override val size: PairedInts
+    override val size: IntPair
 ) : Layer<Pixel> {
     override fun get(posX: Int, posY: Int): Pixel? {
         if (posX < 0 || posX >= size.x || posY < 0 || posY >= size.y) {
@@ -96,21 +96,21 @@ class OffsetLimitedLayer<Pixel>(
         parent[posX + offsetX, posY + offsetY] = pixel
     }
 
-    override fun iterator(): Iterator<Pair<PairedInts, Pixel>> {
+    override fun iterator(): Iterator<Pair<IntPair, Pixel>> {
         val parentIterator = parent.iterator()
-        return object : Iterator<Pair<PairedInts, Pixel>> {
+        return object : Iterator<Pair<IntPair, Pixel>> {
             override fun hasNext(): Boolean {
                 return parentIterator.hasNext()
             }
 
-            override fun next(): Pair<PairedInts, Pixel> {
+            override fun next(): Pair<IntPair, Pixel> {
                 val (pos, pixel) = parentIterator.next()
                 val x = pos.x + offsetX
                 val y = pos.y + offsetY
                 if (x < 0 || x >= size.x || y < 0 || y >= size.y) {
                     throw IllegalArgumentException("Position ($x, $y) is out of bounds")
                 }
-                return PairedInts(x, y) to pixel
+                return IntPair(x, y) to pixel
             }
         }
     }

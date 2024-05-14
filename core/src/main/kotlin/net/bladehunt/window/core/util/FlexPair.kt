@@ -23,11 +23,11 @@
 package net.bladehunt.window.core.util
 
 @JvmRecord
-data class FlexedInts(val x: Int, val flexX: Boolean, val y: Int, val flexY: Boolean) {
+data class FlexPair(val x: Int, val flexX: Boolean, val y: Int, val flexY: Boolean) {
     constructor(x: Int = 0, y: Int = 0) : this(x, x <= 0, y, y <= 0)
     constructor() : this(0, 0)
 
-    fun toPairedInts(): PairedInts {
-        return PairedInts(x, y)
+    fun toPairedInts(): IntPair {
+        return IntPair(x, y)
     }
 }

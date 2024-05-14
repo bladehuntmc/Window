@@ -26,10 +26,10 @@ package net.bladehunt.window.core.layout
 import net.bladehunt.window.core.Phase
 import net.bladehunt.window.core.layer.Layer
 import net.bladehunt.window.core.layer.OffsetLimitedLayer
-import net.bladehunt.window.core.util.PairedInts
-import net.bladehunt.window.core.util.FlexedInts
+import net.bladehunt.window.core.util.IntPair
+import net.bladehunt.window.core.util.FlexPair
 
-open class Row<T>(override val size: FlexedInts) : LayoutWidget<T>(size) {
+open class Row<T>(override val size: FlexPair) : LayoutWidget<T>(size) {
 
     override fun renderWidget(
         children: MutableList<Window.Node<T>>,
@@ -49,7 +49,7 @@ open class Row<T>(override val size: FlexedInts) : LayoutWidget<T>(size) {
                 layer,
                 pos,
                 0,
-                PairedInts(
+                IntPair(
                     if (node.size.flexX) each + (if (index < remainder) 1 else 0) else node.size.x,
                     if (node.size.flexY) layer.size.y else node.size.y
                 )

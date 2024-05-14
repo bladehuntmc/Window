@@ -25,12 +25,12 @@ package net.bladehunt.window.core.layout
 
 import net.bladehunt.window.core.Phase
 import net.bladehunt.window.core.layer.Layer
-import net.bladehunt.window.core.util.FlexedInts
+import net.bladehunt.window.core.util.FlexPair
 import net.bladehunt.window.core.widget.Widget
 import net.bladehunt.window.core.widget.WidgetParent
 
 // needs better name
-abstract class LayoutWidget<T>(override val size: FlexedInts) : Widget<T>(), WidgetParent<T> {
+abstract class LayoutWidget<T>(override val size: FlexPair) : Widget<T>(), WidgetParent<T> {
 
     private val _children: MutableList<Widget<T>> = arrayListOf()
     override val children: Collection<Widget<T>>
@@ -76,7 +76,7 @@ abstract class LayoutWidget<T>(override val size: FlexedInts) : Widget<T>(), Wid
 
         val (sizeX, flexX, sizeY, flexY) = build(node)
 
-        node.size = FlexedInts(
+        node.size = FlexPair(
             if (size.flexX) sizeX else size.x,
             flexX && size.flexX,
             if (size.flexY) sizeY else size.y,

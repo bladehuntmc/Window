@@ -24,10 +24,10 @@
 package net.bladehunt.window.core.layout
 
 import net.bladehunt.window.core.layer.ArrayLayerImpl
-import net.bladehunt.window.core.util.FlexedInts
+import net.bladehunt.window.core.util.FlexPair
 import net.bladehunt.window.core.widget.Widget
 
-abstract class Window<T>(size: FlexedInts) : Column<T>(size) {
+abstract class Window<T>(size: FlexPair) : Column<T>(size) {
     abstract val parentNode: Node<T>
 
     abstract fun render()
@@ -37,10 +37,10 @@ abstract class Window<T>(size: FlexedInts) : Column<T>(size) {
     data class Node<T>(
         val parent: Node<T>? = null,
         val widget: Widget<T>? = null,
-        var size: FlexedInts = FlexedInts(),
+        var size: FlexPair = FlexPair(),
         val children: MutableList<Node<T>> = arrayListOf()
     ) {
-        fun createChild(widget: Widget<T>, size: FlexedInts): Node<T> = Node(
+        fun createChild(widget: Widget<T>, size: FlexPair): Node<T> = Node(
             this,
             widget,
             size

@@ -29,8 +29,8 @@ import net.bladehunt.window.core.interact.Interactable
 import net.bladehunt.window.core.interact.InteractionHandler
 import net.bladehunt.window.core.layer.ArrayLayerImpl
 import net.bladehunt.window.core.layout.Window
-import net.bladehunt.window.core.util.PairedInts
-import net.bladehunt.window.core.util.FlexedInts
+import net.bladehunt.window.core.util.IntPair
+import net.bladehunt.window.core.util.FlexPair
 import net.kyori.adventure.text.Component
 import org.bukkit.event.inventory.InventoryClickEvent
 import org.bukkit.event.inventory.InventoryType
@@ -47,7 +47,7 @@ class PaperWindow(
     size: Int = 27,
     title: Component = Component.empty()
 ) : InventoryHolder, Window<Interactable<ItemStack, InventoryClickEvent>>(
-    FlexedInts(
+    FlexPair(
         rowSize,
         inventoryType.defaultSize / rowSize
     )
@@ -63,7 +63,7 @@ class PaperWindow(
     override val parentNode: Node<Interactable<ItemStack, InventoryClickEvent>> = Node(widget = this, size = this.size)
 
     override fun createArrayLayer(sizeX: Int, sizeY: Int): ArrayLayerImpl<Interactable<ItemStack, InventoryClickEvent>> = ArrayLayerImpl(
-        PairedInts(sizeX, sizeY)
+        IntPair(sizeX, sizeY)
     )
 
     override fun render() {
@@ -95,7 +95,7 @@ class PaperWindow(
         runnable!!.runTaskLater(plugin, 1)
     }
 
-    private fun get2d(slot: Int): PairedInts =
-        PairedInts(slot % size.x, slot / size.x)
+    private fun get2d(slot: Int): IntPair =
+        IntPair(slot % size.x, slot / size.x)
     private fun getAbsolutePos(x: Int, y: Int): Int = y * size.x + x
 }

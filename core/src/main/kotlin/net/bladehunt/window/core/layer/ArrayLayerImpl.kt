@@ -26,17 +26,17 @@ package net.bladehunt.window.core.layer
 import net.bladehunt.window.core.exception.WindowException
 import net.bladehunt.window.core.ext.forEach
 import net.bladehunt.window.core.ext.forEachNotNull
-import net.bladehunt.window.core.util.PairedInts
+import net.bladehunt.window.core.util.IntPair
 
-inline fun <reified T> ArrayLayerImpl(size: PairedInts): ArrayLayerImpl<T> = ArrayLayerImpl(
+inline fun <reified T> ArrayLayerImpl(size: IntPair): ArrayLayerImpl<T> = ArrayLayerImpl(
     size,
     Array(size.x) { Array(size.y) { null } }
 )
 class ArrayLayerImpl<Pixel>(
-    size: PairedInts,
+    size: IntPair,
     private var pixels: Array<Array<Pixel?>>
 ) : Layer<Pixel> {
-    override var size: PairedInts = size
+    override var size: IntPair = size
         private set
 
     override fun get(posX: Int, posY: Int): Pixel? = pixels[posX][posY]
@@ -69,10 +69,10 @@ class ArrayLayerImpl<Pixel>(
         }
     }
 
-    override fun iterator(): Iterator<Pair<PairedInts, Pixel>> {
+    override fun iterator(): Iterator<Pair<IntPair, Pixel>> {
         return iterator {
             pixels.forEachNotNull { x, y, value ->
-                yield(PairedInts(x, y) to value)
+                yield(IntPair(x, y) to value)
             }
         }
     }

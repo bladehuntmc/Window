@@ -20,10 +20,18 @@
  * FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
  * OTHER DEALINGS IN THE SOFTWARE.
  */
+package net.bladehunt.window.core.util
 
-package net.bladehunt.window.core.ext
+data class IntPair(val x: Int, val y: Int) {
+    operator fun plus(other: IntPair): IntPair {
+        return IntPair(this.x + other.x, this.y + other.y)
+    }
 
-import net.bladehunt.window.core.util.PairedInts
+    operator fun minus(other: IntPair): IntPair {
+        return IntPair(this.x - other.x, this.y - other.y)
+    }
 
-operator fun PairedInts.component1() = this.x
-operator fun PairedInts.component2() = this.y
+    operator fun times(other: IntPair): IntPair {
+        return IntPair(this.x * other.x, this.y * other.y)
+    }
+}
