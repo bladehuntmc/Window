@@ -27,27 +27,12 @@ import net.bladehunt.window.core.Phase
 import net.bladehunt.window.core.layer.OffsetLimitedLayer
 import net.bladehunt.window.core.util.IntPair
 import net.bladehunt.window.core.util.FlexPair
-import net.bladehunt.window.core.widget.Widget
-import net.bladehunt.window.core.widget.WidgetParent
 import kotlin.math.max
 
-class Auto<T>(override val size: FlexPair) : WidgetParent<T>, Widget<T>() {
-    private val _children: MutableList<Widget<T>> = arrayListOf()
-    override val children: Collection<Widget<T>>
-        get() = _children.toList()
+class Auto<T>(size: FlexPair) : LayoutWidget<T>(size) {
+    override fun calculateSize(node: Window.Node<T>): FlexPair = size
 
-    override fun <W : Widget<T>> removeWidget(widget: W) {
-        _children.remove(widget)
-    }
-
-    override fun <W : Widget<T>> addWidget(widget: W, index: Int?) {
-        if (_children.contains(widget)) return
-        if (index == null) {
-            _children.add(widget)
-        } else _children.add(index, widget)
-    }
-
-    private fun render(phase: Phase.RenderPhase<T>) {
+    override fun onRender(phase: Phase.RenderPhase<T>) {
         val layer = phase.layer
 
         var pointerX = 0
@@ -79,20 +64,6 @@ class Auto<T>(override val size: FlexPair) : WidgetParent<T>, Widget<T>() {
             rowHeight = max(rowHeight, child.size.y)
 
             widget.render(phase.copy(node = child, layer = offsetLayer))
-        }
-    }
-
-    override fun render(phase: Phase<T>) {
-        when (phase) {
-            is Phase.BuildPhase -> {
-                val node = phase.node
-                _children.forEach { widget ->
-                    val childNode = node.searchLevel(widget) ?: node.createChild(widget, widget.size)
-                    widget.render(phase.copy(node = childNode))
-                }
-                node.size = size
-            }
-            is Phase.RenderPhase -> render(phase)
         }
     }
 }

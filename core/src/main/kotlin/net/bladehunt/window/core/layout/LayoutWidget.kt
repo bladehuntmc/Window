@@ -24,14 +24,11 @@
 package net.bladehunt.window.core.layout
 
 import net.bladehunt.window.core.Phase
-import net.bladehunt.window.core.layer.Layer
 import net.bladehunt.window.core.util.FlexPair
 import net.bladehunt.window.core.widget.Widget
 import net.bladehunt.window.core.widget.WidgetParent
 
-// needs better name
 abstract class LayoutWidget<T>(override val size: FlexPair) : Widget<T>(), WidgetParent<T> {
-
     private val _children: MutableList<Widget<T>> = arrayListOf()
     override val children: Collection<Widget<T>>
         get() = _children.toList()
@@ -47,77 +44,23 @@ abstract class LayoutWidget<T>(override val size: FlexPair) : Widget<T>(), Widge
         } else _children.add(index, widget)
     }
 
-    private fun render(phase: Phase.RenderPhase<T>) {
-        val layer = phase.layer
-
-        // Finalize flexes
-        val flexible = phase.node.children.filter { it.size.flexX }
-
-        val (each, remainder) = calculateFlexes(flexible, layer, phase)
-
-        renderWidget(phase.node.children, layer, phase, each, remainder)
-    }
-
     override fun render(phase: Phase<T>) {
         when (phase) {
-            is Phase.BuildPhase -> {
-                buildPhase(phase)
-            }
-            is Phase.RenderPhase -> render(phase)
+            is Phase.BuildPhase -> onBuild(phase)
+            is Phase.RenderPhase -> onRender(phase)
         }
     }
 
-    private fun buildPhase(phase: Phase.BuildPhase<T>) {
+    abstract fun calculateSize(node: Window.Node<T>): FlexPair
+
+    abstract fun onRender(phase: Phase.RenderPhase<T>)
+
+    open fun onBuild(phase: Phase.BuildPhase<T>) {
         val node = phase.node
         _children.forEach { widget ->
             val childNode = node.searchLevel(widget) ?: node.createChild(widget, widget.size)
             widget.render(phase.copy(node = childNode))
         }
-
-        val (sizeX, flexX, sizeY, flexY) = build(node)
-
-        node.size = FlexPair(
-            if (size.flexX) sizeX else size.x,
-            flexX && size.flexX,
-            if (size.flexY) sizeY else size.y,
-            flexY && size.flexY,
-        )
+        node.size = calculateSize(node)
     }
-
-    data class FlexValues(
-        val sizeX: Int,
-        val flexX: Boolean,
-        val sizeY: Int,
-        val flexY: Boolean
-    )
-
-    abstract fun build(
-        node: Window.Node<T>,
-    ) : FlexValues
-
-    private fun calculateFlexes(
-        flexible: List<Window.Node<T>>,
-        layer: Layer<T>,
-        phase: Phase.RenderPhase<T>,
-    ): Pair<Int, Int> {
-        var each = 0
-        var remainder = 0
-        if (flexible.isNotEmpty()) {
-            val availableSpace = layer.size.y - phase.node.children.sumOf { widget ->
-                if (flexible.contains(widget)) 0 else widget.size.y
-            }
-            each = availableSpace.floorDiv(flexible.size)
-            remainder = availableSpace % flexible.size
-        }
-        return Pair(each, remainder)
-    }
-
-    abstract fun renderWidget(
-        children: MutableList<Window. Node<T>>,
-        layer: Layer<T>,
-        phase: Phase.RenderPhase<T>,
-        each: Int,
-        remainder: Int
-    )
-
 }

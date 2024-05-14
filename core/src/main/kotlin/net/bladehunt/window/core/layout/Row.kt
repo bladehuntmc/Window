@@ -30,46 +30,49 @@ import net.bladehunt.window.core.util.IntPair
 import net.bladehunt.window.core.util.FlexPair
 
 open class Row<T>(override val size: FlexPair) : LayoutWidget<T>(size) {
+    override fun onRender(phase: Phase.RenderPhase<T>) {
+        val (_, _, node, layer) = phase
+        val flexible = children.filter { it.size.flexX }
+        var each = 0
+        var remainder = 0
+        if (flexible.isNotEmpty()) {
+            val availableSpace = layer.size.x - children.sumOf { widget ->
+                if (flexible.contains(widget)) 0 else widget.size.x
+            }
+            each = availableSpace.floorDiv(flexible.size)
+            remainder = availableSpace % flexible.size
+        }
 
-    override fun renderWidget(
-        children: MutableList<Window.Node<T>>,
-        layer: Layer<T>,
-        phase: Phase.RenderPhase<T>,
-        each: Int,
-        remainder: Int
-    ) {
         var pos = 0
-        children.forEachIndexed { index, node ->
-            val widget = node.widget ?: return;
+        node.children.forEachIndexed { index, child ->
+            val widget = child.widget ?: return@forEachIndexed
             widget.setUpdateHandler(this) {
                 requestUpdate()
             }
 
             val offsetLayer = OffsetLimitedLayer(
                 layer,
-                pos,
                 0,
+                pos,
                 IntPair(
-                    if (node.size.flexX) each + (if (index < remainder) 1 else 0) else node.size.x,
-                    if (node.size.flexY) layer.size.y else node.size.y
+                    if (child.size.flexX) each + (if (index >= remainder) 0 else 1) else child.size.x,
+                    if (child.size.flexY) layer.size.y else child.size.y
                 )
             )
-            widget.render(
-                phase.copy(node = node, layer = offsetLayer)
-            )
+            widget.render(phase.copy(node = child, layer = offsetLayer))
 
             pos += offsetLayer.size.x
         }
     }
 
-    override fun build(node: Window.Node<T>) : FlexValues {
+    override fun calculateSize(node: Window.Node<T>) : FlexPair {
         var sizeX = 0
         var flexX = false
         var sizeY = 0
         var flexY = false
 
-        if (size.flexX) {
-            sizeX = 0
+        if (size.flexY) {
+            sizeY = 0
             for (child in node.children) {
                 if (child.size.flexX) {
                     flexX = true
@@ -84,7 +87,6 @@ open class Row<T>(override val size: FlexPair) : LayoutWidget<T>(size) {
             }
         }
 
-        return(FlexValues(sizeX, flexX, sizeY, flexY))
+        return(FlexPair(sizeX, flexX, sizeY, flexY))
     }
-
 }

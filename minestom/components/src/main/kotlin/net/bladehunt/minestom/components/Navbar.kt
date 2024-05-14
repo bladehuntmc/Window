@@ -25,7 +25,7 @@ package net.bladehunt.minestom.components
 
 import net.bladehunt.window.core.Phase
 import net.bladehunt.window.core.interact.Interactable
-import net.bladehunt.window.core.util.Size2
+import net.bladehunt.window.core.util.FlexPair
 import net.bladehunt.window.core.widget.Widget
 import net.minestom.server.event.trait.InventoryEvent
 import net.minestom.server.item.ItemStack
@@ -54,9 +54,9 @@ class Navbar(
         Center,
         End
     }
-    override val size: Size2 = when (orientation) {
-        Orientation.Vertical -> Size2(1, 0)
-        Orientation.Horizontal -> Size2(0, 1)
+    override val size: FlexPair = when (orientation) {
+        Orientation.Vertical -> FlexPair(1, 0)
+        Orientation.Horizontal -> FlexPair(0, 1)
     }
     override fun render(phase: Phase<Interactable<ItemStack, InventoryEvent>>) {
         when (phase) {

@@ -30,16 +30,21 @@ import net.bladehunt.window.core.util.IntPair
 import net.bladehunt.window.core.util.FlexPair
 
 open class Column<T>(override val size: FlexPair) : LayoutWidget<T>(size){
-    override fun renderWidget(
-        children: MutableList<Window.Node<T>>,
-        layer: Layer<T>,
-        phase: Phase.RenderPhase<T>,
-        each: Int,
-        remainder: Int
-    ) {
+    override fun onRender(phase: Phase.RenderPhase<T>) {
+        val (_, _, node, layer) = phase
+        val flexible = children.filter { it.size.flexY }
+        var each = 0
+        var remainder = 0
+        if (flexible.isNotEmpty()) {
+            val availableSpace = layer.size.y - children.sumOf { widget ->
+                if (flexible.contains(widget)) 0 else widget.size.y
+            }
+            each = availableSpace.floorDiv(flexible.size)
+            remainder = availableSpace % flexible.size
+        }
         var pos = 0
-        children.forEachIndexed { index, node ->
-            val widget = node.widget ?: return
+        node.children.forEachIndexed { index, child ->
+            val widget = child.widget ?: return@forEachIndexed
             widget.setUpdateHandler(this) {
                 requestUpdate()
             }
@@ -49,19 +54,17 @@ open class Column<T>(override val size: FlexPair) : LayoutWidget<T>(size){
                 0,
                 pos,
                 IntPair(
-                    if (node.size.flexX) layer.size.x else node.size.x,
-                    if (node.size.flexY) each + (if (index < remainder) 1 else 0) else node.size.y
+                    if (child.size.flexX) layer.size.x else child.size.x,
+                    if (child.size.flexY) each + (if (index >= remainder) 0 else 1) else child.size.y
                 )
             )
-            widget.render(
-                phase.copy(node = node, layer = offsetLayer)
-            )
+            widget.render(phase.copy(node = child, layer = offsetLayer))
 
             pos += offsetLayer.size.y
         }
     }
 
-    override fun build(node: Window.Node<T>) : FlexValues {
+    override fun calculateSize(node: Window.Node<T>) : FlexPair {
         var sizeX = 0
         var flexX = false
         var sizeY = 0
@@ -74,15 +77,15 @@ open class Column<T>(override val size: FlexPair) : LayoutWidget<T>(size){
                     flexX = true
                     sizeX = size.x
                 }
-                if (!flexX) sizeX = child.size.x
+                if (!flexX) sizeX += child.size.x
                 if (child.size.flexY) {
                     flexY = true
                     sizeY = size.y
                 }
-                if (!flexY) sizeY += child.size.y
+                if (!flexY) sizeY = child.size.y
             }
         }
 
-        return(FlexValues(sizeX, flexX, sizeY, flexY))
+        return(FlexPair(sizeX, flexX, sizeY, flexY))
     }
 }
