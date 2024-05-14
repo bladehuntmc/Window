@@ -39,7 +39,7 @@ class WindowInventory(
     fun transaction(block: (Transaction) -> Unit) {
         lock.lock()
         val previous = itemStacks.copyOf()
-        try { block(Transaction()) } catch (_: IllegalArgumentException) {}
+        block(Transaction())
         itemStacks.forEachIndexed { index, itemStack ->
             if (previous[index] != itemStack) updateSlot(index, itemStack)
             EventDispatcher.call(

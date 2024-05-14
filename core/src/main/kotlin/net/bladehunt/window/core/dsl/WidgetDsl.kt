@@ -24,7 +24,9 @@
 package net.bladehunt.window.core.dsl
 
 import net.bladehunt.window.core.interact.Interactable
+import net.bladehunt.window.core.layout.Auto
 import net.bladehunt.window.core.layout.Column
+import net.bladehunt.window.core.layout.Container
 import net.bladehunt.window.core.layout.Row
 import net.bladehunt.window.core.util.Size2
 import net.bladehunt.window.core.widget.Button
@@ -32,25 +34,31 @@ import net.bladehunt.window.core.widget.Switch
 import net.bladehunt.window.core.widget.WidgetParent
 
 @WindowDsl
-inline fun <T> WidgetParent<T>.switch(block: @WindowDsl Switch<T>.() -> Unit): Switch<T> = Switch<T>().apply {
-    block()
-    this@switch.addWidget(this)
-}
+inline fun <T> WidgetParent<T>.switch(block: @WindowDsl Switch<T>.() -> Unit): Switch<T> = Switch<T>()
+    .apply(block)
+    .apply(this::addWidget)
 
 @WindowDsl
-inline fun <T> WidgetParent<T>.column(size: Size2 = Size2(), block: @WindowDsl Column<T>.() -> Unit): Column<T> = Column<T>(size).apply {
-    block()
-    this@column.addWidget(this)
-}
+inline fun <T> WidgetParent<T>.column(size: Size2 = Size2(), block: @WindowDsl Column<T>.() -> Unit): Column<T> = Column<T>(size)
+    .apply(block)
+    .apply(this::addWidget)
 
 @WindowDsl
-inline fun <T> WidgetParent<T>.row(size: Size2 = Size2(), block: @WindowDsl Row<T>.() -> Unit): Row<T> = Row<T>(size).apply {
-    block()
-    this@row.addWidget(this)
-}
+inline fun <T> WidgetParent<T>.row(size: Size2 = Size2(), block: @WindowDsl Row<T>.() -> Unit): Row<T> = Row<T>(size)
+    .apply(block)
+    .apply(this::addWidget)
 
 @WindowDsl
-inline fun <T, E> WidgetParent<Interactable<T, E>>.button(block: Button<T, E>.() -> Unit): Button<T, E> = Button<T, E>().also { button ->
-    button.block()
-    this@button.addWidget(button)
-}
+inline fun <T> WidgetParent<T>.auto(size: Size2 = Size2(), block: @WindowDsl Auto<T>.() -> Unit): Auto<T> = Auto<T>(size)
+    .apply(block)
+    .apply(this::addWidget)
+
+@WindowDsl
+inline fun <T> WidgetParent<T>.container(size: Size2 = Size2(), block: @WindowDsl Container<T>.() -> Unit): Container<T> = Container<T>(size)
+    .apply(block)
+    .apply(this::addWidget)
+
+@WindowDsl
+inline fun <T, E> WidgetParent<Interactable<T, E>>.button(block: Button<T, E>.() -> Unit): Button<T, E> = Button<T, E>()
+    .apply(block)
+    .apply(this::addWidget)

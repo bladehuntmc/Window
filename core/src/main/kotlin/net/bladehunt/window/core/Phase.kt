@@ -50,7 +50,7 @@ sealed interface Phase<T> {
         val layer: Layer<T>
     ) : Phase<T>
 
-    fun component1(): Window<T>
-    fun component2(): Context
-    fun component3(): Window.Node<T>
+    operator fun component1(): Window<T>
+    operator fun component2(): Context
+    operator fun component3(): Window.Node<T>
 }
