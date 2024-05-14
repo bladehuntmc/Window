@@ -23,6 +23,10 @@
 
 package net.bladehunt.minestom.example;
 
+import net.bladehunt.reakt.reactivity.Signal;
+import net.bladehunt.window.core.interact.Interactable;
+import net.bladehunt.window.core.layout.Auto;
+import net.bladehunt.window.core.layout.Container;
 import net.bladehunt.window.core.util.Size2;
 import net.bladehunt.window.core.widget.Button;
 import net.bladehunt.window.minestom.MinestomWindow;
@@ -36,6 +40,9 @@ import net.minestom.server.instance.InstanceContainer;
 import net.minestom.server.inventory.InventoryType;
 import net.minestom.server.item.ItemStack;
 import net.minestom.server.item.Material;
+import org.jetbrains.annotations.NotNull;
+
+import java.util.List;
 
 public class JavaExample {
     public static void main(String[] args) {
@@ -43,20 +50,7 @@ public class JavaExample {
 
         InstanceContainer instance = MinecraftServer.getInstanceManager().createInstanceContainer();
 
-        MinestomWindow window = new MinestomWindow(InventoryType.CHEST_6_ROW, Component.text("Window"));
-
-        Button<ItemStack, InventoryEvent> bookButton = new Button<>(
-                button -> ItemStack.of(Material.BOOK),
-                interaction -> {
-                    if (interaction instanceof PlayerEvent event) {
-                        event.getPlayer().sendMessage("You clicked the book!");
-                    }
-                },
-                new Size2(1, 1)
-        );
-        window.addWidget(bookButton);
-
-        window.render();
+        MinestomWindow window = getWindow();
 
         MinecraftServer.getGlobalEventHandler().addListener(AsyncPlayerConfigurationEvent.class, event -> {
             event.setSpawningInstance(instance);
@@ -67,5 +61,39 @@ public class JavaExample {
         });
 
         server.start("127.0.0.1", 25565);
+    }
+
+    private static @NotNull MinestomWindow getWindow() {
+        MinestomWindow window = new MinestomWindow(InventoryType.CHEST_6_ROW, Component.text("Window"));
+
+        var container = new Container<Interactable<ItemStack, InventoryEvent>>(new Size2());
+        var auto = new Auto<Interactable<ItemStack, InventoryEvent>>(new Size2());
+        for (int i = 0; i < 4; i++) {
+            auto.addWidget(myButton(i));
+        }
+        container.addWidget(auto);
+        window.addWidget(container);
+        window.render();
+
+        return window;
+    }
+
+    static List<Material> materials = Material.values().stream().toList();
+    private static @NotNull Button<ItemStack, InventoryEvent> myButton(int i) {
+        Signal<Integer> index = new Signal<>(i);
+
+        var button = new Button<ItemStack, InventoryEvent>();
+        button.setDisplay(display -> ItemStack.of(materials.get(index.getValue())));
+        button.setInteraction(event -> {
+            var playerEvent = (PlayerEvent) event;
+            var currentMaterial = materials.get(index.getValue()).namespace().path();
+            playerEvent.getPlayer().sendMessage("You clicked the " + currentMaterial);
+            index.setValue(index.getValue() + 1);
+        });
+        button.setSize(new Size2(2, 2));
+
+        index.subscribe(button);
+
+        return button;
     }
 }

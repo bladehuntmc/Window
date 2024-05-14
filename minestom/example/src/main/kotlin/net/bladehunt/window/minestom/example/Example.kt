@@ -31,6 +31,7 @@ import net.bladehunt.kotstom.dsl.item.itemName
 import net.bladehunt.kotstom.dsl.listen
 import net.bladehunt.reakt.reactivity.Signal
 import net.bladehunt.window.core.dsl.*
+import net.bladehunt.window.core.interact.Interactable
 import net.bladehunt.window.core.interact.InteractionHandler
 import net.bladehunt.window.core.util.Size2
 import net.bladehunt.window.minestom.window
@@ -38,83 +39,109 @@ import net.kyori.adventure.text.Component
 import net.minestom.server.MinecraftServer
 import net.minestom.server.event.player.AsyncPlayerConfigurationEvent
 import net.minestom.server.event.player.PlayerStartSneakingEvent
-import net.minestom.server.event.trait.PlayerEvent
 import net.minestom.server.inventory.InventoryType
+import net.minestom.server.item.ItemStack
 import net.minestom.server.item.Material
 
 fun main() = runBlocking {
     val server = MinecraftServer.init()
 
     val instance = InstanceManager.createInstanceContainer()
-    val (material, setMaterial) = Signal(Material.DIAMOND)
-
-    val win = window(InventoryType.CHEST_6_ROW) {
-        val switch = switch {
-            button {
-                size = Size2()
-                display = {
-                    item(material()) {}
-                }
-            }
-            column {
-                button {
-                    display = {
-                        item {
-                            itemName = Component.text("Say hello")
-                        }
-                    }
-                    interaction = InteractionHandler { event ->
-                        event as PlayerEvent
-                        event.player.sendMessage("Hello")
-                    }
-                }
-                button {
-                    size = Size2()
-                    display = {
-                        item(material()) {}
-                    }
-                }
-            }
-        }
-
-        row {
-            button {
-                display = {
-                    item(Material.ARROW) {
-                        itemName = Component.text("First page")
-                    }
-                }
-                interaction = InteractionHandler { event ->
-                    switch.index = 0
-                }
-            }
-            button {
-                display = {
-                    item(Material.ARROW) {
-                        itemName = Component.text("Second page")
-                    }
-                }
-                interaction = InteractionHandler { event ->
-                    switch.index = 1
-                }
-            }
-            button {
-                display = {
-                    item(material()) {
-                        itemName = Component.text("Change Item")
-                    }
-                }
-                interaction = InteractionHandler { event ->
-                    setMaterial(Material.values().random())
-                }
-            }
-        }
-    }
+    val (firstMaterial, setFirstMaterial) = Signal(Material.DIAMOND)
+    val (secondMaterial, setSecondMaterial) = Signal(Material.DIAMOND)
 
     GlobalEventHandler.listen<AsyncPlayerConfigurationEvent> { event ->
         event.spawningInstance = instance
         val player = event.player
         player.eventNode().listen<PlayerStartSneakingEvent> {
+            val win = window(InventoryType.CHEST_6_ROW) {
+                switch {
+                    container {
+                        column {
+                            button {
+                                size = Size2(0, 0)
+                                display = {
+                                    item(firstMaterial()) {}
+                                }
+                            }
+                            row {
+                                button {
+                                    display = {
+                                        item(if (this@switch.index == 0) Material.GREEN_WOOL else Material.RED_WOOL) {
+                                            itemName = Component.text("First page")
+                                        }
+                                    }
+                                    interaction = InteractionHandler { event ->
+                                        this@switch.index = 0
+                                    }
+                                }
+                                button {
+                                    display = {
+                                        item(if (this@switch.index == 1) Material.GREEN_WOOL else Material.RED_WOOL) {
+                                            itemName = Component.text("Second page")
+                                        }
+                                    }
+                                    interaction = InteractionHandler { event ->
+                                        this@switch.index = 1
+                                    }
+                                }
+                                button {
+                                    display = {
+                                        item(firstMaterial()) {
+                                            itemName = Component.text("Change Item")
+                                        }
+                                    }
+                                    interaction = InteractionHandler { event ->
+                                        setFirstMaterial(Material.values().random())
+                                    }
+                                }
+                            }
+                        }
+                    }
+                    container {
+                        column {
+                            button {
+                                size = Size2(0, 0)
+                                display = {
+                                    item(secondMaterial()) {}
+                                }
+                            }
+                            row {
+                                button {
+                                    display = {
+                                        item(if (this@switch.index == 0) Material.GREEN_WOOL else Material.RED_WOOL) {
+                                            itemName = Component.text("First page")
+                                        }
+                                    }
+                                    interaction = InteractionHandler { event ->
+                                        this@switch.index = 0
+                                    }
+                                }
+                                button {
+                                    display = {
+                                        item(if (this@switch.index == 1) Material.GREEN_WOOL else Material.RED_WOOL) {
+                                            itemName = Component.text("Second page")
+                                        }
+                                    }
+                                    interaction = InteractionHandler { event ->
+                                        this@switch.index = 1
+                                    }
+                                }
+                                button {
+                                    display = {
+                                        item(secondMaterial()) {
+                                            itemName = Component.text("Change Item")
+                                        }
+                                    }
+                                    interaction = InteractionHandler { event ->
+                                        setSecondMaterial(Material.values().random())
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
             player.openInventory(win.inventory)
         }
     }

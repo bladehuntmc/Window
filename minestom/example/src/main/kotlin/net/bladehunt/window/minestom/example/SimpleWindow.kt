@@ -26,90 +26,51 @@ package net.bladehunt.window.minestom.example
 import kotlinx.coroutines.runBlocking
 import net.bladehunt.kotstom.GlobalEventHandler
 import net.bladehunt.kotstom.InstanceManager
-import net.bladehunt.kotstom.dsl.item.item
+import net.bladehunt.kotstom.dsl.item.*
 import net.bladehunt.kotstom.dsl.listen
+import net.bladehunt.minestom.components.dsl.navbar
 import net.bladehunt.reakt.reactivity.Signal
 import net.bladehunt.window.core.dsl.*
+import net.bladehunt.window.core.interact.Interactable
 import net.bladehunt.window.core.interact.InteractionHandler
+import net.bladehunt.window.core.layout.Container
 import net.bladehunt.window.core.util.Size2
 import net.bladehunt.window.minestom.window
+import net.kyori.adventure.text.Component
 import net.minestom.server.MinecraftServer
 import net.minestom.server.event.player.AsyncPlayerConfigurationEvent
 import net.minestom.server.event.player.PlayerStartSneakingEvent
 import net.minestom.server.event.trait.PlayerEvent
 import net.minestom.server.inventory.InventoryType
+import net.minestom.server.item.ItemComponent
+import net.minestom.server.item.ItemStack
 import net.minestom.server.item.Material
+import net.minestom.server.utils.Unit
 
-fun main() = runBlocking {
+fun main() {
     val server = MinecraftServer.init()
 
     val instance = InstanceManager.createInstanceContainer()
-    val (material, setMaterial) = Signal(Material.DIAMOND)
 
     val win = window(InventoryType.CHEST_6_ROW) {
-        button {
-            size = Size2(1, 1)
-            display = {
-                item(Material.BOOK) {  }
-            }
-            interaction = InteractionHandler { event ->
-                event as PlayerEvent
-                event.player.sendMessage("You clicked the book")
-            }
-        }
-        button {
-            size = Size2(1, 1)
-            display = {
-                item(Material.DIAMOND) {  }
-            }
-            interaction = InteractionHandler { event ->
-                event as PlayerEvent
-                event.player.sendMessage("You clicked the diamond")
-            }
-        }
-        row {
-            button {
-                size = Size2(1, 1)
-                display = {
-                    item(Material.STONE) {  }
-                }
-                interaction = InteractionHandler { event ->
-                    event as PlayerEvent
-                    event.player.sendMessage("You clicked the stone")
-                }
-            }
-            button {
-                size = Size2(1, 1)
-                display = {
-                    item(Material.STONE) {  }
-                }
-                interaction = InteractionHandler { event ->
-                    event as PlayerEvent
-                    event.player.sendMessage("You clicked the stone")
+        container {
+            padding = Container.Padding(
+                1, 1, 1, 0,
+                Interactable(
+                    item(Material.BLACK_STAINED_GLASS_PANE) {
+                        set(ItemComponent.HIDE_TOOLTIP, Unit.INSTANCE)
+                    }
+                ) { _ -> }
+            )
+            auto {
+                for (i in 0..<4) {
+                    myButton(i)
                 }
             }
         }
-        row {
-            button {
-                size = Size2(0, 0)
-                display = {
-                    item(Material.ARROW) {  }
-                }
-                interaction = InteractionHandler { event ->
-                    event as PlayerEvent
-                    event.player.sendMessage("You clicked the arrow")
-                }
-            }
-            button {
-                size = Size2(1, 1)
-                display = {
-                    item(Material.STONE) {  }
-                }
-                interaction = InteractionHandler { event ->
-                    event as PlayerEvent
-                    event.player.sendMessage("You clicked the stone")
-                }
-            }
+        navbar {
+            addItem(Interactable(ItemStack.of(Material.ARROW)) {  })
+            addItem(Interactable(ItemStack.of(Material.ARROW)) {  })
         }
     }
 

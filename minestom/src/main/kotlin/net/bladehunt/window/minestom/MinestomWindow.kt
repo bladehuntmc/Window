@@ -38,6 +38,7 @@ import net.bladehunt.window.core.util.Size2
 import net.bladehunt.window.minestom.inventory.InventoryLayer
 import net.bladehunt.window.minestom.inventory.WindowInventory
 import net.kyori.adventure.text.Component
+import net.minestom.server.MinecraftServer
 import net.minestom.server.event.inventory.InventoryPreClickEvent
 import net.minestom.server.event.trait.InventoryEvent
 import net.minestom.server.inventory.InventoryType
@@ -85,8 +86,10 @@ class MinestomWindow(
                 transaction,
                 interactionLayer
             )
+            val start = System.nanoTime()
             render(Phase.BuildPhase(this, Context(), parentNode))
             render(Phase.RenderPhase(this, Context(), parentNode, layer))
+            println("Took ${(System.nanoTime() - start)/1000000.0}ms to render")
         }
     }
 
