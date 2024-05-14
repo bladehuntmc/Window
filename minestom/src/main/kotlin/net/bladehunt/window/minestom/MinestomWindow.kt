@@ -33,8 +33,8 @@ import net.bladehunt.window.core.interact.Interactable
 import net.bladehunt.window.core.interact.InteractionHandler
 import net.bladehunt.window.core.layout.Window
 import net.bladehunt.window.core.layer.ArrayLayerImpl
-import net.bladehunt.window.core.util.Int2
-import net.bladehunt.window.core.util.Size2
+import net.bladehunt.window.core.util.PairedInts
+import net.bladehunt.window.core.util.FlexedInts
 import net.bladehunt.window.minestom.inventory.InventoryLayer
 import net.bladehunt.window.minestom.inventory.WindowInventory
 import net.kyori.adventure.text.Component
@@ -50,9 +50,14 @@ import net.minestom.server.timer.TaskSchedule
 class MinestomWindow(
     inventoryType: InventoryType,
     title: Component = Component.text("Window"),
-) : Window<Interactable<ItemStack, InventoryEvent>>(Size2(inventoryType.rowSize, inventoryType.size / inventoryType.rowSize)) {
+) : Window<Interactable<ItemStack, InventoryEvent>>(
+    FlexedInts(
+        inventoryType.rowSize,
+        inventoryType.size / inventoryType.rowSize
+    )
+) {
     val inventory = WindowInventory(inventoryType, title)
-    val interactionLayer = ArrayLayerImpl<InteractionHandler<InventoryEvent>>(size.toInt2())
+    val interactionLayer = ArrayLayerImpl<InteractionHandler<InventoryEvent>>(size.toPairedInts())
 
     init {
         inventory.eventNode().listen<InventoryPreClickEvent> { event: InventoryPreClickEvent ->
@@ -74,12 +79,14 @@ class MinestomWindow(
 
     override val parentNode: Node<Interactable<ItemStack, InventoryEvent>> = Node(widget = this, size = size)
 
-    override fun createArrayLayer(sizeX: Int, sizeY: Int): ArrayLayerImpl<Interactable<ItemStack, InventoryEvent>> = ArrayLayerImpl(Int2(sizeX, sizeY))
+    override fun createArrayLayer(sizeX: Int, sizeY: Int): ArrayLayerImpl<Interactable<ItemStack, InventoryEvent>> = ArrayLayerImpl(
+        PairedInts(sizeX, sizeY)
+    )
 
     override fun render() {
         inventory.transaction { transaction ->
             transaction.clear()
-            val size = size.toInt2()
+            val size = size.toPairedInts()
             interactionLayer.clear()
             val layer = InventoryLayer(
                 size,

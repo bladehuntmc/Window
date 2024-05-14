@@ -23,8 +23,8 @@
 
 package net.bladehunt.window.core.widget
 
-import net.bladehunt.window.core.util.Size2
+import net.bladehunt.window.core.util.FlexedInts
 
 interface Sized {
-    val size: Size2
+    val size: FlexedInts
 }

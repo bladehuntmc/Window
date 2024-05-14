@@ -29,8 +29,8 @@ import net.bladehunt.window.core.interact.Interactable
 import net.bladehunt.window.core.interact.InteractionHandler
 import net.bladehunt.window.core.layer.ArrayLayerImpl
 import net.bladehunt.window.core.layout.Window
-import net.bladehunt.window.core.util.Int2
-import net.bladehunt.window.core.util.Size2
+import net.bladehunt.window.core.util.PairedInts
+import net.bladehunt.window.core.util.FlexedInts
 import net.kyori.adventure.text.Component
 import org.bukkit.event.inventory.InventoryClickEvent
 import org.bukkit.event.inventory.InventoryType
@@ -46,7 +46,12 @@ class PaperWindow(
     rowSize: Int = 9,
     size: Int = 27,
     title: Component = Component.empty()
-) : InventoryHolder, Window<Interactable<ItemStack, InventoryClickEvent>>(Size2(rowSize, inventoryType.defaultSize / rowSize)) {
+) : InventoryHolder, Window<Interactable<ItemStack, InventoryClickEvent>>(
+    FlexedInts(
+        rowSize,
+        inventoryType.defaultSize / rowSize
+    )
+) {
 
     private val inventory: Inventory =
         if (inventoryType == InventoryType.CHEST) plugin.server.createInventory(this, size, title)
@@ -54,13 +59,15 @@ class PaperWindow(
 
     override fun getInventory(): Inventory = inventory
 
-    private val interactionLayer = ArrayLayerImpl<InteractionHandler<InventoryClickEvent>>(this.size.toInt2())
+    private val interactionLayer = ArrayLayerImpl<InteractionHandler<InventoryClickEvent>>(this.size.toPairedInts())
     override val parentNode: Node<Interactable<ItemStack, InventoryClickEvent>> = Node(widget = this, size = this.size)
 
-    override fun createArrayLayer(sizeX: Int, sizeY: Int): ArrayLayerImpl<Interactable<ItemStack, InventoryClickEvent>> = ArrayLayerImpl(Int2(sizeX, sizeY))
+    override fun createArrayLayer(sizeX: Int, sizeY: Int): ArrayLayerImpl<Interactable<ItemStack, InventoryClickEvent>> = ArrayLayerImpl(
+        PairedInts(sizeX, sizeY)
+    )
 
     override fun render() {
-        val newContents = ArrayLayerImpl<Interactable<ItemStack, InventoryClickEvent>>(size.toInt2())
+        val newContents = ArrayLayerImpl<Interactable<ItemStack, InventoryClickEvent>>(size.toPairedInts())
         render(Phase.BuildPhase(this, Context(), parentNode))
         render(Phase.RenderPhase(this, Context(), parentNode, newContents))
         newContents.forEach { (pos, pixel) ->
@@ -88,6 +95,7 @@ class PaperWindow(
         runnable!!.runTaskLater(plugin, 1)
     }
 
-    private fun get2d(slot: Int): Int2 = Int2(slot % size.x, slot / size.x)
+    private fun get2d(slot: Int): PairedInts =
+        PairedInts(slot % size.x, slot / size.x)
     private fun getAbsolutePos(x: Int, y: Int): Int = y * size.x + x
 }

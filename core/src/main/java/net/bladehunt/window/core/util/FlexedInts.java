@@ -26,16 +26,16 @@ package net.bladehunt.window.core.util;
 import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
 
-public record Size2(int x, boolean flexX, int y, boolean flexY) {
-    public Size2(int x, int y) {
+public record FlexedInts(int x, boolean flexX, int y, boolean flexY) {
+    public FlexedInts(int x, int y) {
         this(x, x <= 0, y, y <= 0);
     }
-    public Size2() {
+    public FlexedInts() {
         this(0, 0);
     }
 
     @Contract(" -> new")
-    public @NotNull Int2 toInt2() {
-        return new Int2(x, y);
+    public @NotNull PairedInts toPairedInts() {
+        return new PairedInts(x, y);
     }
 }

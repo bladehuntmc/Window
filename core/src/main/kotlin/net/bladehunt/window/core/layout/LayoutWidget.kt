@@ -24,14 +24,14 @@
 package net.bladehunt.window.core.layout
 
 import net.bladehunt.window.core.Phase
-import net.bladehunt.window.core.layer.OffsetLimitedLayer
-import net.bladehunt.window.core.util.PairedInts
+import net.bladehunt.window.core.layer.Layer
 import net.bladehunt.window.core.util.FlexedInts
 import net.bladehunt.window.core.widget.Widget
 import net.bladehunt.window.core.widget.WidgetParent
-import kotlin.math.max
 
-class Auto<T>(override val size: FlexedInts) : WidgetParent<T>, Widget<T>() {
+// needs better name
+abstract class LayoutWidget<T>(override val size: FlexedInts) : Widget<T>(), WidgetParent<T> {
+
     private val _children: MutableList<Widget<T>> = arrayListOf()
     override val children: Collection<Widget<T>>
         get() = _children.toList()
@@ -50,49 +50,74 @@ class Auto<T>(override val size: FlexedInts) : WidgetParent<T>, Widget<T>() {
     private fun render(phase: Phase.RenderPhase<T>) {
         val layer = phase.layer
 
-        var pointerX = 0
-        var pointerY = 0
-        var rowHeight = 0
-        phase.node.children.forEach { child ->
-            val widget = child.widget ?: return@forEach
+        // Finalize flexes
+        val flexible = phase.node.children.filter { it.size.flexX }
 
-            if (pointerX + child.size.x > layer.size.x) {
-                pointerX = 0
-                pointerY += rowHeight
-                rowHeight = 0
-            }
+        val (each, remainder) = calculateFlexes(flexible, layer, phase)
 
-            widget.setUpdateHandler(this) {
-                requestUpdate()
-            }
-
-            val offsetLayer = OffsetLimitedLayer(
-                layer,
-                pointerX,
-                pointerY,
-                PairedInts(
-                    if (child.size.flexX) 1 else child.size.x,
-                    if (child.size.flexY) 1 else child.size.y
-                )
-            )
-            pointerX += child.size.x
-            rowHeight = max(rowHeight, child.size.y)
-
-            widget.render(phase.copy(node = child, layer = offsetLayer))
-        }
+        renderWidget(phase.node.children, layer, phase, each, remainder)
     }
 
     override fun render(phase: Phase<T>) {
         when (phase) {
             is Phase.BuildPhase -> {
-                val node = phase.node
-                _children.forEach { widget ->
-                    val childNode = node.searchLevel(widget) ?: node.createChild(widget, widget.size)
-                    widget.render(phase.copy(node = childNode))
-                }
-                node.size = size
+                buildPhase(phase)
             }
             is Phase.RenderPhase -> render(phase)
         }
     }
+
+    private fun buildPhase(phase: Phase.BuildPhase<T>) {
+        val node = phase.node
+        _children.forEach { widget ->
+            val childNode = node.searchLevel(widget) ?: node.createChild(widget, widget.size)
+            widget.render(phase.copy(node = childNode))
+        }
+
+        val (sizeX, flexX, sizeY, flexY) = build(node)
+
+        node.size = FlexedInts(
+            if (size.flexX) sizeX else size.x,
+            flexX && size.flexX,
+            if (size.flexY) sizeY else size.y,
+            flexY && size.flexY,
+        )
+    }
+
+    data class FlexValues(
+        val sizeX: Int,
+        val flexX: Boolean,
+        val sizeY: Int,
+        val flexY: Boolean
+    )
+
+    abstract fun build(
+        node: Window.Node<T>,
+    ) : FlexValues
+
+    private fun calculateFlexes(
+        flexible: List<Window.Node<T>>,
+        layer: Layer<T>,
+        phase: Phase.RenderPhase<T>,
+    ): Pair<Int, Int> {
+        var each = 0
+        var remainder = 0
+        if (flexible.isNotEmpty()) {
+            val availableSpace = layer.size.y - phase.node.children.sumOf { widget ->
+                if (flexible.contains(widget)) 0 else widget.size.y
+            }
+            each = availableSpace.floorDiv(flexible.size)
+            remainder = availableSpace % flexible.size
+        }
+        return Pair(each, remainder)
+    }
+
+    abstract fun renderWidget(
+        children: MutableList<Window. Node<T>>,
+        layer: Layer<T>,
+        phase: Phase.RenderPhase<T>,
+        each: Int,
+        remainder: Int
+    )
+
 }

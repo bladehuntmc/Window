@@ -26,12 +26,12 @@ package net.bladehunt.window.minestom.inventory
 import net.bladehunt.window.core.interact.Interactable
 import net.bladehunt.window.core.interact.InteractionHandler
 import net.bladehunt.window.core.layer.Layer
-import net.bladehunt.window.core.util.Int2
+import net.bladehunt.window.core.util.PairedInts
 import net.minestom.server.event.trait.InventoryEvent
 import net.minestom.server.item.ItemStack
 
 class InventoryLayer(
-    override val size: Int2,
+    override val size: PairedInts,
     private val transaction: WindowInventory.Transaction,
     private val interactions: Layer<InteractionHandler<InventoryEvent>>
 ) : Layer<Interactable<ItemStack, InventoryEvent>> {
@@ -67,10 +67,10 @@ class InventoryLayer(
 
     private fun getAbsoluteSlot(x: Int, y: Int): Int = y * size.x + x
 
-    override fun iterator(): Iterator<Pair<Int2, Interactable<ItemStack, InventoryEvent>>> = iterator {
+    override fun iterator(): Iterator<Pair<PairedInts, Interactable<ItemStack, InventoryEvent>>> = iterator {
         for (x in 0..<size.x) {
             for (y in 0..<size.y) {
-                yield(Int2(x, y) to Interactable(transaction[getAbsoluteSlot(x, y)], interactions[x, y]))
+                yield(PairedInts(x, y) to Interactable(transaction[getAbsoluteSlot(x, y)], interactions[x, y]))
             }
         }
     }
