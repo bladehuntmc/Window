@@ -62,4 +62,29 @@ open class Row<T>(override val size: FlexedInts) : LayoutWidget<T>(size) {
         }
     }
 
+    override fun build(node: Window.Node<T>) : FlexValues {
+        var sizeX = 0
+        var flexX = false
+        var sizeY = 0
+        var flexY = false
+
+        if (size.flexX) {
+            sizeX = 0
+            for (child in node.children) {
+                if (child.size.flexX) {
+                    flexX = true
+                    sizeX = size.x
+                }
+                if (!flexX) sizeX += child.size.x
+                if (child.size.flexY) {
+                    flexY = true
+                    sizeY = size.y
+                }
+                if (!flexY) sizeY = child.size.y
+            }
+        }
+
+        return(FlexValues(sizeX, flexX, sizeY, flexY))
+    }
+
 }

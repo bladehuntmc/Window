@@ -61,40 +61,39 @@ abstract class LayoutWidget<T>(override val size: FlexedInts) : Widget<T>(), Wid
     override fun render(phase: Phase<T>) {
         when (phase) {
             is Phase.BuildPhase -> {
-                val node = phase.node
-                _children.forEach { widget ->
-                    val childNode = node.searchLevel(widget) ?: node.createChild(widget, widget.size)
-                    widget.render(phase.copy(node = childNode))
-                }
-                var sizeX = 0
-                var flexX = false
-                var sizeY = 0
-                var flexY = false
-                if (size.flexY) {
-                    sizeY = 0
-                    for (child in node.children) {
-                        if (child.size.flexX) {
-                            flexX = true
-                            sizeX = size.x
-                        }
-                        if (!flexX) sizeX = child.size.x
-                        if (child.size.flexY) {
-                            flexY = true
-                            sizeY = size.y
-                        }
-                        if (!flexY) sizeY += child.size.y
-                    }
-                }
-                node.size = FlexedInts(
-                    if (size.flexX) sizeX else size.x,
-                    flexX && size.flexX,
-                    if (size.flexY) sizeY else size.y,
-                    flexY && size.flexY,
-                )
+                buildPhase(phase)
             }
             is Phase.RenderPhase -> render(phase)
         }
     }
+
+    private fun buildPhase(phase: Phase.BuildPhase<T>) {
+        val node = phase.node
+        _children.forEach { widget ->
+            val childNode = node.searchLevel(widget) ?: node.createChild(widget, widget.size)
+            widget.render(phase.copy(node = childNode))
+        }
+
+        val (sizeX, flexX, sizeY, flexY) = build(node)
+
+        node.size = FlexedInts(
+            if (size.flexX) sizeX else size.x,
+            flexX && size.flexX,
+            if (size.flexY) sizeY else size.y,
+            flexY && size.flexY,
+        )
+    }
+
+    data class FlexValues(
+        val sizeX: Int,
+        val flexX: Boolean,
+        val sizeY: Int,
+        val flexY: Boolean
+    )
+
+    abstract fun build(
+        node: Window.Node<T>,
+    ) : FlexValues
 
     private fun calculateFlexes(
         flexible: List<Window.Node<T>>,
