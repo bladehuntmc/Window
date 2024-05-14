@@ -20,22 +20,18 @@
  * FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
  * OTHER DEALINGS IN THE SOFTWARE.
  */
+package net.bladehunt.window.core.util
 
-package net.bladehunt.window.core.util;
-
-import org.jetbrains.annotations.Contract;
-import org.jetbrains.annotations.NotNull;
-
-public record FlexedInts(int x, boolean flexX, int y, boolean flexY) {
-    public FlexedInts(int x, int y) {
-        this(x, x <= 0, y, y <= 0);
-    }
-    public FlexedInts() {
-        this(0, 0);
+data class PairedInts(val x: Int, val y: Int) {
+    operator fun plus(other: PairedInts): PairedInts {
+        return PairedInts(this.x + other.x, this.y + other.y)
     }
 
-    @Contract(" -> new")
-    public @NotNull PairedInts toPairedInts() {
-        return new PairedInts(x, y);
+    operator fun minus(other: PairedInts): PairedInts {
+        return PairedInts(this.x - other.x, this.y - other.y)
+    }
+
+    operator fun times(other: PairedInts): PairedInts {
+        return PairedInts(this.x * other.x, this.y * other.y)
     }
 }

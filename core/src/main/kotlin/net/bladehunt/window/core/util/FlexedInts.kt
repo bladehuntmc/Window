@@ -20,23 +20,14 @@
  * FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
  * OTHER DEALINGS IN THE SOFTWARE.
  */
+package net.bladehunt.window.core.util
 
-package net.bladehunt.window.core.util;
+@JvmRecord
+data class FlexedInts(val x: Int, val flexX: Boolean, val y: Int, val flexY: Boolean) {
+    constructor(x: Int = 0, y: Int = 0) : this(x, x <= 0, y, y <= 0)
+    constructor() : this(0, 0)
 
-import org.jetbrains.annotations.Contract;
-import org.jetbrains.annotations.NotNull;
-
-public record PairedInts(int x, int y) {
-    @Contract("_ -> new")
-    public @NotNull PairedInts plus(@NotNull PairedInts other) {
-        return new PairedInts(this.x() + other.x(), this.y() + other.y());
-    }
-    @Contract("_ -> new")
-    public @NotNull PairedInts minus(@NotNull PairedInts other) {
-        return new PairedInts(this.x() - other.x(), this.y() - other.y());
-    }
-    @Contract("_ -> new")
-    public @NotNull PairedInts times(@NotNull PairedInts other) {
-        return new PairedInts(this.x() * other.x(), this.y() * other.y());
+    fun toPairedInts(): PairedInts {
+        return PairedInts(x, y)
     }
 }
