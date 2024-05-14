@@ -30,7 +30,7 @@ import net.bladehunt.window.core.dsl.WindowDsl
 import net.bladehunt.window.core.dsl.button
 import net.bladehunt.window.core.interact.Interactable
 import net.bladehunt.window.core.interact.InteractionHandler
-import net.bladehunt.window.core.util.Size2
+import net.bladehunt.window.core.util.FlexPair
 import net.bladehunt.window.core.widget.Button
 import net.bladehunt.window.core.widget.WidgetParent
 import net.kyori.adventure.text.Component
@@ -39,13 +39,13 @@ import net.minestom.server.event.trait.PlayerEvent
 import net.minestom.server.item.ItemStack
 import net.minestom.server.item.Material
 
-val materials = Material.values().toList()
+val materials = Material.values().sortedBy { it.namespace().path() }
 
 @WindowDsl
 fun WidgetParent<Interactable<ItemStack, InventoryEvent>>.myButton(i: Int): Button<ItemStack, InventoryEvent> {
     val (index, setIndex) = Signal(i)
     return button {
-        size = Size2(2, 2)
+        size = FlexPair(2, 2)
         display = {
             item(materials[index()]) {
                 lore {

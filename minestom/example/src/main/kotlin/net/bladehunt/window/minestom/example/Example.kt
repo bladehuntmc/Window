@@ -50,10 +50,12 @@ fun main() = runBlocking {
 
     val win = window(InventoryType.CHEST_6_ROW) {
         val switch = switch {
-            button {
-                size = FlexPair()
-                display = {
-                    item(material()) {}
+            column {
+                button {
+                    size = FlexPair()
+                    display = {
+                        item(material()) {}
+                    }
                 }
             }
             column {
@@ -76,37 +78,9 @@ fun main() = runBlocking {
                 }
             }
         }
-
-        row {
-            button {
-                display = {
-                    item(Material.ARROW) {
-                        itemName = Component.text("First page")
-                    }
-                }
-                interaction = InteractionHandler { event ->
-                    switch.index = 0
-                }
-            }
-            button {
-                display = {
-                    item(Material.ARROW) {
-                        itemName = Component.text("Second page")
-                    }
-                }
-                interaction = InteractionHandler { event ->
-                    switch.index = 1
-                }
-            }
-            button {
-                display = {
-                    item(material()) {
-                        itemName = Component.text("Change Item")
-                    }
-                }
-                interaction = InteractionHandler { event ->
-                    setMaterial(Material.values().random())
-                }
+        button {
+            display = {
+                item(Material.PAPER) {}
             }
         }
     }
