@@ -23,8 +23,8 @@
 
 package net.bladehunt.window.core.widget
 
-import net.bladehunt.window.core.util.Size2
+import net.bladehunt.window.core.util.FlexedInts
 
 interface Resizable : Sized {
-    override var size: Size2
+    override var size: FlexedInts
 }

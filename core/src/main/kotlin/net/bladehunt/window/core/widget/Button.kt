@@ -26,12 +26,15 @@ package net.bladehunt.window.core.widget
 import net.bladehunt.window.core.Phase
 import net.bladehunt.window.core.interact.Interactable
 import net.bladehunt.window.core.interact.InteractionHandler
-import net.bladehunt.window.core.util.Size2
+import net.bladehunt.window.core.util.FlexedInts
 
 class Button<Pixel, Event>(
     var display: (Button<Pixel, Event>.() -> Pixel)? = null,
     var interaction: InteractionHandler<Event>? = null,
-    size: Size2 = Size2(1, 1)
+    size: FlexedInts = FlexedInts(
+        1,
+        1
+    )
 ) : Widget<Interactable<Pixel, Event>>(), Resizable {
     override fun render(phase: Phase<Interactable<Pixel, Event>>) {
         when (phase) {
@@ -47,7 +50,7 @@ class Button<Pixel, Event>(
         }
     }
 
-    override var size: Size2 = size
+    override var size: FlexedInts = size
         set(value) {
             isDirty = true
             field = value

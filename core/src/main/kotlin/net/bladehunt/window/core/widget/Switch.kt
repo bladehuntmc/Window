@@ -25,10 +25,11 @@ package net.bladehunt.window.core.widget
 
 import net.bladehunt.reakt.reactivity.Signal
 import net.bladehunt.window.core.Phase
-import net.bladehunt.window.core.util.Size2
+import net.bladehunt.window.core.util.FlexedInts
 
 class Switch<T> : WidgetParent<T>, Widget<T>() {
-    override val size: Size2 = Size2()
+    override val size: FlexedInts =
+        FlexedInts()
     var index by Signal(0)
 
     private val _children = arrayListOf<Widget<T>>()

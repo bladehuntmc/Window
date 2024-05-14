@@ -23,9 +23,9 @@
 
 package net.bladehunt.window.core.ext
 
-import net.bladehunt.window.core.util.Size2
+import net.bladehunt.window.core.util.FlexedInts
 
-operator fun Size2.component1() = this.x
-operator fun Size2.component2() = this.flexX
-operator fun Size2.component3() = this.y
-operator fun Size2.component4() = this.flexY
+operator fun FlexedInts.component1() = this.x
+operator fun FlexedInts.component2() = this.flexX
+operator fun FlexedInts.component3() = this.y
+operator fun FlexedInts.component4() = this.flexY

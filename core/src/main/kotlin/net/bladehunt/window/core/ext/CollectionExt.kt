@@ -23,12 +23,15 @@
 
 package net.bladehunt.window.core.ext
 
-import net.bladehunt.window.core.util.Int2
+import net.bladehunt.window.core.util.PairedInts
 
-operator fun <T> MutableMap<Int2, T>.set(x: Int, y: Int, value: T) {
-    this[Int2(x, y)] = value
+operator fun <T> MutableMap<PairedInts, T>.set(x: Int, y: Int, value: T) {
+    this[PairedInts(x, y)] = value
 }
-operator fun <T> MutableMap<Int2, T>.get(x: Int, y: Int): T? = this[Int2(x, y)]
+operator fun <T> MutableMap<PairedInts, T>.get(x: Int, y: Int): T? = this[PairedInts(
+    x,
+    y
+)]
 
 operator fun <T> Array<Array<T>>.set(x: Int, y: Int, value: T) {
     this[x][y] = value

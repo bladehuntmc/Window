@@ -26,7 +26,7 @@ package net.bladehunt.window.core.dsl
 import net.bladehunt.window.core.interact.Interactable
 import net.bladehunt.window.core.layout.Column
 import net.bladehunt.window.core.layout.Row
-import net.bladehunt.window.core.util.Size2
+import net.bladehunt.window.core.util.FlexedInts
 import net.bladehunt.window.core.widget.Button
 import net.bladehunt.window.core.widget.Switch
 import net.bladehunt.window.core.widget.WidgetParent
@@ -38,13 +38,13 @@ inline fun <T> WidgetParent<T>.switch(block: @WindowDsl Switch<T>.() -> Unit): S
 }
 
 @WindowDsl
-inline fun <T> WidgetParent<T>.column(size: Size2 = Size2(), block: @WindowDsl Column<T>.() -> Unit): Column<T> = Column<T>(size).apply {
+inline fun <T> WidgetParent<T>.column(size: FlexedInts = FlexedInts(), block: @WindowDsl Column<T>.() -> Unit): Column<T> = Column<T>(size).apply {
     block()
     this@column.addWidget(this)
 }
 
 @WindowDsl
-inline fun <T> WidgetParent<T>.row(size: Size2 = Size2(), block: @WindowDsl Row<T>.() -> Unit): Row<T> = Row<T>(size).apply {
+inline fun <T> WidgetParent<T>.row(size: FlexedInts = FlexedInts(), block: @WindowDsl Row<T>.() -> Unit): Row<T> = Row<T>(size).apply {
     block()
     this@row.addWidget(this)
 }

@@ -31,7 +31,7 @@ import net.bladehunt.kotstom.dsl.listen
 import net.bladehunt.reakt.reactivity.Signal
 import net.bladehunt.window.core.dsl.*
 import net.bladehunt.window.core.interact.InteractionHandler
-import net.bladehunt.window.core.util.Size2
+import net.bladehunt.window.core.util.FlexedInts
 import net.bladehunt.window.minestom.window
 import net.minestom.server.MinecraftServer
 import net.minestom.server.event.player.AsyncPlayerConfigurationEvent
@@ -48,7 +48,7 @@ fun main() = runBlocking {
 
     val win = window(InventoryType.CHEST_6_ROW) {
         button {
-            size = Size2(1, 1)
+            size = FlexedInts(1, 1)
             display = {
                 item(Material.BOOK) {  }
             }
@@ -58,7 +58,7 @@ fun main() = runBlocking {
             }
         }
         button {
-            size = Size2(1, 1)
+            size = FlexedInts(1, 1)
             display = {
                 item(Material.DIAMOND) {  }
             }
@@ -69,7 +69,7 @@ fun main() = runBlocking {
         }
         row {
             button {
-                size = Size2(1, 1)
+                size = FlexedInts(1, 1)
                 display = {
                     item(Material.STONE) {  }
                 }
@@ -79,7 +79,7 @@ fun main() = runBlocking {
                 }
             }
             button {
-                size = Size2(1, 1)
+                size = FlexedInts(1, 1)
                 display = {
                     item(Material.STONE) {  }
                 }
@@ -91,7 +91,7 @@ fun main() = runBlocking {
         }
         row {
             button {
-                size = Size2(0, 0)
+                size = FlexedInts(0, 0)
                 display = {
                     item(Material.ARROW) {  }
                 }
@@ -101,7 +101,7 @@ fun main() = runBlocking {
                 }
             }
             button {
-                size = Size2(1, 1)
+                size = FlexedInts(1, 1)
                 display = {
                     item(Material.STONE) {  }
                 }

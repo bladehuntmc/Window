@@ -21,22 +21,9 @@
  * OTHER DEALINGS IN THE SOFTWARE.
  */
 
-package net.bladehunt.window.core.util;
+package net.bladehunt.window.core.ext
 
-import org.jetbrains.annotations.Contract;
-import org.jetbrains.annotations.NotNull;
+import net.bladehunt.window.core.util.PairedInts
 
-public record Int2(int x, int y) {
-    @Contract("_ -> new")
-    public @NotNull Int2 plus(@NotNull Int2 other) {
-        return new Int2(this.x() + other.x(), this.y() + other.y());
-    }
-    @Contract("_ -> new")
-    public @NotNull Int2 minus(@NotNull Int2 other) {
-        return new Int2(this.x() - other.x(), this.y() - other.y());
-    }
-    @Contract("_ -> new")
-    public @NotNull Int2 times(@NotNull Int2 other) {
-        return new Int2(this.x() * other.x(), this.y() * other.y());
-    }
-}
+operator fun PairedInts.component1() = this.x
+operator fun PairedInts.component2() = this.y
