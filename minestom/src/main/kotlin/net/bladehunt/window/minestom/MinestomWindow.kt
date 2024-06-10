@@ -24,39 +24,28 @@
 package net.bladehunt.window.minestom
 
 import net.bladehunt.kotstom.dsl.listen
-import net.bladehunt.kotstom.dsl.runnable
 import net.bladehunt.kotstom.extension.rowSize
 import net.bladehunt.kotstom.extension.slots
 import net.bladehunt.window.core.Context
-import net.bladehunt.window.core.Phase
-import net.bladehunt.window.core.interact.Interactable
 import net.bladehunt.window.core.interact.InteractionHandler
-import net.bladehunt.window.core.layout.Window
 import net.bladehunt.window.core.layer.ArrayLayerImpl
+import net.bladehunt.window.core.layout.Window
 import net.bladehunt.window.core.util.IntPair
-import net.bladehunt.window.core.util.FlexPair
+import net.bladehunt.window.core.util.Size
 import net.bladehunt.window.minestom.inventory.InventoryLayer
 import net.bladehunt.window.minestom.inventory.WindowInventory
 import net.kyori.adventure.text.Component
 import net.minestom.server.event.inventory.InventoryPreClickEvent
-import net.minestom.server.event.trait.InventoryEvent
 import net.minestom.server.inventory.InventoryType
-import net.minestom.server.item.ItemStack
-import net.minestom.server.timer.ExecutionType
 import net.minestom.server.timer.Task
-import net.minestom.server.timer.TaskSchedule
 
 class MinestomWindow(
     inventoryType: InventoryType,
     title: Component = Component.text("Window"),
-) : Window<Interactable<ItemStack, InventoryEvent>>(
-    FlexPair(
-        inventoryType.rowSize,
-        inventoryType.size / inventoryType.rowSize
-    )
-) {
+) : Window<MinestomPixel>(Size(inventoryType.rowSize, inventoryType.size / inventoryType.rowSize)) {
     val inventory = WindowInventory(inventoryType, title)
-    val interactionLayer = ArrayLayerImpl<InteractionHandler<InventoryEvent>>(size.toPairedInts())
+    val interactionLayer =
+        ArrayLayerImpl<InteractionHandler<InventoryPreClickEvent>>(size.toIntPair())
 
     init {
         inventory.eventNode().listen<InventoryPreClickEvent> { event: InventoryPreClickEvent ->
@@ -76,41 +65,20 @@ class MinestomWindow(
         }
     }
 
-    override val parentNode: Node<Interactable<ItemStack, InventoryEvent>> = Node(widget = this, size = size)
-
-    override fun createArrayLayer(sizeX: Int, sizeY: Int): ArrayLayerImpl<Interactable<ItemStack, InventoryEvent>> = ArrayLayerImpl(
-        IntPair(sizeX, sizeY)
-    )
+    override val parentNode: Node<MinestomPixel> =
+        Node(widget = this, size = size, context = Context())
 
     override fun render() {
-        inventory.transaction { transaction ->
-            transaction.clear()
-            val size = size.toPairedInts()
-            interactionLayer.clear()
-            val layer = InventoryLayer(
-                size,
-                transaction,
-                interactionLayer
-            )
-            val start = System.nanoTime()
-            render(Phase.BuildPhase(this, Context(), parentNode))
-            render(Phase.RenderPhase(this, Context(), parentNode, layer))
-            println("Took ${(System.nanoTime() - start)/1000000.0}ms to render")
-        }
+        val reservation =
+            inventory.transaction {
+                buildNode(parentNode, parentNode.context)
+                parentNode.layer = InventoryLayer(size.toIntPair(), it, interactionLayer)
+                render(parentNode)
+            }
     }
+
+    override fun createArrayLayer(sizeX: Int, sizeY: Int): ArrayLayerImpl<MinestomPixel> =
+        ArrayLayerImpl(IntPair(sizeX, sizeY))
 
     private var queue: Task? = null
-    override fun requestUpdate() {
-        if (queue == null) {
-            queue = runnable {
-                delay = TaskSchedule.immediate()
-                executionType = ExecutionType.TICK_END
-                run {
-                    render()
-                    queue = null
-                }
-            }.schedule()
-        }
-    }
-
 }

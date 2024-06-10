@@ -21,36 +21,23 @@
  * OTHER DEALINGS IN THE SOFTWARE.
  */
 
-package net.bladehunt.window.core
+package net.bladehunt.minestom.widgets.core
 
-import net.bladehunt.window.core.layer.Layer
-import net.bladehunt.window.core.layout.Window
+import net.bladehunt.window.core.decoration.Padding
+import net.bladehunt.window.core.layout.AbstractContainer
+import net.bladehunt.window.core.util.Size
+import net.bladehunt.window.minestom.MinestomPixel
+import net.minestom.server.item.ItemStack
 
-sealed interface Phase<T> {
-    val window: Window<T>
-    val context: Context
+class Container(size: Size) : AbstractContainer<MinestomPixel>(size) {
+    var padding by property(Padding(ItemStack.AIR, 1))
 
-    /**
-     * In this phase, nodes should be appended to the parent.
-     */
-    data class BuildPhase<T>(
-        override val window: Window<T>,
-        override val context: Context,
-        val node: Window.Node<T>
-    ) : Phase<T>
-
-    /**
-     * In this phase, widgets should be rendered to the layer
-     * At this point, the size of the node shouldn't be changed.
-     */
-    data class RenderPhase<T>(
-        override val window: Window<T>,
-        override val context: Context,
-        val node: Window.Node<T>,
-        val layer: Layer<T>
-    ) : Phase<T>
-
-    operator fun component1(): Window<T>
-    operator fun component2(): Context
-    operator fun component3(): Window.Node<T>
+    override fun createPadding(): Padding<MinestomPixel> =
+        Padding(
+            MinestomPixel(padding.item) {},
+            padding.left,
+            padding.right,
+            padding.top,
+            padding.bottom
+        )
 }

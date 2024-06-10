@@ -23,36 +23,38 @@
 
 package net.bladehunt.window.core.widget
 
-import net.bladehunt.reakt.pubsub.EventPublisher
-import net.bladehunt.reakt.pubsub.event.Event
-import net.bladehunt.reakt.reactivity.ReactiveContext
-import net.bladehunt.window.core.Phase
-import java.util.WeakHashMap
+import net.bladehunt.window.core.Context
+import net.bladehunt.window.core.layout.Window
+import net.bladehunt.window.core.util.Size
 
-abstract class Widget<T> : Sized, ReactiveContext {
-    private val updateHandlers: WeakHashMap<Any, () -> Unit> = WeakHashMap()
+abstract class Widget<T> : Resizable {
+    private val handledProperties: ArrayList<WidgetProperty<*>> = arrayListOf()
+
+    override var size by property(Size(1, 1), WidgetProperty.Behavior.FULL_RENDER)
 
     var isDirty: Boolean = true
         protected set
 
-    fun setUpdateHandler(any: Any, handler: () -> Unit) {
-        updateHandlers[any] = handler
-    }
-    fun removeUpdateHandler(any: Any) {
-        updateHandlers.remove(any)
+    fun registerHandlers(node: Window.Node<T>) {
+        handledProperties.forEach { property -> property.handleNode(node) }
     }
 
-    open fun requestUpdate() {
-        updateHandlers.values.forEach { it() }
+    fun unregisterHandlers(node: Window.Node<T>) {
+        handledProperties.forEach { property -> property.dispose(node) }
     }
 
-    abstract fun render(phase: Phase<T>)
+    abstract fun buildNode(parent: Window.Node<T>, context: Context)
 
-    override fun onSubscribe(publisher: EventPublisher) {}
-    override fun onUnsubscribe(publisher: EventPublisher) {}
+    abstract fun render(node: Window.Node<T>)
 
-    override fun onEvent(event: Event) {
-        isDirty = true
-        requestUpdate()
-    }
+    @JvmSynthetic
+    fun <V> property(
+        behavior: WidgetProperty.Behavior = WidgetProperty.Behavior.PARTIAL_RENDER
+    ): WidgetProperty<V?> = WidgetProperty<V?>(null, behavior).also(handledProperties::add)
+
+    @JvmSynthetic
+    fun <V> property(
+        default: V,
+        behavior: WidgetProperty.Behavior = WidgetProperty.Behavior.PARTIAL_RENDER
+    ): WidgetProperty<V> = WidgetProperty(default, behavior).also(handledProperties::add)
 }

@@ -21,39 +21,6 @@
  * OTHER DEALINGS IN THE SOFTWARE.
  */
 
-package net.bladehunt.window.core.widget
+package net.bladehunt.window.core
 
-import net.bladehunt.window.core.Phase
-import net.bladehunt.window.core.interact.Interactable
-import net.bladehunt.window.core.interact.InteractionHandler
-import net.bladehunt.window.core.util.FlexPair
-
-class Button<Pixel, Event>(
-    var display: (Button<Pixel, Event>.() -> Pixel)? = null,
-    var interaction: InteractionHandler<Event>? = null,
-    size: FlexPair = FlexPair(
-        1,
-        1
-    )
-) : Widget<Interactable<Pixel, Event>>(), Resizable {
-    override fun render(phase: Phase<Interactable<Pixel, Event>>) {
-        when (phase) {
-            is Phase.BuildPhase -> {}
-            is Phase.RenderPhase -> {
-                for (x in 0..<phase.layer.size.x) {
-                    for (y in 0..<phase.layer.size.y) {
-                        phase.layer[x, y] = Interactable(display!!.invoke(this), interaction)
-                    }
-                }
-                isDirty = false
-            }
-        }
-    }
-
-    override var size: FlexPair = size
-        set(value) {
-            isDirty = true
-            field = value
-            requestUpdate()
-        }
-}
+@Target(AnnotationTarget.TYPE, AnnotationTarget.FUNCTION) @DslMarker annotation class WindowDsl

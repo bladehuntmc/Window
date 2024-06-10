@@ -23,14 +23,15 @@
 
 package net.bladehunt.window.minestom
 
-import net.bladehunt.window.core.dsl.WindowDsl
+import net.bladehunt.window.core.WindowDsl
 import net.minestom.server.inventory.InventoryType
 
 @WindowDsl
 inline fun window(
     inventoryType: InventoryType,
     block: @WindowDsl MinestomWindow.() -> Unit
-): MinestomWindow = MinestomWindow(inventoryType).apply {
-    block()
-    render()
-}
+): MinestomWindow =
+    MinestomWindow(inventoryType).apply {
+        block()
+        render()
+    }

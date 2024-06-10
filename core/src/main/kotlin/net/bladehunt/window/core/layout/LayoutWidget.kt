@@ -23,12 +23,12 @@
 
 package net.bladehunt.window.core.layout
 
-import net.bladehunt.window.core.Phase
-import net.bladehunt.window.core.util.FlexPair
+import net.bladehunt.window.core.Context
+import net.bladehunt.window.core.util.Size
 import net.bladehunt.window.core.widget.Widget
 import net.bladehunt.window.core.widget.WidgetParent
 
-abstract class LayoutWidget<T>(override val size: FlexPair) : Widget<T>(), WidgetParent<T> {
+abstract class LayoutWidget<T>(override var size: Size) : Widget<T>(), WidgetParent<T> {
     private val _children: MutableList<Widget<T>> = arrayListOf()
     override val children: Collection<Widget<T>>
         get() = _children.toList()
@@ -44,23 +44,12 @@ abstract class LayoutWidget<T>(override val size: FlexPair) : Widget<T>(), Widge
         } else _children.add(index, widget)
     }
 
-    override fun render(phase: Phase<T>) {
-        when (phase) {
-            is Phase.BuildPhase -> onBuild(phase)
-            is Phase.RenderPhase -> onRender(phase)
-        }
-    }
+    abstract fun calculateSize(node: Window.Node<T>, context: Context): Size
 
-    abstract fun calculateSize(node: Window.Node<T>): FlexPair
+    override fun buildNode(parent: Window.Node<T>, context: Context) {
+        val node = parent.createChild(this, context)
+        children.forEach { it.buildNode(node, context) }
 
-    abstract fun onRender(phase: Phase.RenderPhase<T>)
-
-    open fun onBuild(phase: Phase.BuildPhase<T>) {
-        val node = phase.node
-        _children.forEach { widget ->
-            val childNode = node.searchLevel(widget) ?: node.createChild(widget, widget.size)
-            widget.render(phase.copy(node = childNode))
-        }
-        node.size = calculateSize(node)
+        node.size = calculateSize(node, context)
     }
 }

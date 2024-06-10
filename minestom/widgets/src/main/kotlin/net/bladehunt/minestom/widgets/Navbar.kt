@@ -21,23 +21,17 @@
  * OTHER DEALINGS IN THE SOFTWARE.
  */
 
-package net.bladehunt.minestom.components
+package net.bladehunt.minestom.widgets
 
-import net.bladehunt.window.core.Phase
-import net.bladehunt.window.core.interact.Interactable
-import net.bladehunt.window.core.util.FlexPair
-import net.bladehunt.window.core.widget.Widget
-import net.minestom.server.event.trait.InventoryEvent
-import net.minestom.server.item.ItemStack
-import net.minestom.server.item.Material
-
+/*
 class Navbar(
     private val orientation: Orientation = Orientation.Horizontal,
     private val style: Style = Style.Normal,
     private val closePosition: Position = Position.Center
-) : Widget<Interactable<ItemStack, InventoryEvent>>() {
-    private val items: MutableList<Interactable<ItemStack, InventoryEvent>> = arrayListOf()
-    fun addItem(item: Interactable<ItemStack, InventoryEvent>) {
+) : Widget<MinestomPixel>() {
+    private val items: MutableList<MinestomPixel> = arrayListOf()
+
+    fun addItem(item: MinestomPixel) {
         items.add(item)
     }
 
@@ -45,39 +39,48 @@ class Navbar(
         Vertical,
         Horizontal
     }
+
     enum class Style {
         Normal,
         Compact
     }
+
     enum class Position {
         Start,
         Center,
         End
     }
-    override val size: FlexPair = when (orientation) {
-        Orientation.Vertical -> FlexPair(1, 0)
-        Orientation.Horizontal -> FlexPair(0, 1)
-    }
-    override fun render(phase: Phase<Interactable<ItemStack, InventoryEvent>>) {
+
+    override val size: Size =
+        when (orientation) {
+            Orientation.Vertical -> Size(1, 0)
+            Orientation.Horizontal -> Size(0, 1)
+        }
+
+    override fun render(phase: Phase<MinestomPixel>) {
         when (phase) {
             is Phase.BuildPhase -> {}
             is Phase.RenderPhase -> {
                 val layer = phase.layer
-                val length: Int = when (orientation) {
-                    Orientation.Vertical -> layer.size.y
-                    Orientation.Horizontal -> layer.size.x
-                }
-                val setItem: (Int, Interactable<ItemStack, InventoryEvent>) -> Unit = when (orientation) {
-                    Orientation.Vertical -> ({ pos, pixel -> layer[0, pos] = pixel })
-                    Orientation.Horizontal -> ({ pos, pixel -> layer[pos, 0] = pixel })
-                }
+                val length: Int =
+                    when (orientation) {
+                        Orientation.Vertical -> layer.size.y
+                        Orientation.Horizontal -> layer.size.x
+                    }
+                val setItem: (Int, MinestomPixel) -> Unit =
+                    when (orientation) {
+                        Orientation.Vertical -> ({ pos, pixel -> layer[0, pos] = pixel })
+                        Orientation.Horizontal -> ({ pos, pixel -> layer[pos, 0] = pixel })
+                    }
                 for (i in 0..<length) {
                     setItem(
                         i,
-                        items.getOrNull(i) ?: Interactable(ItemStack.of(Material.BLACK_STAINED_GLASS_PANE)) {}
+                        items.getOrNull(i)
+                            ?: Interactable(ItemStack.of(Material.BLACK_STAINED_GLASS_PANE)) {}
                     )
                 }
             }
         }
     }
 }
+*/

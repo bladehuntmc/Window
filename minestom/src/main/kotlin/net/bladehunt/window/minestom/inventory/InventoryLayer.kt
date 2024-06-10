@@ -27,16 +27,17 @@ import net.bladehunt.window.core.interact.Interactable
 import net.bladehunt.window.core.interact.InteractionHandler
 import net.bladehunt.window.core.layer.Layer
 import net.bladehunt.window.core.util.IntPair
-import net.minestom.server.event.trait.InventoryEvent
+import net.bladehunt.window.minestom.MinestomPixel
+import net.minestom.server.event.inventory.InventoryPreClickEvent
 import net.minestom.server.item.ItemStack
 
 class InventoryLayer(
     override val size: IntPair,
     private val transaction: WindowInventory.Transaction,
-    private val interactions: Layer<InteractionHandler<InventoryEvent>>
-) : Layer<Interactable<ItemStack, InventoryEvent>> {
+    private val interactions: Layer<InteractionHandler<InventoryPreClickEvent>>
+) : Layer<MinestomPixel> {
 
-    override fun set(posX: Int, posY: Int, pixel: Interactable<ItemStack, InventoryEvent>) {
+    override fun set(posX: Int, posY: Int, pixel: MinestomPixel) {
         transaction[getAbsoluteSlot(posX, posY)] = pixel.pixel
 
         if (pixel.interactionHandler != null) {
@@ -44,7 +45,8 @@ class InventoryLayer(
         } else interactions.remove(posX, posY)
     }
 
-    override fun get(posX: Int, posY: Int): Interactable<ItemStack, InventoryEvent> = Interactable(transaction[getAbsoluteSlot(posX, posY)], interactions[posX, posY])
+    override fun get(posX: Int, posY: Int): MinestomPixel =
+        Interactable(transaction[getAbsoluteSlot(posX, posY)], interactions[posX, posY])
 
     override fun remove(posX: Int, posY: Int) {
         transaction[getAbsoluteSlot(posX, posY)] = ItemStack.AIR
@@ -52,11 +54,13 @@ class InventoryLayer(
     }
 
     override fun isEmpty(): Boolean = transaction.isEmpty()
+
     override fun isNotEmpty(): Boolean = transaction.isNotEmpty()
 
-    override fun isPositionEmpty(posX: Int, posY: Int): Boolean = transaction[getAbsoluteSlot(posX, posY)].isAir
+    override fun isPositionEmpty(posX: Int, posY: Int): Boolean =
+        transaction[getAbsoluteSlot(posX, posY)].isAir
 
-    override fun copyTo(other: Layer<Interactable<ItemStack, InventoryEvent>>) {
+    override fun copyTo(other: Layer<MinestomPixel>) {
         throw UnsupportedOperationException("This operation is not supported for inventory layers")
     }
 
@@ -67,10 +71,13 @@ class InventoryLayer(
 
     private fun getAbsoluteSlot(x: Int, y: Int): Int = y * size.x + x
 
-    override fun iterator(): Iterator<Pair<IntPair, Interactable<ItemStack, InventoryEvent>>> = iterator {
+    override fun iterator(): Iterator<Pair<IntPair, MinestomPixel>> = iterator {
         for (x in 0..<size.x) {
             for (y in 0..<size.y) {
-                yield(IntPair(x, y) to Interactable(transaction[getAbsoluteSlot(x, y)], interactions[x, y]))
+                yield(
+                    IntPair(x, y) to
+                        Interactable(transaction[getAbsoluteSlot(x, y)], interactions[x, y])
+                )
             }
         }
     }

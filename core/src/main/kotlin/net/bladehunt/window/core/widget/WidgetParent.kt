@@ -29,5 +29,8 @@ interface WidgetParent<T> {
     fun <W : Widget<T>> removeWidget(widget: W)
 
     fun <W : Widget<T>> addWidget(widget: W) = addWidget(widget, null)
+
     fun <W : Widget<T>> addWidget(widget: W, index: Int? = null)
+
+    operator fun <W : Widget<T>> W.unaryPlus() = addWidget(this)
 }

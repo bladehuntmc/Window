@@ -23,8 +23,8 @@
 
 package net.bladehunt.window.core.widget
 
-import net.bladehunt.window.core.util.FlexPair
+import net.bladehunt.window.core.util.Size
 
 interface Resizable : Sized {
-    override var size: FlexPair
+    override var size: Size
 }

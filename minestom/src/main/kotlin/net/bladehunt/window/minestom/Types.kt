@@ -21,8 +21,16 @@
  * OTHER DEALINGS IN THE SOFTWARE.
  */
 
-package net.bladehunt.window.core.dsl
+package net.bladehunt.window.minestom
 
-@Target(AnnotationTarget.TYPE, AnnotationTarget.FUNCTION)
-@DslMarker
-annotation class WindowDsl
+import net.bladehunt.window.core.interact.Interactable
+import net.bladehunt.window.core.widget.Widget
+import net.bladehunt.window.core.widget.WidgetParent
+import net.minestom.server.event.inventory.InventoryPreClickEvent
+import net.minestom.server.item.ItemStack
+
+typealias MinestomPixel = Interactable<ItemStack, InventoryPreClickEvent>
+
+typealias MinestomWidget = Widget<MinestomPixel>
+
+typealias MinestomWidgetParent = WidgetParent<MinestomPixel>

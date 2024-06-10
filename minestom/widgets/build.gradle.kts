@@ -5,6 +5,6 @@ java {
 }
 
 dependencies {
-    compileOnly("net.minestom:minestom-snapshots:1_20_5-323c75f8a5")
+    compileOnly("net.minestom:minestom-snapshots:1_20_5-d911dab9dd")
     compileOnly(project(":minestom"))
 }

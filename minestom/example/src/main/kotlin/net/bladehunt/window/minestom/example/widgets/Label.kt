@@ -21,23 +21,21 @@
  * OTHER DEALINGS IN THE SOFTWARE.
  */
 
-package net.bladehunt.window.paper
+package net.bladehunt.window.minestom.example.widgets
 
+import net.bladehunt.kotstom.dsl.item.item
+import net.bladehunt.kotstom.dsl.item.itemName
+import net.bladehunt.minestom.widgets.dsl.button
 import net.bladehunt.window.core.WindowDsl
+import net.bladehunt.window.core.interact.InteractionHandler
+import net.bladehunt.window.minestom.MinestomWidget
 import net.kyori.adventure.text.Component
-import org.bukkit.event.inventory.InventoryType
-import org.bukkit.plugin.Plugin
+import net.minestom.server.item.Material
 
 @WindowDsl
-inline fun window(
-    plugin: Plugin,
-    inventoryType: InventoryType = InventoryType.CHEST,
-    rowSize: Int = 9,
-    size: Int = 27,
-    title: Component = Component.empty(),
-    block: @WindowDsl PaperWindow.() -> Unit
-): PaperWindow =
-    PaperWindow(plugin, inventoryType, rowSize, size, title).apply {
-        block()
-        render()
+fun label(material: Material, text: Component): MinestomWidget {
+    return button {
+        display = item(material) { itemName = text }
+        onInteract = InteractionHandler { event -> event.isCancelled = true }
     }
+}

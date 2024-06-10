@@ -21,23 +21,10 @@
  * OTHER DEALINGS IN THE SOFTWARE.
  */
 
-package net.bladehunt.window.paper
+package net.bladehunt.minestom.widgets.core
 
-import net.bladehunt.window.core.WindowDsl
-import net.kyori.adventure.text.Component
-import org.bukkit.event.inventory.InventoryType
-import org.bukkit.plugin.Plugin
+import net.bladehunt.window.core.layout.AbstractAuto
+import net.bladehunt.window.core.util.Size
+import net.bladehunt.window.minestom.MinestomPixel
 
-@WindowDsl
-inline fun window(
-    plugin: Plugin,
-    inventoryType: InventoryType = InventoryType.CHEST,
-    rowSize: Int = 9,
-    size: Int = 27,
-    title: Component = Component.empty(),
-    block: @WindowDsl PaperWindow.() -> Unit
-): PaperWindow =
-    PaperWindow(plugin, inventoryType, rowSize, size, title).apply {
-        block()
-        render()
-    }
+class Auto(size: Size) : AbstractAuto<MinestomPixel>(size)

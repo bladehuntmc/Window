@@ -23,8 +23,6 @@
 
 package net.bladehunt.minestom.example;
 
-import net.bladehunt.window.core.widget.Button;
-
 public class JavaExample {
     public static void main(String[] args) {
     }

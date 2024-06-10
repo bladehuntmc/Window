@@ -20,14 +20,26 @@
  * FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
  * OTHER DEALINGS IN THE SOFTWARE.
  */
-package net.bladehunt.window.core.util
 
-@JvmRecord
-data class FlexPair(val x: Int, val flexX: Boolean, val y: Int, val flexY: Boolean) {
-    constructor(x: Int = 0, y: Int = 0) : this(x, x <= 0, y, y <= 0)
-    constructor() : this(0, 0)
+package net.bladehunt.minestom.widgets.dsl
 
-    fun toPairedInts(): IntPair {
-        return IntPair(x, y)
-    }
-}
+import net.bladehunt.minestom.widgets.core.*
+import net.bladehunt.window.core.Modifier
+import net.bladehunt.window.core.WindowDsl
+import net.bladehunt.window.core.util.Size
+
+@WindowDsl
+inline fun column(size: Size = Size(), modifier: Modifier<Column>): Column =
+    Column(size).apply(modifier)
+
+@WindowDsl
+inline fun row(size: Size = Size(), modifier: Modifier<Row>): Row = Row(size).apply(modifier)
+
+@WindowDsl
+inline fun auto(size: Size = Size(), modifier: Modifier<Auto>): Auto = Auto(size).apply(modifier)
+
+@WindowDsl
+inline fun container(size: Size = Size(), modifier: Modifier<Container>): Container =
+    Container(size).apply(modifier)
+
+@WindowDsl inline fun button(modifier: Modifier<Button>): Button = Button().apply(modifier)

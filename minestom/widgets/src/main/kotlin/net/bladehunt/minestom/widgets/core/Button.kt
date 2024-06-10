@@ -21,23 +21,24 @@
  * OTHER DEALINGS IN THE SOFTWARE.
  */
 
-package net.bladehunt.window.paper
+package net.bladehunt.minestom.widgets.core
 
+import net.bladehunt.window.core.ReactiveProperty
 import net.bladehunt.window.core.WindowDsl
-import net.kyori.adventure.text.Component
-import org.bukkit.event.inventory.InventoryType
-import org.bukkit.plugin.Plugin
+import net.bladehunt.window.core.layout.Window
+import net.bladehunt.window.core.widget.AbstractButton
+import net.bladehunt.window.minestom.MinestomPixel
+import net.minestom.server.event.inventory.InventoryPreClickEvent
+import net.minestom.server.item.ItemStack
 
-@WindowDsl
-inline fun window(
-    plugin: Plugin,
-    inventoryType: InventoryType = InventoryType.CHEST,
-    rowSize: Int = 9,
-    size: Int = 27,
-    title: Component = Component.empty(),
-    block: @WindowDsl PaperWindow.() -> Unit
-): PaperWindow =
-    PaperWindow(plugin, inventoryType, rowSize, size, title).apply {
-        block()
-        render()
-    }
+class Button(default: ItemStack = ItemStack.AIR) :
+    AbstractButton<ItemStack, InventoryPreClickEvent>() {
+    val displayProperty = property(default)
+    var display by displayProperty
+
+    @WindowDsl
+    inline fun display(crossinline block: ReactiveProperty<ItemStack>) =
+        displayProperty.reactive(block)
+
+    override fun getDisplay(node: Window.Node<MinestomPixel>): ItemStack = display
+}

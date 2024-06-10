@@ -21,23 +21,11 @@
  * OTHER DEALINGS IN THE SOFTWARE.
  */
 
-package net.bladehunt.window.paper
-
+package net.bladehunt.minestom.widgets.dsl
+/*
+import net.bladehunt.minestom.widgets.Navbar
+import net.bladehunt.window.core.Modifier
 import net.bladehunt.window.core.WindowDsl
-import net.kyori.adventure.text.Component
-import org.bukkit.event.inventory.InventoryType
-import org.bukkit.plugin.Plugin
 
-@WindowDsl
-inline fun window(
-    plugin: Plugin,
-    inventoryType: InventoryType = InventoryType.CHEST,
-    rowSize: Int = 9,
-    size: Int = 27,
-    title: Component = Component.empty(),
-    block: @WindowDsl PaperWindow.() -> Unit
-): PaperWindow =
-    PaperWindow(plugin, inventoryType, rowSize, size, title).apply {
-        block()
-        render()
-    }
+@WindowDsl inline fun navbar(block: Modifier<Navbar>): Navbar = Navbar().apply(block)
+*/

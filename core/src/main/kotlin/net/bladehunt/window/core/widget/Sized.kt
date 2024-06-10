@@ -23,8 +23,8 @@
 
 package net.bladehunt.window.core.widget
 
-import net.bladehunt.window.core.util.FlexPair
+import net.bladehunt.window.core.util.Size
 
 interface Sized {
-    val size: FlexPair
+    val size: Size
 }

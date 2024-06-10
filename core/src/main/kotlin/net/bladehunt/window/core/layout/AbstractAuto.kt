@@ -23,23 +23,23 @@
 
 package net.bladehunt.window.core.layout
 
-import net.bladehunt.window.core.Phase
+import net.bladehunt.window.core.Context
 import net.bladehunt.window.core.layer.OffsetLimitedLayer
 import net.bladehunt.window.core.util.IntPair
-import net.bladehunt.window.core.util.FlexPair
+import net.bladehunt.window.core.util.Size
 import kotlin.math.max
 
-class Auto<T>(size: FlexPair) : LayoutWidget<T>(size) {
-    override fun calculateSize(node: Window.Node<T>): FlexPair = size
+abstract class AbstractAuto<T>(size: Size) : LayoutWidget<T>(size) {
+    override fun calculateSize(node: Window.Node<T>, context: Context): Size = size
 
-    override fun onRender(phase: Phase.RenderPhase<T>) {
-        val layer = phase.layer
+    override fun render(node: Window.Node<T>) {
+        val layer = node.layer ?: throw IllegalStateException("The layer must not be null!")
 
         var pointerX = 0
         var pointerY = 0
         var rowHeight = 0
-        phase.node.children.forEach { child ->
-            val widget = child.widget ?: return@forEach
+        node.children.forEach { child ->
+            val widget = child.widget
 
             if (pointerX + child.size.x > layer.size.x) {
                 pointerX = 0
@@ -47,23 +47,20 @@ class Auto<T>(size: FlexPair) : LayoutWidget<T>(size) {
                 rowHeight = 0
             }
 
-            widget.setUpdateHandler(this) {
-                requestUpdate()
-            }
-
-            val offsetLayer = OffsetLimitedLayer(
-                layer,
-                pointerX,
-                pointerY,
-                IntPair(
-                    if (child.size.flexX) 1 else child.size.x,
-                    if (child.size.flexY) 1 else child.size.y
+            node.layer =
+                OffsetLimitedLayer(
+                    layer,
+                    pointerX,
+                    pointerY,
+                    IntPair(
+                        if (child.size.flexBasisX > 0) 1 else child.size.x,
+                        if (child.size.flexBasisY > 0) 1 else child.size.y
+                    )
                 )
-            )
             pointerX += child.size.x
             rowHeight = max(rowHeight, child.size.y)
 
-            widget.render(phase.copy(node = child, layer = offsetLayer))
+            widget.render(child)
         }
     }
 }

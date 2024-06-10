@@ -21,16 +21,10 @@
  * OTHER DEALINGS IN THE SOFTWARE.
  */
 
-package net.bladehunt.minestom.components.dsl
+package net.bladehunt.minestom.widgets.core
 
-import net.bladehunt.minestom.components.Navbar
-import net.bladehunt.window.core.dsl.WindowDsl
-import net.bladehunt.window.core.interact.Interactable
-import net.bladehunt.window.core.widget.WidgetParent
-import net.minestom.server.event.trait.InventoryEvent
-import net.minestom.server.item.ItemStack
+import net.bladehunt.window.core.layout.AbstractColumn
+import net.bladehunt.window.core.util.Size
+import net.bladehunt.window.minestom.MinestomPixel
 
-@WindowDsl
-inline fun WidgetParent<Interactable<ItemStack, InventoryEvent>>.navbar(block: @WindowDsl Navbar.() -> Unit): Navbar = Navbar()
-    .apply(block)
-    .apply(this::addWidget)
+class Column(size: Size) : AbstractColumn<MinestomPixel>(size)

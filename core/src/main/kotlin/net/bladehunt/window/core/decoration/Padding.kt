@@ -21,23 +21,20 @@
  * OTHER DEALINGS IN THE SOFTWARE.
  */
 
-package net.bladehunt.window.paper
+package net.bladehunt.window.core.decoration
 
-import net.bladehunt.window.core.WindowDsl
-import net.kyori.adventure.text.Component
-import org.bukkit.event.inventory.InventoryType
-import org.bukkit.plugin.Plugin
+data class Padding<T>(
+    val item: T,
+    val left: Int = 0,
+    val right: Int = 0,
+    val top: Int = 0,
+    val bottom: Int = 0,
+) {
+    constructor(item: T, padding: Int) : this(item, padding, padding, padding, padding)
 
-@WindowDsl
-inline fun window(
-    plugin: Plugin,
-    inventoryType: InventoryType = InventoryType.CHEST,
-    rowSize: Int = 9,
-    size: Int = 27,
-    title: Component = Component.empty(),
-    block: @WindowDsl PaperWindow.() -> Unit
-): PaperWindow =
-    PaperWindow(plugin, inventoryType, rowSize, size, title).apply {
-        block()
-        render()
-    }
+    constructor(
+        item: T,
+        paddingX: Int,
+        paddingY: Int
+    ) : this(item, paddingX, paddingX, paddingY, paddingY)
+}

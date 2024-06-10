@@ -22,6 +22,7 @@
  */
 package net.bladehunt.window.core.util
 
+@JvmRecord
 data class IntPair(val x: Int, val y: Int) {
     operator fun plus(other: IntPair): IntPair {
         return IntPair(this.x + other.x, this.y + other.y)
