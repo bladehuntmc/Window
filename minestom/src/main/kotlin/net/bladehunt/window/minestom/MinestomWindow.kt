@@ -23,62 +23,6 @@
 
 package net.bladehunt.window.minestom
 
-import net.bladehunt.kotstom.dsl.listen
-import net.bladehunt.kotstom.extension.rowSize
-import net.bladehunt.kotstom.extension.slots
-import net.bladehunt.window.core.Context
-import net.bladehunt.window.core.interact.InteractionHandler
-import net.bladehunt.window.core.layer.ArrayLayerImpl
-import net.bladehunt.window.core.layout.Window
-import net.bladehunt.window.core.util.IntPair
-import net.bladehunt.window.core.util.Size
-import net.bladehunt.window.minestom.inventory.InventoryLayer
-import net.bladehunt.window.minestom.inventory.WindowInventory
-import net.kyori.adventure.text.Component
-import net.minestom.server.event.inventory.InventoryPreClickEvent
-import net.minestom.server.inventory.InventoryType
-import net.minestom.server.timer.Task
-
-class MinestomWindow(
-    inventoryType: InventoryType,
-    title: Component = Component.text("Window"),
-) : Window<MinestomPixel>(Size(inventoryType.rowSize, inventoryType.size / inventoryType.rowSize)) {
-    val inventory = WindowInventory(inventoryType, title)
-    val interactionLayer =
-        ArrayLayerImpl<InteractionHandler<InventoryPreClickEvent>>(size.toIntPair())
-
-    init {
-        inventory.eventNode().listen<InventoryPreClickEvent> { event: InventoryPreClickEvent ->
-            val slots = event.clickInfo.slots
-            when (slots.size) {
-                0 -> {}
-                1 -> {
-                    val (slot) = slots
-                    val clickedPosX = slot % inventory.inventoryType.rowSize
-                    val clickedPosY = slot / inventory.inventoryType.rowSize
-                    val handler = interactionLayer[clickedPosX, clickedPosY]
-                    handler?.interact(event)
-                    event.isCancelled = true
-                }
-                else -> {}
-            }
-        }
-    }
-
-    override val parentNode: Node<MinestomPixel> =
-        Node(widget = this, size = size, context = Context())
-
-    override fun render() {
-        val reservation =
-            inventory.transaction {
-                buildNode(parentNode, parentNode.context)
-                parentNode.layer = InventoryLayer(size.toIntPair(), it, interactionLayer)
-                render(parentNode)
-            }
-    }
-
-    override fun createArrayLayer(sizeX: Int, sizeY: Int): ArrayLayerImpl<MinestomPixel> =
-        ArrayLayerImpl(IntPair(sizeX, sizeY))
-
-    private var queue: Task? = null
+class MinestomWindow {
+    // TODO: Window Implementation
 }

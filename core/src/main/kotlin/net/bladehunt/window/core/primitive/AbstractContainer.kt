@@ -21,13 +21,15 @@
  * OTHER DEALINGS IN THE SOFTWARE.
  */
 
-package net.bladehunt.window.core.layout
+package net.bladehunt.window.core.primitive
 
 import net.bladehunt.window.core.Context
 import net.bladehunt.window.core.decoration.Padding
+import net.bladehunt.window.core.layout.Window
 import net.bladehunt.window.core.util.Size
+import net.bladehunt.window.core.widget.Layout
 
-abstract class AbstractContainer<T>(size: Size) : LayoutWidget<T>(size) {
+abstract class AbstractContainer<T>(size: Size) : Layout<T>(size) {
     abstract fun createPadding(): Padding<T>
 
     override fun calculateSize(node: Window.Node<T>, context: Context): Size {

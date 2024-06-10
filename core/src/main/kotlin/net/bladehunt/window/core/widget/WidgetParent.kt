@@ -32,5 +32,6 @@ interface WidgetParent<T> {
 
     fun <W : Widget<T>> addWidget(widget: W, index: Int? = null)
 
+    @JvmSynthetic
     operator fun <W : Widget<T>> W.unaryPlus() = addWidget(this)
 }

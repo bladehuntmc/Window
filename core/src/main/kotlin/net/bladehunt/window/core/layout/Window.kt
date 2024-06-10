@@ -26,6 +26,7 @@ package net.bladehunt.window.core.layout
 import net.bladehunt.window.core.Context
 import net.bladehunt.window.core.layer.ArrayLayerImpl
 import net.bladehunt.window.core.layer.Layer
+import net.bladehunt.window.core.primitive.AbstractColumn
 import net.bladehunt.window.core.util.Size
 import net.bladehunt.window.core.widget.Widget
 

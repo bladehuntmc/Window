@@ -21,15 +21,17 @@
  * OTHER DEALINGS IN THE SOFTWARE.
  */
 
-package net.bladehunt.window.core.layout
+package net.bladehunt.window.core.primitive
 
 import net.bladehunt.window.core.Context
 import net.bladehunt.window.core.layer.OffsetLimitedLayer
+import net.bladehunt.window.core.layout.Window
 import net.bladehunt.window.core.util.IntPair
 import net.bladehunt.window.core.util.Size
+import net.bladehunt.window.core.widget.Layout
 import kotlin.math.max
 
-abstract class AbstractAuto<T>(size: Size) : LayoutWidget<T>(size) {
+abstract class AbstractAuto<T>(size: Size) : Layout<T>(size) {
     override fun calculateSize(node: Window.Node<T>, context: Context): Size = size
 
     override fun render(node: Window.Node<T>) {

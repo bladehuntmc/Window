@@ -32,9 +32,6 @@ abstract class Widget<T> : Resizable {
 
     override var size by property(Size(1, 1), WidgetProperty.Behavior.FULL_RENDER)
 
-    var isDirty: Boolean = true
-        protected set
-
     fun registerHandlers(node: Window.Node<T>) {
         handledProperties.forEach { property -> property.handleNode(node) }
     }

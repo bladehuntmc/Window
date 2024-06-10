@@ -21,23 +21,27 @@
  * OTHER DEALINGS IN THE SOFTWARE.
  */
 
-package net.bladehunt.window.paper
+package net.bladehunt.window.core.primitive
 
-import net.bladehunt.window.core.WindowDsl
-import net.kyori.adventure.text.Component
-import org.bukkit.event.inventory.InventoryType
-import org.bukkit.plugin.Plugin
+import net.bladehunt.window.core.Context
+import net.bladehunt.window.core.ext.fill
+import net.bladehunt.window.core.interact.Interactable
+import net.bladehunt.window.core.interact.InteractionHandler
+import net.bladehunt.window.core.layout.Window
+import net.bladehunt.window.core.widget.Resizable
+import net.bladehunt.window.core.widget.Widget
 
-@WindowDsl
-inline fun window(
-    plugin: Plugin,
-    inventoryType: InventoryType = InventoryType.CHEST,
-    rowSize: Int = 9,
-    size: Int = 27,
-    title: Component = Component.empty(),
-    block: @WindowDsl PaperWindow.() -> Unit
-): PaperWindow =
-    PaperWindow(plugin, inventoryType, rowSize, size, title).apply {
-        block()
-        render()
+abstract class AbstractButton<Pixel, Event> : Widget<Interactable<Pixel, Event>>(), Resizable {
+    var onInteract by property<InteractionHandler<Event>>()
+
+    abstract fun getDisplay(node: Window.Node<Interactable<Pixel, Event>>): Pixel
+
+    override fun buildNode(parent: Window.Node<Interactable<Pixel, Event>>, context: Context) {
+        parent.createChild(this, context)
     }
+
+    override fun render(node: Window.Node<Interactable<Pixel, Event>>) {
+        val layer = node.layer ?: throw IllegalStateException("The layer must not be null!")
+        layer.fill(Interactable(getDisplay(node), onInteract))
+    }
+}

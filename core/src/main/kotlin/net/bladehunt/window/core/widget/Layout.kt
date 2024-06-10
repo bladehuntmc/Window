@@ -21,16 +21,34 @@
  * OTHER DEALINGS IN THE SOFTWARE.
  */
 
-package net.bladehunt.window.minestom
+package net.bladehunt.window.core.widget
 
-import net.bladehunt.window.core.interact.Interactable
-import net.bladehunt.window.core.widget.Widget
-import net.bladehunt.window.core.widget.WidgetParent
-import net.minestom.server.event.inventory.InventoryPreClickEvent
-import net.minestom.server.item.ItemStack
+import net.bladehunt.window.core.Context
+import net.bladehunt.window.core.layout.Window
+import net.bladehunt.window.core.util.Size
 
-typealias MinestomPixel = Interactable<ItemStack, InventoryPreClickEvent>
+abstract class Layout<T>(override var size: Size) : Widget<T>(), WidgetParent<T> {
+    private val _children: MutableList<Widget<T>> = arrayListOf()
+    override val children: Collection<Widget<T>>
+        get() = _children.toList()
 
-typealias MinestomWidget = Widget<MinestomPixel>
+    override fun <W : Widget<T>> removeWidget(widget: W) {
+        _children.remove(widget)
+    }
 
-typealias MinestomWidgetParent = WidgetParent<MinestomPixel>
+    override fun <W : Widget<T>> addWidget(widget: W, index: Int?) {
+        if (_children.contains(widget)) return
+        if (index == null) {
+            _children.add(widget)
+        } else _children.add(index, widget)
+    }
+
+    abstract fun calculateSize(node: Window.Node<T>, context: Context): Size
+
+    override fun buildNode(parent: Window.Node<T>, context: Context) {
+        val node = parent.createChild(this, context)
+        children.forEach { it.buildNode(node, context) }
+
+        node.size = calculateSize(node, context)
+    }
+}
