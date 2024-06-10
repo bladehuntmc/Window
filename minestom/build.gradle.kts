@@ -27,8 +27,8 @@ repositories { maven("https://gitlab.com/api/v4/groups/bladehunt/-/packages/mave
 
 dependencies {
     api(project(":core"))
-    api("net.bladehunt:kotstom:0.2.0-beta")
-    compileOnly("net.minestom:minestom-snapshots:1_20_5-d911dab9dd")
+    api("net.bladehunt:kotstom:0.2.0")
+    compileOnly("net.minestom:minestom-snapshots:1c528d8ae2")
     testImplementation(platform("org.junit:junit-bom:5.9.1"))
     testImplementation("org.junit.jupiter:junit-jupiter")
 }
