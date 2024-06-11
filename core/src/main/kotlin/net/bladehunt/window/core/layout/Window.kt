@@ -27,8 +27,8 @@ import net.bladehunt.window.core.Context
 import net.bladehunt.window.core.layer.ArrayLayerImpl
 import net.bladehunt.window.core.layer.Layer
 import net.bladehunt.window.core.primitive.AbstractColumn
+import net.bladehunt.window.core.primitive.Primitive
 import net.bladehunt.window.core.util.Size
-import net.bladehunt.window.core.widget.Widget
 
 abstract class Window<T>(size: Size) : AbstractColumn<T>(size) {
     abstract val parentNode: Node<T>
@@ -47,7 +47,7 @@ abstract class Window<T>(size: Size) : AbstractColumn<T>(size) {
 
     data class Node<T>(
         val parent: Node<T>? = null,
-        val widget: Widget<T>,
+        val primitive: Primitive<T>,
         var context: Context,
         var size: Size = Size(0, 0),
         val children: MutableList<Node<T>> = arrayListOf(),
@@ -57,16 +57,17 @@ abstract class Window<T>(size: Size) : AbstractColumn<T>(size) {
             children.add(node)
         }
 
-        fun createChild(widget: Widget<T>, context: Context): Node<T> =
-            Node(this, widget, context, widget.size).apply(::addChild)
+        fun createChild(primitive: Primitive<T>, context: Context): Node<T> =
+            Node(this, primitive, context, primitive.size).apply(::addChild)
 
         fun removeChild(node: Node<T>) = children.remove(node)
 
-        fun removeChild(widget: Widget<T>) = children.removeIf { it == widget }
+        fun removeChild(primitive: Primitive<T>) = children.removeIf { it == primitive }
 
-        fun searchLevel(widget: Widget<T>): Node<T>? = children.firstOrNull { it.widget == widget }
+        fun searchLevel(primitive: Primitive<T>): Node<T>? =
+            children.firstOrNull { it.primitive == primitive }
 
-        fun hasChild(widget: Widget<T>): Boolean = children.any { it.widget == widget }
+        fun hasChild(primitive: Primitive<T>): Boolean = children.any { it.primitive == primitive }
 
         fun traverseDepthFirst(visit: (Node<T>) -> Unit) {
             visit(this)
@@ -82,7 +83,7 @@ abstract class Window<T>(size: Size) : AbstractColumn<T>(size) {
         }
 
         override fun toString(): String {
-            return "Node(widget=$widget, size=$size, children=$children)"
+            return "Node(widget=$primitive, size=$size, children=$children)"
         }
     }
 }

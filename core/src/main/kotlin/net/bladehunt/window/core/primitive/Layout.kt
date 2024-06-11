@@ -21,17 +21,34 @@
  * OTHER DEALINGS IN THE SOFTWARE.
  */
 
-package net.bladehunt.window.core.widget
+package net.bladehunt.window.core.primitive
 
-interface WidgetParent<T> {
-    val children: Collection<Widget<T>>
+import net.bladehunt.window.core.Context
+import net.bladehunt.window.core.layout.Window
+import net.bladehunt.window.core.util.Size
 
-    fun <W : Widget<T>> removeWidget(widget: W)
+abstract class Layout<T>(override var size: Size) : Primitive<T>(), PrimitiveParent<T> {
+    private val _children: MutableList<Primitive<T>> = arrayListOf()
+    override val children: Collection<Primitive<T>>
+        get() = _children.toList()
 
-    fun <W : Widget<T>> addWidget(widget: W) = addWidget(widget, null)
+    override fun <W : Primitive<T>> removeWidget(widget: W) {
+        _children.remove(widget)
+    }
 
-    fun <W : Widget<T>> addWidget(widget: W, index: Int? = null)
+    override fun <W : Primitive<T>> addPrimitive(widget: W, index: Int?) {
+        if (_children.contains(widget)) return
+        if (index == null) {
+            _children.add(widget)
+        } else _children.add(index, widget)
+    }
 
-    @JvmSynthetic
-    operator fun <W : Widget<T>> W.unaryPlus() = addWidget(this)
+    abstract fun calculateSize(node: Window.Node<T>, context: Context): Size
+
+    override fun buildNode(parent: Window.Node<T>, context: Context) {
+        val node = parent.createChild(this, context)
+        children.forEach { it.buildNode(node, context) }
+
+        node.size = calculateSize(node, context)
+    }
 }

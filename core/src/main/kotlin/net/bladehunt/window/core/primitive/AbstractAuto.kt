@@ -28,7 +28,6 @@ import net.bladehunt.window.core.layer.OffsetLimitedLayer
 import net.bladehunt.window.core.layout.Window
 import net.bladehunt.window.core.util.IntPair
 import net.bladehunt.window.core.util.Size
-import net.bladehunt.window.core.widget.Layout
 import kotlin.math.max
 
 abstract class AbstractAuto<T>(size: Size) : Layout<T>(size) {
@@ -41,7 +40,7 @@ abstract class AbstractAuto<T>(size: Size) : Layout<T>(size) {
         var pointerY = 0
         var rowHeight = 0
         node.children.forEach { child ->
-            val widget = child.widget
+            val widget = child.primitive
 
             if (pointerX + child.size.x > layer.size.x) {
                 pointerX = 0

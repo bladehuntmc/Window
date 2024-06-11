@@ -30,7 +30,6 @@ import net.bladehunt.window.core.layer.OffsetLimitedLayer
 import net.bladehunt.window.core.layout.Window
 import net.bladehunt.window.core.util.IntPair
 import net.bladehunt.window.core.util.Size
-import net.bladehunt.window.core.widget.Layout
 
 abstract class AbstractRow<T>(size: Size = Size(0, 0)) : Layout<T>(size) {
     override fun calculateSize(node: Window.Node<T>, context: Context): Size {
@@ -84,7 +83,7 @@ abstract class AbstractRow<T>(size: Size = Size(0, 0)) : Layout<T>(size) {
                     )
                 )
             child.layer = childLayer
-            child.widget.render(child)
+            child.primitive.render(child)
 
             previousX += childLayer.size.x
         }

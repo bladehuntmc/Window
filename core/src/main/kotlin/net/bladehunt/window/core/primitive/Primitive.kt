@@ -21,13 +21,14 @@
  * OTHER DEALINGS IN THE SOFTWARE.
  */
 
-package net.bladehunt.window.core.widget
+package net.bladehunt.window.core.primitive
 
 import net.bladehunt.window.core.Context
 import net.bladehunt.window.core.layout.Window
 import net.bladehunt.window.core.util.Size
+import net.bladehunt.window.core.widget.Resizable
 
-abstract class Widget<T> : Resizable {
+abstract class Primitive<T> : Resizable {
     private val handledProperties: ArrayList<WidgetProperty<*>> = arrayListOf()
 
     override var size by property(Size(1, 1), WidgetProperty.Behavior.FULL_RENDER)

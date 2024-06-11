@@ -27,7 +27,6 @@ import net.bladehunt.window.core.Context
 import net.bladehunt.window.core.decoration.Padding
 import net.bladehunt.window.core.layout.Window
 import net.bladehunt.window.core.util.Size
-import net.bladehunt.window.core.widget.Layout
 
 abstract class AbstractContainer<T>(size: Size) : Layout<T>(size) {
     abstract fun createPadding(): Padding<T>
@@ -68,6 +67,6 @@ abstract class AbstractContainer<T>(size: Size) : Layout<T>(size) {
             }
         }
         val child = node.children.firstOrNull() ?: return
-        child.widget.render(child)
+        child.primitive.render(child)
     }
 }

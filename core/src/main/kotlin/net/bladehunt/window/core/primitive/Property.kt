@@ -21,14 +21,14 @@
  * OTHER DEALINGS IN THE SOFTWARE.
  */
 
-package net.bladehunt.window.core.widget
+package net.bladehunt.window.core.primitive
 
 import net.bladehunt.reakt.pubsub.EventPublisher
 import net.bladehunt.reakt.pubsub.event.Event
 import net.bladehunt.reakt.reactivity.ReactiveContext
 import net.bladehunt.window.core.ReactiveProperty
 import net.bladehunt.window.core.layout.Window
-import net.bladehunt.window.core.widget.WidgetProperty.Behavior
+import net.bladehunt.window.core.primitive.WidgetProperty.Behavior
 import java.util.*
 import kotlin.properties.ReadWriteProperty
 import kotlin.reflect.KProperty
@@ -37,7 +37,7 @@ fun <T> WidgetProperty(behavior: Behavior = Behavior.PARTIAL_RENDER): WidgetProp
     WidgetProperty(null, behavior)
 
 class WidgetProperty<T>(default: T, val behavior: Behavior = Behavior.PARTIAL_RENDER) :
-    ReactiveContext, ReadWriteProperty<Widget<*>, T> {
+    ReactiveContext, ReadWriteProperty<Primitive<*>, T> {
 
     enum class Behavior {
         NONE,
@@ -58,12 +58,12 @@ class WidgetProperty<T>(default: T, val behavior: Behavior = Behavior.PARTIAL_RE
                     {}
                 }
                 Behavior.PARTIAL_RENDER -> {
-                    { node.widget.render(node) }
+                    { node.primitive.render(node) }
                 }
                 Behavior.FULL_RENDER -> {
                     {
                         val root = node.getRoot()
-                        root.widget.render(root)
+                        root.primitive.render(root)
                     }
                 }
                 Behavior.PARTIAL_BUILD -> {
@@ -91,9 +91,9 @@ class WidgetProperty<T>(default: T, val behavior: Behavior = Behavior.PARTIAL_RE
 
     override fun onUnsubscribe(publisher: EventPublisher) {}
 
-    override fun getValue(thisRef: Widget<*>, property: KProperty<*>): T = value
+    override fun getValue(thisRef: Primitive<*>, property: KProperty<*>): T = value
 
-    override fun setValue(thisRef: Widget<*>, property: KProperty<*>, value: T) {
+    override fun setValue(thisRef: Primitive<*>, property: KProperty<*>, value: T) {
         this.value = value
     }
 }

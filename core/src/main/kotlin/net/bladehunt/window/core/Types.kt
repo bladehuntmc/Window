@@ -25,6 +25,6 @@ package net.bladehunt.window.core
 
 import net.bladehunt.reakt.reactivity.ReactiveContext
 
-typealias Modifier<T> = @WindowDsl T.() -> Unit
+typealias Modifier<T> = @WindowDsl context(Context) T.() -> Unit
 
 typealias ReactiveProperty<T> = @WindowDsl ReactiveContext.() -> T

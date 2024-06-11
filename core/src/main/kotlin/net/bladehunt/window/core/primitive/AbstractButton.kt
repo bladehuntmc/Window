@@ -29,9 +29,8 @@ import net.bladehunt.window.core.interact.Interactable
 import net.bladehunt.window.core.interact.InteractionHandler
 import net.bladehunt.window.core.layout.Window
 import net.bladehunt.window.core.widget.Resizable
-import net.bladehunt.window.core.widget.Widget
 
-abstract class AbstractButton<Pixel, Event> : Widget<Interactable<Pixel, Event>>(), Resizable {
+abstract class AbstractButton<Pixel, Event> : Primitive<Interactable<Pixel, Event>>(), Resizable {
     var onInteract by property<InteractionHandler<Event>>()
 
     abstract fun getDisplay(node: Window.Node<Interactable<Pixel, Event>>): Pixel

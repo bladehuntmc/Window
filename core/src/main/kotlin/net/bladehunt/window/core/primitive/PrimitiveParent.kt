@@ -21,34 +21,16 @@
  * OTHER DEALINGS IN THE SOFTWARE.
  */
 
-package net.bladehunt.window.core.widget
+package net.bladehunt.window.core.primitive
 
-import net.bladehunt.window.core.Context
-import net.bladehunt.window.core.layout.Window
-import net.bladehunt.window.core.util.Size
+interface PrimitiveParent<T> {
+    val children: Collection<Primitive<T>>
 
-abstract class Layout<T>(override var size: Size) : Widget<T>(), WidgetParent<T> {
-    private val _children: MutableList<Widget<T>> = arrayListOf()
-    override val children: Collection<Widget<T>>
-        get() = _children.toList()
+    fun <W : Primitive<T>> removeWidget(widget: W)
 
-    override fun <W : Widget<T>> removeWidget(widget: W) {
-        _children.remove(widget)
-    }
+    fun <W : Primitive<T>> addPrimitive(widget: W) = addPrimitive(widget, null)
 
-    override fun <W : Widget<T>> addWidget(widget: W, index: Int?) {
-        if (_children.contains(widget)) return
-        if (index == null) {
-            _children.add(widget)
-        } else _children.add(index, widget)
-    }
+    fun <W : Primitive<T>> addPrimitive(widget: W, index: Int? = null)
 
-    abstract fun calculateSize(node: Window.Node<T>, context: Context): Size
-
-    override fun buildNode(parent: Window.Node<T>, context: Context) {
-        val node = parent.createChild(this, context)
-        children.forEach { it.buildNode(node, context) }
-
-        node.size = calculateSize(node, context)
-    }
+    @JvmSynthetic operator fun <W : Primitive<T>> W.unaryPlus() = addPrimitive(this)
 }
