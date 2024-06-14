@@ -23,36 +23,12 @@
 
 package net.bladehunt.window.minestom
 
-import net.bladehunt.kotstom.extension.rowSize
-import net.bladehunt.window.core.Context
-import net.bladehunt.window.core.decoration.Padding
-import net.bladehunt.window.core.layer.ArrayLayerImpl
-import net.bladehunt.window.core.layout.Window
-import net.bladehunt.window.core.util.IntPair
-import net.bladehunt.window.core.util.Size
-import net.bladehunt.window.minestom.inventory.InventoryLayer
-import net.minestom.server.inventory.Inventory
+import net.bladehunt.window.core.Modifier
 import net.minestom.server.inventory.InventoryType
 
-class MinestomWindow(inventoryType: InventoryType) : Window<MinestomPixel>() {
-    override val size: Size =
-        Size(inventoryType.rowSize, inventoryType.size / inventoryType.rowSize)
-
-    val inventory = Inventory(inventoryType, "Window")
-
-    private val layer = InventoryLayer(inventory)
-
-    override val parentNode: Node<MinestomPixel> = Node(null, this, Context(), layer = layer)
-
-    override fun render() {
-        render(parentNode)
+inline fun window(inventoryType: InventoryType, block: Modifier<MinestomWindow>) =
+    MinestomWindow(inventoryType).apply {
+        block()
+        build()
+        render()
     }
-
-    override fun createArrayLayer(sizeX: Int, sizeY: Int): ArrayLayerImpl<MinestomPixel> {
-        return ArrayLayerImpl(IntPair(sizeX, sizeY))
-    }
-
-    override fun createPadding(): Padding<MinestomPixel> {
-        TODO("Not yet implemented")
-    }
-}
