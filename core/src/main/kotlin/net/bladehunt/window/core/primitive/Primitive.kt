@@ -23,15 +23,11 @@
 
 package net.bladehunt.window.core.primitive
 
-import net.bladehunt.window.core.Context
 import net.bladehunt.window.core.layout.Window
-import net.bladehunt.window.core.util.Size
-import net.bladehunt.window.core.widget.Resizable
+import net.bladehunt.window.core.widget.Sized
 
-abstract class Primitive<T> : Resizable {
+abstract class Primitive<T> : Sized {
     private val handledProperties: ArrayList<WidgetProperty<*>> = arrayListOf()
-
-    override var size by property(Size(1, 1), WidgetProperty.Behavior.FULL_RENDER)
 
     fun registerHandlers(node: Window.Node<T>) {
         handledProperties.forEach { property -> property.handleNode(node) }
@@ -41,7 +37,7 @@ abstract class Primitive<T> : Resizable {
         handledProperties.forEach { property -> property.dispose(node) }
     }
 
-    abstract fun buildNode(parent: Window.Node<T>, context: Context)
+    abstract fun build(parent: Window.Node<T>)
 
     abstract fun render(node: Window.Node<T>)
 
