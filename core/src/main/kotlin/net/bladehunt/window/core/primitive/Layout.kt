@@ -27,7 +27,7 @@ import net.bladehunt.window.core.Context
 import net.bladehunt.window.core.layout.Window
 import net.bladehunt.window.core.util.Size
 
-abstract class Layout<T>(override var size: Size) : Primitive<T>(), PrimitiveParent<T> {
+abstract class Layout<T> : Primitive<T>(), PrimitiveParent<T> {
     private val _children: MutableList<Primitive<T>> = arrayListOf()
     override val children: Collection<Primitive<T>>
         get() = _children.toList()
@@ -45,10 +45,10 @@ abstract class Layout<T>(override var size: Size) : Primitive<T>(), PrimitivePar
 
     abstract fun calculateSize(node: Window.Node<T>, context: Context): Size
 
-    override fun buildNode(parent: Window.Node<T>, context: Context) {
-        val node = parent.createChild(this, context)
-        children.forEach { it.buildNode(node, context) }
-
-        node.size = calculateSize(node, context)
+    override fun build(parent: Window.Node<T>) {
+        parent.createChild(this) {
+            this@Layout._children.forEach { it.build(this) }
+            size = calculateSize(this, context)
+        }
     }
 }

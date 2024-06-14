@@ -23,15 +23,15 @@
 
 package net.bladehunt.window.core.primitive
 
+import kotlin.math.max
+import kotlin.math.roundToInt
 import net.bladehunt.window.core.Context
 import net.bladehunt.window.core.layer.OffsetLimitedLayer
 import net.bladehunt.window.core.layout.Window
 import net.bladehunt.window.core.util.IntPair
 import net.bladehunt.window.core.util.Size
-import kotlin.math.max
-import kotlin.math.roundToInt
 
-abstract class AbstractColumn<T>(size: Size = Size(0, 0)) : Layout<T>(size) {
+abstract class AbstractColumn<T> : Layout<T>() {
     override fun calculateSize(node: Window.Node<T>, context: Context): Size {
         val (sizeX, sizeY, flexX, flexY) = size
 

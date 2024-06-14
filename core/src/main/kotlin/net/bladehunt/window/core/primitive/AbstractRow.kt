@@ -31,7 +31,7 @@ import net.bladehunt.window.core.layout.Window
 import net.bladehunt.window.core.util.IntPair
 import net.bladehunt.window.core.util.Size
 
-abstract class AbstractRow<T>(size: Size = Size(0, 0)) : Layout<T>(size) {
+abstract class AbstractRow<T> : Layout<T>() {
     override fun calculateSize(node: Window.Node<T>, context: Context): Size {
         val (sizeX, sizeY, flexX, flexY) = size
 

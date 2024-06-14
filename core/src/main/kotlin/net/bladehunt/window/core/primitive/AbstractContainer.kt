@@ -28,7 +28,7 @@ import net.bladehunt.window.core.decoration.Padding
 import net.bladehunt.window.core.layout.Window
 import net.bladehunt.window.core.util.Size
 
-abstract class AbstractContainer<T>(size: Size) : Layout<T>(size) {
+abstract class AbstractContainer<T> : Layout<T>() {
     abstract fun createPadding(): Padding<T>
 
     override fun calculateSize(node: Window.Node<T>, context: Context): Size {

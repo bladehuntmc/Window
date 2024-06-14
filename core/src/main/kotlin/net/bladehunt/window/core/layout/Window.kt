@@ -26,21 +26,19 @@ package net.bladehunt.window.core.layout
 import net.bladehunt.window.core.Context
 import net.bladehunt.window.core.layer.ArrayLayerImpl
 import net.bladehunt.window.core.layer.Layer
-import net.bladehunt.window.core.primitive.AbstractColumn
+import net.bladehunt.window.core.primitive.AbstractContainer
 import net.bladehunt.window.core.primitive.Primitive
 import net.bladehunt.window.core.util.Size
 
-abstract class Window<T>(size: Size) : AbstractColumn<T>(size) {
+abstract class Window<T> : AbstractContainer<T>() {
     abstract val parentNode: Node<T>
 
-    fun buildNode(context: Context) {
-        buildNode(parentNode, context)
-    }
+    fun build() = build(parentNode)
 
     abstract fun render()
 
-    override fun buildNode(parent: Node<T>, context: Context) {
-        children.forEach { it.buildNode(parentNode, context) }
+    override fun build(parent: Node<T>) {
+        children.forEach { it.build(parent) }
     }
 
     abstract fun createArrayLayer(sizeX: Int, sizeY: Int): ArrayLayerImpl<T>
@@ -57,8 +55,11 @@ abstract class Window<T>(size: Size) : AbstractColumn<T>(size) {
             children.add(node)
         }
 
-        fun createChild(primitive: Primitive<T>, context: Context): Node<T> =
+        fun createChild(primitive: Primitive<T>): Node<T> =
             Node(this, primitive, context, primitive.size).apply(::addChild)
+
+        inline fun createChild(primitive: Primitive<T>, block: Node<T>.() -> Unit): Node<T> =
+            Node(this, primitive, context, primitive.size).apply(block).apply(::addChild)
 
         fun removeChild(node: Node<T>) = children.remove(node)
 

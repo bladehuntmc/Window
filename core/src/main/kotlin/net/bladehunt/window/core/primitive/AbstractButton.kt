@@ -35,7 +35,7 @@ abstract class AbstractButton<Pixel, Event> : Primitive<Interactable<Pixel, Even
 
     abstract fun getDisplay(node: Window.Node<Interactable<Pixel, Event>>): Pixel
 
-    override fun buildNode(parent: Window.Node<Interactable<Pixel, Event>>, context: Context) {
+    override fun build(parent: Window.Node<Interactable<Pixel, Event>>, context: Context) {
         parent.createChild(this, context)
     }
 
