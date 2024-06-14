@@ -23,7 +23,6 @@
 
 package net.bladehunt.window.core.layer
 
-import net.bladehunt.window.core.exception.WindowException
 import net.bladehunt.window.core.util.IntPair
 
 class OffsetLimitedLayer<Pixel>(
@@ -71,7 +70,6 @@ class OffsetLimitedLayer<Pixel>(
     }
 
     override fun copyTo(other: Layer<Pixel>) {
-        if (other.size != size) throw WindowException("Layers must be the same size to copy")
         for (x in 0..<size.x) {
             for (y in 0..<size.y) {
                 val value = parent[x + offsetX, y + offsetY]

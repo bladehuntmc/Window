@@ -23,11 +23,28 @@
 
 package net.bladehunt.window.core.primitive
 
+import net.bladehunt.reakt.pubsub.EventPublisher
+import net.bladehunt.reakt.pubsub.event.Event
+import net.bladehunt.reakt.reactivity.ReactiveContext
+import net.bladehunt.window.core.ReactiveProperty
 import net.bladehunt.window.core.layout.Window
 import net.bladehunt.window.core.widget.Sized
+import java.util.*
+import kotlin.collections.ArrayList
+import kotlin.properties.ReadWriteProperty
+import kotlin.reflect.KProperty
+
+enum class Behavior {
+    NONE,
+    PARTIAL_RENDER,
+    FULL_RENDER,
+    PARTIAL_BUILD,
+    FULL_BUILD
+}
 
 abstract class Primitive<T> : Sized {
-    private val handledProperties: ArrayList<WidgetProperty<*>> = arrayListOf()
+
+    private val handledProperties: ArrayList<Property<*>> = arrayListOf()
 
     fun registerHandlers(node: Window.Node<T>) {
         handledProperties.forEach { property -> property.handleNode(node) }
@@ -43,12 +60,68 @@ abstract class Primitive<T> : Sized {
 
     @JvmSynthetic
     fun <V> property(
-        behavior: WidgetProperty.Behavior = WidgetProperty.Behavior.PARTIAL_RENDER
-    ): WidgetProperty<V?> = WidgetProperty<V?>(null, behavior).also(handledProperties::add)
+        behavior: Behavior = Behavior.PARTIAL_RENDER
+    ): Property<V?> = Property<V?>(null, behavior).also(handledProperties::add)
 
     @JvmSynthetic
     fun <V> property(
         default: V,
-        behavior: WidgetProperty.Behavior = WidgetProperty.Behavior.PARTIAL_RENDER
-    ): WidgetProperty<V> = WidgetProperty(default, behavior).also(handledProperties::add)
+        behavior: Behavior = Behavior.PARTIAL_RENDER
+    ): Property<V> = Property(default, behavior).also(handledProperties::add)
+
+
+    inner class Property<T>(default: T, val behavior: Behavior = Behavior.PARTIAL_RENDER) :
+        ReactiveContext, ReadWriteProperty<Primitive<*>, T> {
+
+        private val handlers: WeakHashMap<Window.Node<*>, () -> Unit> = WeakHashMap()
+
+        var value: T = default
+
+        fun <P> handleNode(node: Window.Node<P>) {
+            handlers[node] =
+                when (behavior) {
+                    Behavior.NONE -> {
+                        {}
+                    }
+                    Behavior.PARTIAL_RENDER -> {
+                        { node.primitive.render(node) }
+                    }
+                    Behavior.FULL_RENDER -> {
+                        {
+                            val root = node.getRoot()
+                            root.primitive.render(root)
+                        }
+                    }
+                    Behavior.PARTIAL_BUILD -> {
+                        {}
+                    }
+                    Behavior.FULL_BUILD -> {
+                        {}
+                    }
+                }
+        }
+
+        fun <P> dispose(node: Window.Node<P>) {
+            handlers.remove(node)
+        }
+
+        override fun onEvent(event: Event) {
+            handlers.values.forEach { it() }
+        }
+
+        inline fun reactive(block: ReactiveProperty<T>) {
+            value = block(this)
+        }
+
+        override fun onSubscribe(publisher: EventPublisher) {}
+
+        override fun onUnsubscribe(publisher: EventPublisher) {}
+
+        override fun getValue(thisRef: Primitive<*>, property: KProperty<*>): T = value
+
+        override fun setValue(thisRef: Primitive<*>, property: KProperty<*>, value: T) {
+            this.value = value
+        }
+    }
+
 }
