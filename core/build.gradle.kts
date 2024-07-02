@@ -7,21 +7,18 @@ publishing {
     }
     repositories {
         maven {
-            url = uri("https://gitlab.com/api/v4/projects/54684809/packages/maven")
-            credentials(HttpHeaderCredentials::class) {
-                name = "Job-Token"
-                value = properties["CI_JOB_TOKEN"] as String?
+            name = "releases"
+            url = uri("https://mvn.bladehunt.net/releases")
+            credentials(PasswordCredentials::class) {
+                username = System.getenv("MAVEN_NAME")
+                password = System.getenv("MAVEN_SECRET")
             }
-            authentication {
-                create("header", HttpHeaderAuthentication::class)
-            }
+            authentication { create<BasicAuthentication>("basic") }
         }
     }
 }
 
-java {
-    withSourcesJar()
-}
+java { withSourcesJar() }
 
 dependencies {
     testImplementation(platform("org.junit:junit-bom:5.9.1"))
@@ -30,6 +27,4 @@ dependencies {
     compileOnly("net.kyori:adventure-api:4.15.0")
 }
 
-tasks.test {
-    useJUnitPlatform()
-}
+tasks.test { useJUnitPlatform() }

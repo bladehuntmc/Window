@@ -8,11 +8,12 @@ plugins {
 
 allprojects {
     group = "net.bladehunt"
-    version = "0.1.0-alpha.4"
+    version = "0.1.0-alpha.5"
 
     repositories {
         mavenCentral()
         maven(url = "https://jitpack.io")
+        maven("https://mvn.bladehunt.net/releases")
         maven("https://gitlab.com/api/v4/groups/bladehunt/-/packages/maven")
     }
     tasks.withType<JavaCompile> {
@@ -23,12 +24,11 @@ allprojects {
     tasks.withType<KotlinCompile> {
         kotlinOptions {
             jvmTarget = "21"
-            compilerOptions {
-                freeCompilerArgs.add("-Xcontext-receivers")
-            }
+            compilerOptions { freeCompilerArgs.add("-Xcontext-receivers") }
         }
     }
 }
+
 subprojects {
     apply(plugin = "org.jetbrains.kotlin.jvm")
     apply(plugin = "maven-publish")
