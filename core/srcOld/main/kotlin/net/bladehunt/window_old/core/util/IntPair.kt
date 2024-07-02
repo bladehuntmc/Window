@@ -20,18 +20,19 @@
  * FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
  * OTHER DEALINGS IN THE SOFTWARE.
  */
+package net.bladehunt.window_old.core.util
 
-package net.bladehunt.window.minestom
-
-import net.bladehunt.window_old.core.Modifier
-import net.minestom.server.inventory.InventoryType
-
-inline fun window(
-    inventoryType: InventoryType,
-    block: net.bladehunt.window_old.core.Modifier<MinestomWindow>
-) =
-    MinestomWindow(inventoryType).apply {
-        block()
-        build()
-        render()
+@JvmRecord
+data class IntPair(val x: Int, val y: Int) {
+    operator fun plus(other: IntPair): IntPair {
+        return IntPair(this.x + other.x, this.y + other.y)
     }
+
+    operator fun minus(other: IntPair): IntPair {
+        return IntPair(this.x - other.x, this.y - other.y)
+    }
+
+    operator fun times(other: IntPair): IntPair {
+        return IntPair(this.x * other.x, this.y * other.y)
+    }
+}

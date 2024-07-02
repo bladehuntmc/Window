@@ -21,17 +21,33 @@
  * OTHER DEALINGS IN THE SOFTWARE.
  */
 
-package net.bladehunt.window.minestom
+package net.bladehunt.window_old.core.ext
 
-import net.bladehunt.window_old.core.Modifier
-import net.minestom.server.inventory.InventoryType
+import net.bladehunt.window.core.util.IntPair
 
-inline fun window(
-    inventoryType: InventoryType,
-    block: net.bladehunt.window_old.core.Modifier<MinestomWindow>
-) =
-    MinestomWindow(inventoryType).apply {
-        block()
-        build()
-        render()
+operator fun <T> MutableMap<IntPair, T>.set(x: Int, y: Int, value: T) {
+    this[IntPair(x, y)] = value
+}
+
+operator fun <T> MutableMap<IntPair, T>.get(x: Int, y: Int): T? = this[IntPair(x, y)]
+
+operator fun <T> Array<Array<T>>.set(x: Int, y: Int, value: T) {
+    this[x][y] = value
+}
+
+operator fun <T> Array<Array<T>>.get(x: Int, y: Int, value: T) = this[x][y]
+
+inline fun <T> Array<Array<T>>.forEach(block: (x: Int, y: Int, value: T?) -> Unit) {
+    for (x in this.indices) {
+        for (y in this[x].indices) {
+            block(x, y, this[x][y])
+        }
     }
+}
+
+inline fun <T> Array<Array<T?>>.forEachNotNull(block: (x: Int, y: Int, value: T) -> Unit) {
+    forEach { x, y, value ->
+        if (value == null) return@forEach
+        block(x, y, value)
+    }
+}

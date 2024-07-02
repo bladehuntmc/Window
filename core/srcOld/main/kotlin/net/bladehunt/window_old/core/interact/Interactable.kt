@@ -21,17 +21,6 @@
  * OTHER DEALINGS IN THE SOFTWARE.
  */
 
-package net.bladehunt.window.minestom
+package net.bladehunt.window_old.core.interact
 
-import net.bladehunt.window_old.core.Modifier
-import net.minestom.server.inventory.InventoryType
-
-inline fun window(
-    inventoryType: InventoryType,
-    block: net.bladehunt.window_old.core.Modifier<MinestomWindow>
-) =
-    MinestomWindow(inventoryType).apply {
-        block()
-        build()
-        render()
-    }
+data class Interactable<Pixel, T>(val pixel: Pixel, val interactionHandler: InteractionHandler<T>?)

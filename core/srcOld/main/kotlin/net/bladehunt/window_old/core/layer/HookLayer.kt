@@ -21,17 +21,20 @@
  * OTHER DEALINGS IN THE SOFTWARE.
  */
 
-package net.bladehunt.window.minestom
+package net.bladehunt.window_old.core.layer
 
-import net.bladehunt.window_old.core.Modifier
-import net.minestom.server.inventory.InventoryType
-
-inline fun window(
-    inventoryType: InventoryType,
-    block: net.bladehunt.window_old.core.Modifier<MinestomWindow>
-) =
-    MinestomWindow(inventoryType).apply {
-        block()
-        build()
-        render()
+open class HookLayer<Pixel>(
+    private val inner: Layer<Pixel>,
+    private val onSet: (layer: Layer<Pixel>, posX: Int, posY: Int, pixel: Pixel) -> Unit,
+    private val onRemove: (layer: Layer<Pixel>, posX: Int, posY: Int) -> Unit
+) : Layer<Pixel> by inner {
+    override fun set(posX: Int, posY: Int, pixel: Pixel) {
+        inner[posX, posY] = pixel
+        onSet(this, posX, posY, pixel)
     }
+
+    override fun remove(posX: Int, posY: Int) {
+        inner.remove(posX, posY)
+        onRemove(this, posX, posY)
+    }
+}

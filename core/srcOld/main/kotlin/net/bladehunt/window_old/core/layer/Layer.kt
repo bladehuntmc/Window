@@ -21,17 +21,34 @@
  * OTHER DEALINGS IN THE SOFTWARE.
  */
 
-package net.bladehunt.window.minestom
+package net.bladehunt.window_old.core.layer
 
-import net.bladehunt.window_old.core.Modifier
-import net.minestom.server.inventory.InventoryType
+import net.bladehunt.window.core.util.IntPair
 
-inline fun window(
-    inventoryType: InventoryType,
-    block: net.bladehunt.window_old.core.Modifier<MinestomWindow>
-) =
-    MinestomWindow(inventoryType).apply {
-        block()
-        build()
-        render()
-    }
+interface Layer<Pixel> : Iterable<Pair<IntPair, Pixel>> {
+    val size: IntPair
+
+    operator fun set(posX: Int, posY: Int, pixel: Pixel)
+
+    operator fun get(posX: Int, posY: Int): Pixel?
+
+    operator fun set(pos: IntPair, pixel: Pixel) = set(pos.x, pos.y, pixel)
+
+    operator fun get(pos: IntPair): Pixel? = get(pos.x, pos.y)
+
+    fun remove(posX: Int, posY: Int)
+
+    fun remove(pos: IntPair) = remove(pos.x, pos.y)
+
+    fun isEmpty(): Boolean
+
+    fun isNotEmpty(): Boolean
+
+    fun isPositionEmpty(posX: Int, posY: Int): Boolean
+
+    fun isPositionEmpty(pos: IntPair): Boolean = isPositionEmpty(pos.x, pos.y)
+
+    fun copyTo(other: Layer<Pixel>)
+
+    fun clear()
+}

@@ -20,18 +20,25 @@
  * FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
  * OTHER DEALINGS IN THE SOFTWARE.
  */
+package net.bladehunt.window_old.core.util
 
-package net.bladehunt.window.minestom
+/**
+ * @property x The X size - If X is flexible, this should be treated as the minimum size
+ * @property y The Y size - If Y is flexible, this should be treated as the minimum size
+ * @property flexBasisX The flex basis of the X - If the value is 0, then it isn't flexible
+ * @property flexBasisX The flex basis of the Y - If the value is 0, then it isn't flexible
+ * @author oglass
+ */
+@JvmRecord
+data class Size(
+    val x: Int,
+    val y: Int,
+    val flexBasisX: Int = if (x == 0) 1 else 0,
+    val flexBasisY: Int = if (y == 0) 1 else 0
+) {
+    constructor() : this(0, 0)
 
-import net.bladehunt.window_old.core.Modifier
-import net.minestom.server.inventory.InventoryType
-
-inline fun window(
-    inventoryType: InventoryType,
-    block: net.bladehunt.window_old.core.Modifier<MinestomWindow>
-) =
-    MinestomWindow(inventoryType).apply {
-        block()
-        build()
-        render()
+    fun toIntPair(): IntPair {
+        return IntPair(x, y)
     }
+}

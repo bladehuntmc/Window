@@ -21,17 +21,20 @@
  * OTHER DEALINGS IN THE SOFTWARE.
  */
 
-package net.bladehunt.window.minestom
+package net.bladehunt.window_old.core.ext
 
-import net.bladehunt.window_old.core.Modifier
-import net.minestom.server.inventory.InventoryType
+import net.bladehunt.window.core.layer.Layer
 
-inline fun window(
-    inventoryType: InventoryType,
-    block: net.bladehunt.window_old.core.Modifier<MinestomWindow>
-) =
-    MinestomWindow(inventoryType).apply {
-        block()
-        build()
-        render()
+fun <T> Layer<T>.fill(
+    pixel: T,
+    startX: Int = 0,
+    startY: Int = 0,
+    endX: Int = this.size.x,
+    endY: Int = this.size.y
+) {
+    for (x in startX..<endX) {
+        for (y in startY..<endY) {
+            set(x, y, pixel)
+        }
     }
+}

@@ -21,17 +21,20 @@
  * OTHER DEALINGS IN THE SOFTWARE.
  */
 
-package net.bladehunt.window.minestom
+package net.bladehunt.window_old.core.decoration
 
-import net.bladehunt.window_old.core.Modifier
-import net.minestom.server.inventory.InventoryType
+data class Padding<T>(
+    val item: T,
+    val left: Int = 0,
+    val right: Int = 0,
+    val top: Int = 0,
+    val bottom: Int = 0,
+) {
+    constructor(item: T, padding: Int) : this(item, padding, padding, padding, padding)
 
-inline fun window(
-    inventoryType: InventoryType,
-    block: net.bladehunt.window_old.core.Modifier<MinestomWindow>
-) =
-    MinestomWindow(inventoryType).apply {
-        block()
-        build()
-        render()
-    }
+    constructor(
+        item: T,
+        paddingX: Int,
+        paddingY: Int
+    ) : this(item, paddingX, paddingX, paddingY, paddingY)
+}

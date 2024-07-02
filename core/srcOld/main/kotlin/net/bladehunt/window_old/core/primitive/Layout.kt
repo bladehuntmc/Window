@@ -21,17 +21,33 @@
  * OTHER DEALINGS IN THE SOFTWARE.
  */
 
-package net.bladehunt.window.minestom
+package net.bladehunt.window_old.core.primitive
 
-import net.bladehunt.window_old.core.Modifier
-import net.minestom.server.inventory.InventoryType
+import net.bladehunt.window.core.layout.Window
+import net.bladehunt.window.core.util.Size
 
-inline fun window(
-    inventoryType: InventoryType,
-    block: net.bladehunt.window_old.core.Modifier<MinestomWindow>
-) =
-    MinestomWindow(inventoryType).apply {
-        block()
-        build()
-        render()
+abstract class Layout<T> : Primitive<T>(), PrimitiveParent<T> {
+    private val _children: MutableList<Primitive<T>> = arrayListOf()
+    override val children: Collection<Primitive<T>>
+        get() = _children.toList()
+
+    override fun <W : Primitive<T>> removeWidget(widget: W) {
+        _children.remove(widget)
     }
+
+    override fun <W : Primitive<T>> addPrimitive(widget: W, index: Int?) {
+        if (_children.contains(widget)) return
+        if (index == null) {
+            _children.add(widget)
+        } else _children.add(index, widget)
+    }
+
+    abstract fun calculateSize(node: Window.Node<T>): Size
+
+    override fun build(parent: Window.Node<T>) {
+        parent.createChild(this) {
+            this@Layout._children.forEach { it.build(this) }
+            size = calculateSize(this)
+        }
+    }
+}

@@ -21,38 +21,45 @@
  * OTHER DEALINGS IN THE SOFTWARE.
  */
 
-package net.bladehunt.window.minestom
+package net.bladehunt.window_old.core.primitive
 
-import net.bladehunt.kotstom.extension.rowSize
+import kotlin.math.max
 import net.bladehunt.window.core.Context
-import net.bladehunt.window.core.layer.ArrayLayerImpl
+import net.bladehunt.window.core.layer.OffsetLimitedLayer
 import net.bladehunt.window.core.layout.Window
 import net.bladehunt.window.core.util.IntPair
 import net.bladehunt.window.core.util.Size
-import net.bladehunt.window.minestom.inventory.InventoryLayer
-import net.bladehunt.window_old.core.decoration.Padding
-import net.minestom.server.inventory.Inventory
-import net.minestom.server.inventory.InventoryType
 
-class MinestomWindow(inventoryType: InventoryType) : Window<MinestomPixel>() {
-    override val size: Size =
-        Size(inventoryType.rowSize, inventoryType.size / inventoryType.rowSize)
+abstract class AbstractAuto<T> : Layout<T>() {
+    override fun calculateSize(node: Window.Node<T>, context: Context): Size = size
 
-    val inventory = Inventory(inventoryType, "Window")
+    override fun render(node: Window.Node<T>) {
+        val layer = node.layer ?: throw IllegalStateException("The layer must not be null!")
 
-    private val layer = InventoryLayer(inventory)
+        var pointerX = 0
+        var pointerY = 0
+        var rowHeight = 0
+        node.children.forEach { child ->
+            val widget = child.primitive
 
-    override val parentNode: Node<MinestomPixel> = Node(null, this, Context(), layer = layer)
+            if (pointerX + child.size.x > layer.size.x) {
+                pointerX = 0
+                pointerY += rowHeight
+                rowHeight = 0
+            }
 
-    override fun render() {
-        render(parentNode)
-    }
+            node.layer =
+                OffsetLimitedLayer(
+                    layer,
+                    pointerX,
+                    pointerY,
+                    IntPair(
+                        if (child.size.flexBasisX > 0) 1 else child.size.x,
+                        if (child.size.flexBasisY > 0) 1 else child.size.y))
+            pointerX += child.size.x
+            rowHeight = max(rowHeight, child.size.y)
 
-    override fun createArrayLayer(sizeX: Int, sizeY: Int): ArrayLayerImpl<MinestomPixel> {
-        return ArrayLayerImpl(IntPair(sizeX, sizeY))
-    }
-
-    override fun createPadding(): net.bladehunt.window_old.core.decoration.Padding<MinestomPixel> {
-        TODO("Not yet implemented")
+            widget.render(child)
+        }
     }
 }

@@ -21,17 +21,16 @@
  * OTHER DEALINGS IN THE SOFTWARE.
  */
 
-package net.bladehunt.window.minestom
+package net.bladehunt.window_old.core.primitive
 
-import net.bladehunt.window_old.core.Modifier
-import net.minestom.server.inventory.InventoryType
+interface PrimitiveParent<T> {
+    val children: Collection<Primitive<T>>
 
-inline fun window(
-    inventoryType: InventoryType,
-    block: net.bladehunt.window_old.core.Modifier<MinestomWindow>
-) =
-    MinestomWindow(inventoryType).apply {
-        block()
-        build()
-        render()
-    }
+    fun <W : Primitive<T>> removeWidget(widget: W)
+
+    fun <W : Primitive<T>> addPrimitive(widget: W) = addPrimitive(widget, null)
+
+    fun <W : Primitive<T>> addPrimitive(widget: W, index: Int? = null)
+
+    @JvmSynthetic operator fun <W : Primitive<T>> W.unaryPlus() = addPrimitive(this)
+}

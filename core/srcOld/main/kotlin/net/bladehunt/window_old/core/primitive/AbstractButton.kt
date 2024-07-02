@@ -21,17 +21,26 @@
  * OTHER DEALINGS IN THE SOFTWARE.
  */
 
-package net.bladehunt.window.minestom
+package net.bladehunt.window_old.core.primitive
 
-import net.bladehunt.window_old.core.Modifier
-import net.minestom.server.inventory.InventoryType
+import net.bladehunt.window.core.Context
+import net.bladehunt.window.core.ext.fill
+import net.bladehunt.window.core.interact.Interactable
+import net.bladehunt.window.core.interact.InteractionHandler
+import net.bladehunt.window.core.layout.Window
+import net.bladehunt.window.core.widget.Resizable
 
-inline fun window(
-    inventoryType: InventoryType,
-    block: net.bladehunt.window_old.core.Modifier<MinestomWindow>
-) =
-    MinestomWindow(inventoryType).apply {
-        block()
-        build()
-        render()
+abstract class AbstractButton<Pixel, Event> : Primitive<Interactable<Pixel, Event>>(), Resizable {
+    var onInteract by property<InteractionHandler<Event>>()
+
+    abstract fun getDisplay(node: Window.Node<Interactable<Pixel, Event>>): Pixel
+
+    override fun build(parent: Window.Node<Interactable<Pixel, Event>>, context: Context) {
+        parent.createChild(this, context)
     }
+
+    override fun render(node: Window.Node<Interactable<Pixel, Event>>) {
+        val layer = node.layer ?: throw IllegalStateException("The layer must not be null!")
+        layer.fill(Interactable(getDisplay(node), onInteract))
+    }
+}
