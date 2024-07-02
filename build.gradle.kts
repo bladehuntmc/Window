@@ -1,13 +1,14 @@
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 
 plugins {
-    kotlin("jvm") version "1.9.22" apply false
+    `java-library`
+    kotlin("jvm") version "1.9.23" apply false
     `maven-publish`
 }
 
 allprojects {
     group = "net.bladehunt"
-    version = "0.1.0-alpha.3"
+    version = "0.1.0-alpha.4"
 
     repositories {
         mavenCentral()
@@ -15,13 +16,13 @@ allprojects {
         maven("https://gitlab.com/api/v4/groups/bladehunt/-/packages/maven")
     }
     tasks.withType<JavaCompile> {
-        sourceCompatibility = "17"
-        targetCompatibility = "17"
+        sourceCompatibility = "21"
+        targetCompatibility = "21"
     }
 
     tasks.withType<KotlinCompile> {
         kotlinOptions {
-            jvmTarget = "17"
+            jvmTarget = "21"
             compilerOptions {
                 freeCompilerArgs.add("-Xcontext-receivers")
             }

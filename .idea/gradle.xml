@@ -5,16 +5,15 @@
     <option name="linkedExternalProjectsSettings">
       <GradleProjectSettings>
         <option name="externalProjectPath" value="$PROJECT_DIR$" />
-        <option name="gradleHome" value="/usr/share/java/gradle" />
-        <option name="gradleJvm" value="azul-17" />
         <option name="modules">
           <set>
             <option value="$PROJECT_DIR$" />
             <option value="$PROJECT_DIR$/core" />
             <option value="$PROJECT_DIR$/minestom" />
-            <option value="$PROJECT_DIR$/minestom/components" />
             <option value="$PROJECT_DIR$/minestom/example" />
+            <option value="$PROJECT_DIR$/minestom/widgets" />
             <option value="$PROJECT_DIR$/paper" />
+            <option value="$PROJECT_DIR$/paper/example" />
           </set>
         </option>
       </GradleProjectSettings>
